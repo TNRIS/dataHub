@@ -1,0 +1,80 @@
+/*
+styles for component: CatalogCard
+*/
+
+.catalog-card-component {
+  width: 100%;
+  background-color: $main-background;
+  box-shadow: $catalog-card-shadow;
+  transition: all .2s ease-in-out;
+  padding: 5px;
+
+  .catalog-card__headline {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin: 1em 0 inherit 0;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: $nest-text;
+  }
+
+  .catalog-card__year {
+    font-size: 18px;
+    color: $nest-text-subtle;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 0;
+    -webkit-margin-before: 0;
+    margin-bottom: auto;
+  }
+
+  .catalog-card__source {
+    font-size: 18px;
+    color: $nest-text-subtle;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 0;
+    -webkit-margin-before: 0;
+  }
+
+  &:hover, &:active, &:focus {
+    cursor: pointer;
+    box-shadow: $catalog-card-shadow-hover;
+
+    .mdc-image-list__supporting {
+      height: auto;
+      max-height: 100%;
+      overflow: hidden;
+
+      .mdc-image-list__label {
+        padding: 3px 0 3px 0;
+        margin-top: 3px;
+        line-height: 1.1rem;
+        white-space: normal;
+      }
+    }
+
+    img {
+      outline: 3px solid black;
+      outline-offset: -2px;
+    }
+
+  }
+
+  .mdc-image-list__supporting {
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+
+    .mdc-image-list__label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.3rem;
+      font-size: 14px;
+    }
+
+  }
+}

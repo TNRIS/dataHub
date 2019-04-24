@@ -1,0 +1,321 @@
+/*
+Color Theme Classes
+*/
+
+/*
+--------------------------------
+default theme colors and imported use of them
+default color set by Catalog component from
+colorThemeReducer in the redux store
+
+CURRENTLY: light
+--------------------------------
+*/
+
+// need to set the primary globally so the theme chooser has access to them all
+// these won't be overwritten
+$default-theme-primary: white;
+$dark-theme-primary: #222;
+$satan-theme-primary: #af0000;
+
+$tnris-blue: #1E8DC1;
+
+// set the rest of them
+// these will all be overwritten
+$primary-color: $tnris-blue;
+$secondary-color: #BADBFF;
+$button-text: white;
+
+$main-background: white;
+$nest-text: #444;
+$nest-text-subtle: gray;
+
+$search-background: #efefef;
+$header-border: lightgray;
+
+$catalog-card-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+                      0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+                      0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+
+$catalog-card-shadow-hover: 2px 2px 8px #888;
+
+$error-text: #af0000;
+$success-text: #00870b;
+
+$skin-primary: $nest-text;
+
+$footer-light: #444;
+$footer-dark: #222;
+$footer-text: #f5f5f5;
+
+body {
+  background-color: $main-background;
+}
+
+@import 'componentSassImporter';
+
+
+/*
+--------------------------------
+optional theme colors and imported use of them
+--------------------------------
+When adding new themes you will also need to update:
+  1. Header.jsx component logo Switch function to choose proper logo color
+  2. _themeChooser.scss sass file to set the themeChooser "background-color" for the new theme's class name
+  3. ThemeChooser.jsx component to add the new theme to the constructor themeOptions array
+  4. create new primary global sass variable to use in Step #3 (the next step). this is done above ~line 17
+  5. create the new class below with the name "<theme name to be used by the store>-app-theme"
+  6. update export (bottom of this file) to include fill and text colors for maps. keys should be
+     <theme name>Fill and <theme name>Text, respectively with the theme name matching the one used in
+     Step 5. fill is typically same as secondary-color while text is same as text-color
+*/
+
+.dark-app-theme {
+  $primary-color: $dark-theme-primary;
+  $secondary-color: #999999;
+  $button-text: lightgray;
+
+  $main-background: #383838;
+  $nest-text: #ededed;
+  $nest-text-subtle: #555;
+
+  $search-background: $secondary-color;
+  $header-border: #282828;
+
+  // $catalog-card-shadow: 0px 2px 6px -1px rgba(255,255,255, 0.2),
+  //                        0px 1px 1px 0px rgba(255,255,255, 0.14),
+  //                        0px 1px 3px 0px rgba(255,255,255, 0.12);
+
+  $error-text: #af0000;
+  $success-text: #00870b;
+
+  $skin-primary: lightgray;
+
+  $footer-light: #444;
+  $footer-dark: #222;
+  $footer-text: #f5f5f5;
+
+  body {
+    background-color: #282828;
+
+    .search-component {
+      .search-input {
+        background-color: #333;
+      }
+
+      ::placeholder {
+        color: $nest-text-subtle !important;
+      }
+    }
+
+    .beta-notice-dialog a {
+      color: $tnris-blue !important;
+    }
+
+    .view-container {
+
+      .catalog {
+        background-color: #282828;
+
+        .mdc-typography--subtitle1 {
+          color: gray;
+        }
+      }
+
+      .tnris-download-template,
+      .tnris-order-template,
+      .historical-aerial-template,
+      .outside-entity-template {
+        background-color: #282828;
+
+        header {
+          background-color: #282828;
+        }
+      }
+
+      .mdc-drawer {
+
+        .mdc-list-group__subheader {
+          color: gray !important;
+        }
+
+        .mdc-list-item--activated {
+          color: $tnris-blue;
+          background-color: $main-background;
+        }
+      }
+
+      a {
+      color: $tnris-blue !important;
+      }
+
+      li {
+        border-bottom-color: $nest-text-subtle !important;
+
+        .mdc-list-item__secondary-text {
+          color: $nest-text;
+        }
+      }
+
+      // desktop tabs for collection template headers
+      div.mdc-tab-bar {
+        .mdc-tab:not(.mdc-tab--active) {
+          span {
+            color: grey !important;
+          }
+        }
+      }
+
+      .order-tnris-data-form-component {
+        .mdc-typography--caption {
+          color: gray;
+        }
+
+        .mdc-form-field {
+          input {
+            color: gray;
+          }
+
+          .mdc-switch {
+            .mdc-switch__track {
+              background-color: gray;
+              border-color: gray;
+            }
+          }
+
+          .mdc-switch--checked {
+            .mdc-switch__track, .mdc-switch__thumb {
+              background-color: $tnris-blue !important;
+              border-color: $tnris-blue !important;
+            }
+          }
+        }
+
+        .mdc-floating-label {
+          color: gray;
+        }
+
+        .mdc-radio__native-control:enabled:checked + .mdc-radio__background {
+          .mdc-radio__outer-circle, .mdc-radio__inner-circle {
+            border-color: $tnris-blue;
+          }
+        }
+      }
+
+      .contact-tnris-form-component {
+        .mdc-text-field {
+          border-bottom-color: $nest-text-subtle;
+        }
+
+        .mdc-select:not(.mdc-select--disabled) {
+          @include mdc-select-bottom-line-color($nest-text-subtle);
+        }
+      }
+    }
+  }
+
+  @import 'componentSassImporter';
+}
+
+.satan-app-theme {
+  $primary-color: $satan-theme-primary;
+  $secondary-color: #999999;
+  $button-text: lightgray;
+
+  $main-background: #860000;
+  $nest-text: #ededed;
+  $nest-text-subtle: gray;
+
+  $search-background: $secondary-color;
+  $header-border: $nest-text-subtle;
+
+  $catalog-card-shadow: 0px 2px 6px -1px rgba(255,255,255, 0.2),
+                         0px 1px 1px 0px rgba(255,255,255, 0.14),
+                         0px 1px 3px 0px rgba(255,255,255, 0.12);
+
+  $error-text: white;
+  $success-text: #00870b;
+
+  $skin-primary: lightgray;
+
+  $footer-light: #444;
+  $footer-dark: #222;
+  $footer-text: #f5f5f5;
+
+  body {
+    background-color: $main-background;
+
+    .search-component {
+      .search-input {
+        background-color: #333;
+      }
+
+      ::placeholder {
+        color: $nest-text-subtle !important;
+      }
+    }
+
+    .beta-notice-dialog a {
+      color: $tnris-blue !important;
+    }
+
+    header {
+      .header-title {
+        background-color: $dark-theme-primary !important;
+      }
+    }
+
+    .view-container {
+
+      a {
+        color: black !important;
+      }
+
+      .mdc-drawer {
+        border-left-color: $nest-text-subtle;
+
+        .mdc-list-item--activated {
+          color: black;
+          background-color: $main-background;
+        }
+      }
+
+      li {
+        border-bottom-color: $nest-text-subtle !important;
+
+        .mdc-list-item__secondary-text {
+          color: $nest-text;
+        }
+      }
+
+      // desktop tabs for collection template headers
+      div.mdc-tab-bar {
+        .mdc-tab:not(.mdc-tab--active) {
+          span {
+            color: grey !important;
+          }
+        }
+      }
+
+      .contact-tnris-form-component {
+        .mdc-text-field {
+          border-bottom-color: $nest-text-subtle;
+        }
+
+        .mdc-select:not(.mdc-select--disabled) {
+          @include mdc-select-bottom-line-color($nest-text-subtle);
+        }
+      }
+    }
+  }
+
+  @import 'componentSassImporter';
+}
+
+
+// export colors for use by jsx. specifically, tnrisDownloadTemplateDownload map
+:export {
+  lightFill: #7D7D7D; lightText: white;
+  darkFill: #7D7D7D; darkText: white;
+  satanFill: $satan-theme-primary; satanText: white;
+        }

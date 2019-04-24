@@ -1,0 +1,110 @@
+@import "breakpoints";
+/*
+styles for component: Catalog
+*/
+
+.catalog-component {
+  margin-bottom: 75px;
+
+  .view-container {
+    padding-top: 106px;
+  }
+
+  .mdc-dialog {
+    z-index: 1000;
+  }
+
+  .open-drawer {
+    width: calc(100% - 255px);
+  }
+
+  .closed-drawer {
+    width: 100%;
+  }
+
+  .dataset-toaster {
+    .mdc-snackbar__surface {
+      text-align: center;
+      background-color: $primary-color;
+
+      .mdc-snackbar__label {
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .beta-notice-dialog {
+    a {
+      color: $primary-color;
+    }
+
+    button {
+      color: $button-text;
+      background-color: $primary-color;
+      font-size: 1.1rem;
+    }
+  }
+
+  .catalog {
+    background-color: $main-background;
+
+    .catalog-grid {
+      @include mdc-layout-grid(desktop, 30px, 1600px);
+
+      .mdc-layout-grid__inner {
+        padding-inline-start: unset;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .mdc-dialog__surface {
+      background-color: $main-background;
+    }
+
+    .no-data {
+      margin: 0 auto;
+      max-width: 600px;
+
+      .no-data-image {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+  }
+}
+
+.sweet-loading-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.catalog-component__loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  min-width: 100%;
+  background-color: #121515;
+  overflow: hidden;
+
+  .holodeck-loading-image {
+    width: 100%;
+    height: 100%;
+
+    @media (max-width: $breakpoint-desktop) {
+      width: auto;
+      position: fixed;
+      left: -9999px;
+      right: -9999px;
+      margin:0 auto;
+    }
+  }
+}

@@ -1,0 +1,154 @@
+/*
+styles for component: OrderTnrisDataForm
+*/
+
+.order-tnris-data-form-component {
+  @include mdc-text-field-bottom-line-color(rgba(0,0,0,.42));
+  @include mdc-text-field-label-color($primary-color);
+  @include mdc-text-field-line-ripple-color($primary-color);
+  @include mdc-text-field-textarea-stroke-color(rgba(0,0,0,.42));
+
+  @include mdc-radio-ink-color($primary-color);
+  @include mdc-radio-checked-stroke-color($primary-color);
+  @include mdc-radio-focus-indicator-color($primary-color);
+
+  .mdc-radio .mdc-radio__native-control:enabled:not(:checked) + .mdc-radio__background .mdc-radio__outer-circle {
+    border-color: $nest-text;
+  }
+
+  padding: 0px 20px 20px 20px;
+  min-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  div.mdc-text-field {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin-bottom: 16px;
+    display: flex;
+  }
+
+  div.mdc-text-field--textarea {
+    textarea {
+      color: $nest-text;
+    }
+  }
+
+  .mdc-text-field--focused {
+    border-color: $primary-color;
+  }
+
+  .mdc-text-field--invalid {
+    @include mdc-text-field-bottom-line-color($error-text);
+    @include mdc-text-field-label-color($error-text);
+    @include mdc-text-field-line-ripple-color($error-text);
+    @include mdc-text-field-textarea-stroke-color($error-text);
+  }
+
+  .mdc-form-field {
+    label {
+      color: $nest-text;
+    }
+  }
+
+  .order-lidar-switches, .order-historical-switches {
+    .mdc-form-field {
+      min-height: 40px;
+
+      .mdc-switch:not(.mdc-switch--disabled) {
+        @include mdc-switch-toggled-on-color($primary-color);
+        @include mdc-switch-toggled-on-track-color($primary-color);
+        @include mdc-switch-toggled-on-thumb-color($primary-color);
+        @include mdc-switch-toggled-on-ripple-color($primary-color);
+      }
+
+      .mdc-switch {
+        margin-right: 12px;
+      }
+
+      label {
+        cursor: pointer;
+      }
+
+      .mdc-switch.mdc-switch--disabled {
+        .mdc-switch__native-control {
+          pointer-events: initial;
+          cursor: not-allowed;
+        }
+      }
+
+      .mdc-switch.mdc-switch--disabled + label {
+        cursor: not-allowed;
+      }
+    }
+
+  }
+
+  .mdc-typography--headline6 {
+    margin-bottom: 10px;
+  }
+
+  .mdc-typography--body2 {
+    color: $nest-text;
+  }
+
+  .mdc-typography--caption {
+    margin-left: 44px;
+    color: $nest-text-subtle;
+
+    a {
+      color: $primary-color;
+    }
+  }
+
+  .mdc-form-field {
+    display: flex;
+
+    label {
+      cursor: pointer;
+    }
+  }
+
+  .mdc-text-field:not(.mdc-text-field--disabled) + .mdc-text-field-helper-text {
+    margin-bottom: 10px;
+    color: $primary-color;
+  }
+
+  .invalid-prompt {
+    color: $error-text;
+  }
+
+  .submit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .mdc-button--raised:not(:disabled),
+    .mdc-button--unelevated:not(:disabled) {
+      background-color: $primary-color;
+      color: $button-text;
+    }
+  }
+
+  .order-cart-form-success {
+    span {
+      color: $success-text;
+    }
+  }
+
+  .order-cart-form-error {
+    span {
+      color: $error-text;
+    }
+  }
+
+  div.hidden-field {
+    display: none;
+  }
+
+  .order-tnris-data-message {
+    text-align: center;
+  }
+
+
+}

@@ -1,0 +1,24 @@
+/*
+styles for component: CollectionSorter
+*/
+
+.sort-component {
+  margin-left: 3px;
+  margin-right: 3px;
+
+  .mdc-list {
+    text-align: center;
+
+    .mdc-list-item {
+      margin: 2px 8px 8px 8px;
+      cursor: pointer;
+      color: $nest-text;
+    }
+
+    .mdc-list-item--activated {
+      color: $primary-color;
+      // background-color: $secondary-color;
+    }
+
+  }
+}

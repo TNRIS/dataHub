@@ -1,0 +1,43 @@
+/*
+styles for component: CountyCoverage
+*/
+
+// only used by tnrisOrderTemplateDetails & HistoricalAerialTemplateDetails
+.county-coverage-component {
+  height: 80vh;
+
+  #county-coverage-map {
+    position: absolute;
+    top: 165px;
+    bottom: 50px;
+    width: 100%;
+
+    .mapboxgl-canvas {
+      height: 100% !important;
+    }
+
+    .mapboxgl-control-container {
+      .mapboxgl-ctrl-top-left {
+        button {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  #county-coverage-notice {
+    background: $main-background;
+    color: $nest-text;
+    position: absolute;
+    z-index: 2;
+    top: 175px;
+    right: 5px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.4);
+    padding: 6px;
+    text-align: center;
+    max-width: 80vw;
+  }
+
+}

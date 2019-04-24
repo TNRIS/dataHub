@@ -1,0 +1,51 @@
+/*
+styles for component: CollectionFilter
+*/
+
+.filter-component {
+  float: left;
+  margin-left: 3px;
+  margin-right: 3px;
+  width: 100%;
+  padding-bottom: 6px;
+
+  .hide-filter-list {
+    display: none;
+  }
+
+  .filter-list-title {
+    cursor: pointer;
+  }
+
+  .mdc-list {
+
+    .mdc-list-item {
+      text-transform: capitalize;
+      overflow: hidden;
+      color: $nest-text;
+
+      i {
+        color: $nest-text-subtle;
+      }
+
+      .mdc-list-item__meta {
+        margin-left: auto;
+        margin-right: inherit;
+      }
+
+      label {
+        cursor: pointer;
+        color: $nest-text;
+      }
+
+      @include mdc-checkbox-container-colors($nest-text-subtle, $main-background, $primary-color, $primary-color);
+      @include mdc-checkbox-focus-indicator-color($primary-color);
+      @include mdc-checkbox-ink-color($secondary-color);
+    }
+
+    .mdc-list-item--activated {
+      color: $primary-color;
+      // background-color: $secondary-color;
+    }
+  }
+}

@@ -1,0 +1,142 @@
+/*
+styles for component: TnrisDownloadTemplateDownload
+*/
+
+.tnris-download-template-download {
+  height: 80vh;
+
+  button {
+    margin: 0;
+  }
+
+  #tnris-download-menu {
+    background: $main-background;
+    color: $nest-text;
+    position: absolute;
+    z-index: 1;
+    top: 175px;
+    right: 10px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.4);
+
+    &.hidden-layer-menu {
+      display: none;
+    }
+
+    .mdc-list-item {
+      margin: 3px 6px 3px 6px;
+      height: initial;
+      display: block;
+      text-align: center;
+    }
+
+    .mdc-list-item.mdc-list-item--activated {
+      background-color: $nest-text;
+      color: $main-background;
+    }
+  }
+
+  #tnris-download-map {
+    position: absolute;
+    top: 165px;
+    bottom: 50px;
+    width: 100%;
+
+    .mapboxgl-canvas {
+      height: 100% !important;
+    }
+
+    .mapboxgl-popup {
+        max-width: 400px;
+
+        .mapboxgl-popup-content {
+          ul {
+            list-style: none;
+            padding-inline-start: 0;
+          }
+        }
+    }
+  }
+
+  #tnris-download-note {
+    background: $main-background;
+    color: $nest-text;
+    position: absolute;
+    z-index: 2;
+    bottom: 60px;
+    left: 5px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.4);
+    padding: 3px;
+    line-height: 12px;
+
+    i {
+      font-size: 16px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 20px;
+      max-width: 80vw;
+    }
+  }
+
+  #tnris-download-instructions {
+    background: $main-background;
+    color: $nest-text;
+    position: absolute;
+    z-index: 2;
+    top: 270px;
+    left: 8px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(0,0,0,0.15);
+    padding: 3px;
+    line-height: 12px;
+    max-width: 20vw;
+
+    .close-icon {
+      cursor: pointer;
+      float: left;
+      border-radius: 3px;
+
+      &:hover {
+        background-color: #ccc;
+      }
+    }
+
+    i {
+      cursor: pointer;
+      font-size: 25px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 20px;
+      padding: 5px;
+      width: auto;
+      text-align: center;
+    }
+  }
+
+  .tnris-download-template-download__mobile {
+    background: $main-background;
+    color: $nest-text;
+    padding: 35px;
+    text-align: center;
+  }
+
+  .tnris-download-template-download__loading {
+    overflow: hidden;
+
+    .holodeck-loading-image {
+      width: 100%;
+    }
+  }
+
+  .tnris-download-template-download__none {
+    background: $main-background;
+    color: $error-text;
+    padding: 35px;
+  }
+
+}

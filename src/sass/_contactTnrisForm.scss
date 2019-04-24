@@ -1,0 +1,116 @@
+/*
+styles for component: ContactTnrisForm
+*/
+
+.contact-tnris-form-component {
+  @include mdc-text-field-bottom-line-color(rgba(0, 0, 0, 0.12));
+  @include mdc-text-field-label-color($nest-text);
+  @include mdc-text-field-line-ripple-color($primary-color);
+  @include mdc-text-field-textarea-stroke-color(rgba(0, 0, 0, 0.12));
+
+  padding: 0px 20px 20px 20px;
+  min-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  p.mdc-typography--body2 {
+    margin-bottom: 6px;
+  }
+
+  div.mdc-text-field {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin-bottom: 16px;
+    display: flex;
+
+    input {
+      color: $nest-text;
+    }
+  }
+
+  .mdc-select:not(.mdc-select--disabled) {
+    background-color: initial;
+    margin-bottom: 16px;
+    display: flex;
+    @include mdc-select-label-color($nest-text);
+    @include mdc-select-bottom-line-color(rgba(0, 0, 0, 0.12));
+    @include mdc-select-focused-bottom-line-color($primary-color);
+
+
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      color: $nest-text;
+
+      option:not([disabled]) {
+        color: $nest-text;
+      }
+
+      option {
+        background-color: $main-background;
+      }
+    }
+
+    select::-ms-expand {
+      display: none;
+    }
+
+  }
+
+  div.mdc-text-field--textarea {
+    border-bottom-color: rgba(0, 0, 0, 0.12);
+
+    textarea {
+      color: $nest-text;
+    }
+  }
+
+  .mdc-text-field--focused {
+    border-bottom: 1px solid $primary-color;
+  }
+
+  .mdc-text-field--invalid {
+    @include mdc-text-field-bottom-line-color($error-text);
+    @include mdc-text-field-label-color($error-text);
+    @include mdc-text-field-line-ripple-color($error-text);
+    @include mdc-text-field-textarea-stroke-color($error-text);
+  }
+
+  .recaptcha-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .invalid-prompt {
+    color: $error-text;
+  }
+
+  .submit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .mdc-button--raised:not(:disabled),
+    .mdc-button--unelevated:not(:disabled) {
+      background-color: $primary-color;
+      color: $button-text;
+    }
+  }
+
+  .contact-tnris-form-success {
+    span {
+      color: $success-text;
+    }
+  }
+
+  .contact-tnris-form-error {
+    span {
+      color: $error-text;
+    }
+  }
+
+  .order-tnris-data-message {
+    text-align: center;
+  }
+}

@@ -1,0 +1,224 @@
+/*
+styles for component: OrderCart
+*/
+
+.order-cart-form-component-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: $main-background;
+
+  .order-cart-form-component {
+    @include mdc-text-field-bottom-line-color(rgba(0,0,0,0.12));
+    @include mdc-text-field-label-color($nest-text);
+    @include mdc-text-field-line-ripple-color($primary-color);
+    @include mdc-text-field-textarea-stroke-color(rgba(0,0,0,.12));
+
+    @include mdc-radio-ink-color($primary-color);
+    @include mdc-radio-checked-stroke-color($primary-color);
+    @include mdc-radio-focus-indicator-color($primary-color)
+
+    padding: 15px;
+    color: $nest-text;
+
+    .order-cart-data-items {
+      .mdc-list-item {
+        width: calc(100% - 16px);
+
+        @media (max-width: $breakpoint-phone) {
+          width: 100%;
+          padding: 0;
+        }
+
+        .mdc-list-item__meta {
+          cursor: pointer;
+
+          &:hover {
+            color: red;
+          }
+        }
+      }
+
+      .empty-cart-message {
+        text-align: center;
+      }
+    }
+
+    .mdc-list {
+      color: $nest-text-subtle;
+
+      .mdc-list-item {
+        .mdc-list-item__graphic {
+          color: $primary-color;
+        }
+
+        .mdc-list-item__text {
+          .mdc-list-item__primary-text {
+            color: $primary-color;
+            a {
+              text-decoration: inherit;
+              color: $primary-color;
+            }
+            a:hover {
+              cursor: pointer;
+            }
+          }
+
+          .mdc-list-item__secondary-text {
+            color: $nest-text-subtle;
+          }
+        }
+
+        .mdc-list-item__meta {
+          color: $nest-text-subtle;
+        }
+      }
+
+    }
+
+    .template-content-div {
+      margin-bottom: 15px;
+      padding: 6px 16px 16px 16px;
+    }
+
+    div.mdc-text-field {
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      margin-bottom: 16px;
+      display: flex;
+
+      input {
+        color: $nest-text;
+      }
+    }
+
+    .mdc-text-field--invalid {
+      @include mdc-text-field-bottom-line-color($error-text);
+      @include mdc-text-field-label-color($error-text);
+      @include mdc-text-field-line-ripple-color($error-text);
+      @include mdc-text-field-textarea-stroke-color($error-text);
+    }
+
+    input[type='number'] {
+      -moz-appearance:textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) {
+      background-color: initial;
+      margin-bottom: 16px;
+      display: flex;
+      @include mdc-select-label-color($nest-text);
+      @include mdc-select-bottom-line-color(rgba(0, 0, 0, 0.12));
+      @include mdc-select-focused-bottom-line-color($primary-color);
+
+
+      select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        color: $nest-text;
+
+        option:not([disabled]) {
+          color: black;
+        }
+
+        option {
+          color: $nest-text !important;
+        }
+      }
+
+      select::-ms-expand {
+        display: none;
+      }
+
+    }
+
+    .mdc-radio .mdc-radio__native-control:enabled:not(:checked) + .mdc-radio__background .mdc-radio__outer-circle {
+      border-color: $nest-text;
+    }
+
+    .mdc-typography--headline6 {
+      margin-bottom: 10px;
+      color: $nest-text;
+    }
+
+    .mdc-typography--body2 {
+      color: $nest-text;
+    }
+
+    .mdc-typography--caption {
+      margin-left: 44px;
+      color: $nest-text-subtle;
+    }
+
+    .expiration-note {
+      float: right;
+    }
+
+    .mdc-form-field {
+      display: flex;
+
+      label {
+        cursor: pointer;
+        color: $nest-text;
+      }
+    }
+
+    .recaptcha-container {
+      margin-top: 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .invalid-prompt {
+      color: $error-text;
+    }
+
+    .submit-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .mdc-button--raised:not(:disabled),
+      .mdc-button--unelevated:not(:disabled) {
+        background-color: $primary-color;
+        color: $button-text;
+      }
+    }
+
+    .default-order-cart-display {
+      text-align: center;
+
+      button {
+        background-color: $primary-color;
+        color: $button-text;
+      }
+    }
+
+    .order-cart-form-success {
+      text-align: center;
+      span {
+        color: $success-text;
+      }
+    }
+
+    .order-cart-form-error {
+      text-align: center;
+      span {
+        color: red;
+      }
+    }
+
+    .order-cart-form-submitting {
+      text-align: center;
+    }
+
+    div.hidden-field {
+      display: none;
+    }
+  }
+}

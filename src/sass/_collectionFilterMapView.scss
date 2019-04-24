@@ -1,0 +1,18 @@
+/*
+styles for component: CollectionFilterMapView
+*/
+
+.filter-map-view {
+  height: 80vh;
+
+  h2 {
+    font-size: 1.7rem;
+    font-family: 'Roboto Condensed', sans-serif;
+    color: $nest-text;
+  }
+
+  .close-shopping-cart {
+    background-color: #e6e6e6;
+    border-radius: 50%;
+  }
+}

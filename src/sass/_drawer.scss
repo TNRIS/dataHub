@@ -1,0 +1,17 @@
+/*
+styles for component: Drawer
+*/
+
+.drawer-component {
+
+  .tnris-logo, .twdb-logo {
+    border-radius: 4px;
+  }
+
+  .close-button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+}

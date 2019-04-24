@@ -1,0 +1,15 @@
+/*
+global device breakpoints to be used in sass and javascript
+*/
+$breakpoint-desktop: 1100px;
+$breakpoint-download: 900px;
+$breakpoint-tablet: 840px;
+$breakpoint-phone: 500px;
+
+// :export directive enables sass variables to be used as javascript variables
+:export {
+  desktop: $breakpoint-desktop;
+  download: $breakpoint-download;
+  tablet: $breakpoint-tablet;
+  phone: $breakpoint-phone;
+}

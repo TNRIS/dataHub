@@ -1,0 +1,76 @@
+/*
+styles for component: CollectionSearcher
+*/
+
+.search-component:focus-within {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px,
+    rgba(0, 0, 0, 0.14) 0px 8px 10px 1px,
+    rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+
+    .search-input {
+      background-color: $main-background;
+    }
+}
+
+.search-component {
+  width: 30%;
+  position: absolute;
+  left: 50%;
+  margin-left: -15%;
+  margin-right: auto;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  overflow: unset;
+
+  @media (min-width: $breakpoint-phone) and (max-width: $breakpoint-desktop) {
+    width: 40%;
+    margin-left: -20%;
+  }
+
+  @media (max-width: $breakpoint-phone) {
+    width: 100%;
+    position: relative;
+    left: 0;
+    margin-left: 0;
+    margin-right: 12px;
+  }
+
+  .material-icons.mdc-text-field__icon {
+    color: $skin-primary;
+  }
+
+  .search-input {
+    background-color: $search-background;
+    padding: 5px 60px 5px 50px !important;
+    border-bottom: 0;
+    color: $skin-primary;
+    caret-color: $skin-primary;
+  }
+
+  .suggestion-list {
+    background-color: $main-background;
+    border-top: 1px solid $header-border;
+    box-shadow: inherit;
+
+    // @media (max-width: $breakpoint-phone) {
+    //   width: 145%;
+    // }
+
+    li {
+      color: $skin-primary;
+      background-color: $main-background !important;
+    }
+
+    li[aria-selected="true"] {
+      background-color: rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
+  .suggestion-list:hover {
+    cursor: pointer;
+  }
+
+  .clear-button {
+    top: calc(50% - 43%);
+  }
+}

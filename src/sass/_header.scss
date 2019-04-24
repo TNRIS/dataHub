@@ -1,0 +1,146 @@
+/*
+styles for component: Header
+*/
+
+// removes the shadow from the header on scroll
+.mdc-top-app-bar--fixed-scrolled {
+  box-shadow: none;
+}
+
+.header-component {
+  @include mdc-top-app-bar-ink-color($skin-primary);
+  @include mdc-top-app-bar-icon-ink-color($skin-primary);
+  @include mdc-top-app-bar-fill-color($main-background);
+  border-bottom: solid 1px $header-border;
+
+  .open-drawer {
+    width: calc(100% - 255px);
+  }
+
+  .closed-drawer {
+    width: 100%;
+  }
+
+  .header-title {
+    background-color: $primary-color;
+    color: $button-text;
+    font-size: 16px;
+    font-weight: 100;
+    padding: 4px;
+    height: 35px;
+
+    section {
+      padding: 0;
+
+      .tnris-logo {
+        width: auto;
+        height: 30px;
+        margin-right: 10px;
+        padding: 4px 0 0 5px;
+      }
+
+      .header-title__tnris {
+        font-family: 'Roboto Condensed', sans-serif;
+        text-decoration: none;
+        letter-spacing: 3px;
+        text-align: left;
+        text-transform: uppercase;
+        align-items: baseline;
+        color: inherit;
+        padding-top: 12px;
+        margin-left: 5px;
+
+        @media (min-width: $breakpoint-phone) and (max-width: 649px) {
+          padding-top: 4px;
+        }
+      }
+
+      .header-title__twdb {
+        text-decoration: none;
+        letter-spacing: 0;
+        text-transform: none !important;
+        text-align: right;
+        align-items: baseline;
+        color: inherit;
+        padding-top: 12px;
+        margin-right: 5px;
+
+        @media (min-width: $breakpoint-phone) and (max-width: 649px) {
+          padding-top: 4px;
+        }
+      }
+
+      .title-size {
+        font-size: 14px;
+
+        @media (min-width: $breakpoint-download) and (max-width: $breakpoint-desktop) {
+          font-size: 12px;
+        }
+        @media (min-width: $breakpoint-phone) and (max-width: $breakpoint-download) {
+          font-size: 10px;
+        }
+        @media (max-width: $breakpoint-phone) {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  .header-nav {
+    height: 70px;
+
+    #app-title {
+      padding-left: 20px;
+      font-family: 'Roboto Condensed', sans-serif;
+
+      @media (max-width: $breakpoint-phone) {
+        margin-left: 0;
+        padding-left: 12px;
+      }
+    }
+
+    .back-to-hub {
+      padding-left: 20px;
+      outline: none;
+      cursor: pointer !important;
+    }
+
+    .nav-button {
+      padding-right: 12px;
+
+      @media (max-width: $breakpoint-phone) {
+        padding-right: 0;
+      }
+
+    }
+
+    .open-drawer {
+      width: calc(100% - 255px);
+      -webkit-transition: width 2s; /* Safari */
+      transition: width .1s;
+    }
+
+    .closed-drawer {
+      width: 100%;
+      -webkit-transition: width 2s; /* Safari */
+      transition: width .1s;
+    }
+
+    .mdc-top-app-bar__action-item {
+      // margin-left: 3px;
+      // margin-right: 3px;
+
+      .logo {
+        max-height: 100%;
+      }
+    }
+
+    .tnris-logo-text {
+      font-style: italic;
+      font-family: crillee;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+  }
+
+}
