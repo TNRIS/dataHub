@@ -274,7 +274,9 @@ class OrderCart extends Component {
           <li key={collectionId} className="mdc-list-item">
             <span className="mdc-list-item__graphic material-icons" aria-hidden="true">whatshot</span>
             <span className="mdc-list-item__text">
-              <span className="mdc-list-item__primary-text"><a name={collectionId} onClick={this.handleCartItemClick}>{compiledDisplayName}</a></span>
+              <span className="mdc-list-item__primary-text">
+                <button name={collectionId} onClick={this.handleCartItemClick}>{compiledDisplayName}</button>
+              </span>
               <span className="mdc-list-item__secondary-text">{this.props.orders[collectionId].coverage} Coverage{partialType}{attachments}{formats}</span>
             </span>
             <span className="mdc-list-item__meta material-icons"

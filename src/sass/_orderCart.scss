@@ -53,12 +53,15 @@ styles for component: OrderCart
 
         .mdc-list-item__text {
           .mdc-list-item__primary-text {
-            color: $primary-color;
-            a {
+            button {
+              font-size: 16px;
               text-decoration: inherit;
               color: $primary-color;
+              border: none;
+              padding: 0;
             }
-            a:hover {
+
+            button:hover {
               cursor: pointer;
             }
           }

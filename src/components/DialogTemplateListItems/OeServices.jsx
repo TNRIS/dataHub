@@ -35,8 +35,8 @@ export default class OeServices extends React.Component {
       <div id="oe_services">
         <div className="collapse mdc-button mdc-button--raised mdc-ripple-upgraded" onClick={displayServices}>
           <p>
-            Currently, there are <u>{namesArray.length}</u> available services from <u>{this.props.collection.source_abbreviation}</u>. <strong>Click this button</strong> to 
-            view a list of services that you can access by visiting the agency's <a href={this.props.collection.source_data_website} target="_blank">open data portal</a>.
+            Currently, there are <u>{namesArray.length}</u> available services from <u>{this.props.collection.source_abbreviation}</u>. <strong>Click this button</strong> to
+            view a list of services that you can access by visiting the agency's <a href={this.props.collection.source_data_website} target="_blank" rel="noopener noreferrer">open data portal</a>.
           </p>
         </div>
         <div id="service-list" className="content">

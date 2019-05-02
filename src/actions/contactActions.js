@@ -32,7 +32,6 @@ function handleErrors(response) {
 
 export function submitContactTnrisForm(formInfo) {
   const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8001/' : 'https://contact.tnris.org/';
-  console.log(contactUrl);
   return (dispatch, getState) => {
     dispatch(submitContactBegin());
     const payload = {

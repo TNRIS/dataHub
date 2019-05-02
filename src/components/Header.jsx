@@ -110,7 +110,7 @@ export default class Header extends React.Component {
               title = "DataHub">
                 DataHub
             </p>) : window.innerWidth >= tablet && this.props.view !== 'catalog' ? (
-            <a
+            <button
               id="app-title"
               className="back-to-hub mdc-typography mdc-typography--headline5"
               title="back to DataHub"
@@ -118,15 +118,15 @@ export default class Header extends React.Component {
               onKeyDown={(e) => this.handleKeyPress(e, 'catalog')}
               tabIndex="3">
                 DataHub
-            </a>) : window.innerWidth < tablet && this.props.view !== 'catalog' ? (
-            <a
+            </button>) : window.innerWidth < tablet && this.props.view !== 'catalog' ? (
+            <button
               className="back-to-hub material-icons mdc-top-app-bar__navigation-icon"
               title="back to DataHub"
               onClick={this.handleCatalogView}
               onKeyDown={(e) => this.handleKeyPress(e, 'catalog')}
               tabIndex="3">
                 view_comfy
-            </a>) : '';
+            </button>) : '';
 
     return (
         <header
@@ -160,19 +160,19 @@ export default class Header extends React.Component {
               {this.props.orders && Object.keys(this.props.orders).length !== 0 ?
                  <div className="shopping-cart-icon nav-button">
                    {shoppingCartCountBadge}
-                  <a
+                  <button
                     onClick={this.handleOrderCartView}
                     onKeyDown={(e) => this.handleKeyPress(e, 'cart')}
                     className="material-icons mdc-top-app-bar__navigation-icon"
                     title="View shopping cart"
                     tabIndex="3">
                     shopping_cart
-                  </a>
+                  </button>
                 </div> : ''}
                 {this.props.view === 'catalog' ?
                   <div className="tool-drawer-icon nav-button">
                     {toolDrawerNotification}
-                    <a
+                    <button
                       onClick={this.props.handleToolDrawerDisplay}
                       onKeyDown={(e) => this.handleKeyPress(e, 'toolDrawer')}
                       className="material-icons mdc-top-app-bar__navigation-icon"
@@ -182,7 +182,7 @@ export default class Header extends React.Component {
                       {/*{this.props.toolDrawerVariant === 'dismissible' ?
                         this.props.toolDrawerStatus === 'closed' ? 'menu' : 'tune' : 'tune'}*/}
                         tune
-                    </a>
+                    </button>
                   </div> : ''}
             </section>
           </div>
