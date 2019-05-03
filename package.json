@@ -71,8 +71,8 @@
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "SASS_PATH=./node_modules react-scripts start",
+    "build": "SASS_PATH=./node_modules react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
