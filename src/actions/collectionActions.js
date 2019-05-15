@@ -97,14 +97,14 @@ function historicalRecursiveFetcher(dispatch, getState, apiQuery, response) {
 }
 
 export function fetchHistorical(dispatch, getState, results) {
-  const apiQuery = 'https://data.tnris.org/api/v1/historical/collections';
+  const apiQuery = 'https://api.tnris.org/api/v1/historical/collections';
   return historicalRecursiveFetcher(dispatch, getState, apiQuery, results);
 }
 
 export function fetchCollections() {
   return (dispatch, getState) => {
     dispatch(fetchCollectionsBegin());
-    return fetch('https://data.tnris.org/api/v1/collections')
+    return fetch('https://api.tnris.org/api/v1/collections')
       .then(handleErrors)
       .then(res => res.json())
       .then(json => {
@@ -183,7 +183,7 @@ function resourcesRecursiveFetcher(dispatch, getState, apiQuery, collectionId, r
 }
 
 export function fetchCollectionResources(collectionId) {
-  const apiQuery = 'https://data.tnris.org/api/v1/resources?collection_id=' + collectionId;
+  const apiQuery = 'https://api.tnris.org/api/v1/resources?collection_id=' + collectionId;
   return (dispatch, getState) => {
     dispatch(fetchCollectionResourcesBegin());
     return resourcesRecursiveFetcher(dispatch, getState, apiQuery, collectionId, []);
