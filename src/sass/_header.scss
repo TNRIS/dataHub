@@ -93,6 +93,8 @@ styles for component: Header
       border: none;
       padding: 0px 0px 0px 20px;
       font-family: 'Roboto Condensed', sans-serif;
+      color: $nest-text;
+      background-color: rgba(0, 0, 0, 0);
 
       @media (max-width: $breakpoint-phone) {
         margin-left: 0;
