@@ -7,6 +7,10 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import turfExtent from 'turf-extent';
 import styles from '../sass/index.scss';
+
+// global sass breakpoint variables to be used in js
+import breakpoints from '../sass/_breakpoints.scss';
+
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -18,16 +22,24 @@ export default class CollectionFilterMap extends React.Component {
       mapFilteredCollectionIds: this.props.collectionFilterMapFilter
     }
     // bind our map builder and other custom functions
+    this.createMap = this.createMap.bind(this);
     this.resetTheMap = this.resetTheMap.bind(this);
     this.enableUserInteraction = this.enableUserInteraction.bind(this);
     this.disableUserInteraction = this.disableUserInteraction.bind(this);
     this.handleFilterButtonClick = this.handleFilterButtonClick.bind(this);
+    this.downloadBreakpoint = parseInt(breakpoints.download, 10);
   }
 
   componentDidMount() {
     if (this.props.view !== 'geoFilter') {
       this.props.setViewGeoFilter();
     }
+    if (window.innerWidth > this.downloadBreakpoint) {
+      this.createMap();
+    }
+  }
+
+  createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
     // define the map bounds for Texas at the initial zoom and center,
@@ -285,17 +297,35 @@ export default class CollectionFilterMap extends React.Component {
 }
 
   render() {
-    return (
-      <div className='collection-filter-map-component'>
-        <div id='collection-filter-map'></div>
-        <button
-          id='map-filter-button'
-          className='map-filter-button mdc-fab mdc-fab--extended mdc-fab--exited'
-          onClick={this.handleFilterButtonClick}>
-          {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
-        </button>
-        <CollectionFilterMapInstructions />
-      </div>
-    );
+    if (window.innerWidth <= this.downloadBreakpoint) {
+      window.scrollTo(0,0);
+      return (
+        <div id='collection-filter-map' className='tnris-download-template-download'>
+          <div className="tnris-download-template-download__mobile">
+            <p>
+              In consideration of user experience,
+              the filter by geography map has been <strong>disabled</strong> for small browser windows and mobile devices.
+            </p>
+            <p>
+              Please visit this page with a desktop computer or increase the browser window size and refresh
+              the page to use the filter by geography tool.
+            </p>
+          </div>
+        </div>
+      )
+    } else {
+      return (
+        <div className='collection-filter-map-component'>
+          <div id='collection-filter-map'></div>
+          <button
+            id='map-filter-button'
+            className='map-filter-button mdc-fab mdc-fab--extended mdc-fab--exited'
+            onClick={this.handleFilterButtonClick}>
+            {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
+          </button>
+          <CollectionFilterMapInstructions />
+        </div>
+      );
+    }
   }
 }
