@@ -50,6 +50,14 @@ styles for component: Footer
           p {
             margin: 0;
           }
+
+          i.material-icons {
+            margin-right: 6px;
+          }
+
+          a {
+            vertical-align: top;
+          }
         }
 
         button {
