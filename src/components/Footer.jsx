@@ -111,12 +111,12 @@ export default class Footer extends React.Component {
                         <a href="https://goo.gl/maps/RE5BC" target="_blank" rel="noopener noreferrer" tabIndex="0">
                           <i className="material-icons">open_in_new</i>View Map
                         </a>
+                        <br />
+                        <a href="https://tnris.org/contact/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                          <i className="material-icons">contact_mail</i>General Contact
+                        </a>
                       </small>
                       <p>
-                        <a href="tel:5124638337" tabIndex="0">
-                          <i className="material-icons">phone</i>512-463-8337
-                        </a>
-                        <br />
                         <strong>RDC Office Hours:</strong><br />
                         Monday-Friday, 8am-4pm<br />
                         By Appointment Only
