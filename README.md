@@ -1,5 +1,17 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Get setup!
+
+In the project directory, enable the proper version of Node and NPM:
+
+### `nvm use 10` 
+
+Site builds successfully with **NodeJS v10.16.3** & **NPM v6.9** but fails under NodeJS until dependency updates occur. After enabling the proper node version, install dependencies:
+
+### `npm install`
+
+and you're good to go!
+
 ## Available Scripts
 
 In the project directory, you can run:
