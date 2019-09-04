@@ -13,7 +13,7 @@ const initialState = {
   collectionFilterMapAoi: {},
   collectionFilterMapCenter: {lng: -99.341389, lat: 31.33},
   collectionFilterMapFilter: [],
-  collectionFilterMapZoom: 5.8
+  collectionFilterMapZoom: 5.3
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {

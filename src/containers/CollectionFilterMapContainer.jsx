@@ -7,6 +7,8 @@ import {
   urlTrackerActions
 } from '../actions';
 import CollectionFilterMap from '../components/CollectionFilterMap';
+import { getAllResources
+       } from '../selectors/resourceSelectors';
 
 const mapStateToProps = state => ({
   collectionFilterMapAoi: state.collectionFilterMap.collectionFilterMapAoi,
@@ -15,7 +17,8 @@ const mapStateToProps = state => ({
   collectionFilterMapZoom: state.collectionFilterMap.collectionFilterMapZoom,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
-  view: state.catalog.view
+  view: state.catalog.view,
+  resources: getAllResources(state)
 });
 
 const mapDispatchToProps = dispatch => ({

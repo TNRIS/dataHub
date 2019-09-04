@@ -19,7 +19,8 @@ export default class CollectionFilterMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mapFilteredCollectionIds: this.props.collectionFilterMapFilter
+      mapFilteredCollectionIds: this.props.collectionFilterMapFilter,
+      countyNames: []
     }
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
@@ -39,6 +40,24 @@ export default class CollectionFilterMap extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.props.selectedCountyName) {
+      console.log(this.props.selectedCountyName);
+      let county = this._map.querySourceFeatures(
+        'county-source',
+        {
+          sourceLayer: 'layer0',
+          filter: [
+                    "all",
+                    ["==", "area_type", "county"],
+                    ["==", "area_type_name", this.props.selectedCountyName]
+                  ]
+        }
+      )
+      console.log(county);
+    }
+  }
+
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -50,7 +69,7 @@ export default class CollectionFilterMap extends React.Component {
     //   [-108.83792172606844, 25.535364049344025], // Southwest coordinates
     //   [-89.8448562738755, 36.78883840623598] // Northeast coordinates
     // ]
-    this._map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
         container: 'collection-filter-map', // container id
         style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
         center: this.props.collectionFilterMapCenter,
@@ -58,8 +77,103 @@ export default class CollectionFilterMap extends React.Component {
         // maxBounds: texasBounds, // sets texasBounds as max to prevent panning
         interactive: true
     });
+    this._map = map;
+
     this._navControl = new mapboxgl.NavigationControl()
-    this._map.addControl(this._navControl, 'top-left');
+    map.addControl(this._navControl, 'top-left');
+
+    map.on('load', function() {
+      // define harris county footprint layer and add it to the map
+      const layerData = {
+          user_name: 'tnris-flood',
+          sublayers: [{
+                  sql: `SELECT
+                          * FROM area_type
+                        WHERE
+                          area_type.area_type IN ('county', 'quad');`,
+                  cartocss: '{}'
+              }],
+          maps_api_template: 'https://tnris-flood.carto.com'
+      };
+
+      cartodb.Tiles.getTiles(layerData, function (result, error) {
+        if (result == null) {
+          console.log("error: ", error.errors.join('\n'));
+          return;
+        }
+
+        const countyTiles = result.tiles.map(function (tileUrl) {
+          console.log(tileUrl);
+          return tileUrl
+            .replace('{s}', 'a')
+            .replace(/\.png/, '.mvt');
+        });
+
+        map.addSource(
+          'county-source',
+          { type: 'vector', tiles: countyTiles }
+        );
+
+        map.addLayer({
+            id: 'counties',
+            'type': 'fill',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 2,
+            'maxzoom': 24,
+            'paint': {
+              'fill-color': 'rgba(100,100,100,0)',
+              // 'fill-color': styles[filler],
+              // 'fill-opacity': .05,
+              // 'fill-outline-color': styles[filler]
+            }
+        });
+        map.addLayer({
+            id: 'county-outline',
+            'type': 'line',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 2,
+            'maxzoom': 24,
+            'paint': {
+              'line-color': 'rgba(100,100,100,1)',
+              'line-width': 2,
+              'line-opacity': .2
+            },
+            'filter': ["==", "area_type", "county"]
+        });
+
+        map.addLayer({
+            id: 'county-selected',
+            'type': 'fill',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 2,
+            'maxzoom': 24,
+            'paint': {
+              'fill-color': styles[filler],
+              'fill-opacity': .7,
+              'fill-outline-color': styles[texter]
+            },
+            'filter': ["in", "cartodb_id", ""]
+        }, 'counties');
+
+        map.addLayer({
+            id: 'quad-outline',
+            'type': 'line',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 9,
+            'maxzoom': 24,
+            'paint': {
+              'line-color': 'rgba(100,0,100,1)',
+              'line-width': 2,
+              'line-opacity': .05
+            },
+            'filter': ["==", "area_type", "quad"]
+          });
+      });
+    })
 
     const filler = this.props.theme + "Fill";
     const texter = this.props.theme + "Text";
@@ -149,6 +263,7 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     const _this = this;
+    console.log(_this._map);
     this._map.on('draw.create', (e) => {
       getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
@@ -294,9 +409,10 @@ export default class CollectionFilterMap extends React.Component {
 
     // jump back into catalog view regardless of setting or clearing the geo filter
     this.props.setViewCatalog();
-}
+  }
 
   render() {
+    console.log(this.props);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (
@@ -323,7 +439,7 @@ export default class CollectionFilterMap extends React.Component {
             onClick={this.handleFilterButtonClick}>
             {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
           </button>
-          <CollectionFilterMapInstructions />
+          {/*<CollectionFilterMapInstructions />*/}
         </div>
       );
     }

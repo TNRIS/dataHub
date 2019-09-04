@@ -57,6 +57,7 @@ export default class Catalog extends React.Component {
 
   componentDidMount() {
     this.props.fetchCollections();
+    this.props.fetchResources();
     this.props.fetchStoredShoppingCart();
     window.addEventListener("resize", this.handleResize);
     window.innerWidth >= parseInt(breakpoints.desktop, 10) ? this.props.setDismissibleDrawer() : this.props.setModalDrawer();
@@ -244,6 +245,7 @@ export default class Catalog extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     // Here lies the beta notice dialog. To remove the notice, remove the reference to this variable
     // in the returned codeblock below under the 'catalog-component'.
     // const betaDialog = (
