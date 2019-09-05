@@ -13,7 +13,8 @@ export default class CollectionFilterMapView extends React.Component {
     super();
     this.state = {
       countyNames: [],
-      selectedCountyName: ""
+      selectedCountyName: "",
+      moveMap: false
     }
     this.handleBack = this.handleBack.bind(this);
     this.getCountyAndQuadNames = this.getCountyAndQuadNames.bind(this);
@@ -25,7 +26,10 @@ export default class CollectionFilterMapView extends React.Component {
 
     const select = new MDCSelect(document.querySelector('.mdc-select'));
     select.listen('MDCSelect:change', () => {
-      this.setState({selectedCountyName: select.value})
+      this.setState({
+        selectedCountyName: select.value,
+        moveMap: true
+      })
       // alert(`Selected option at index ${select.selectedIndex} with value "${select.value}"`);
     });
   }
@@ -102,7 +106,8 @@ export default class CollectionFilterMapView extends React.Component {
               <span className="mdc-floating-label">Pick a Food Group</span>
               <div className="mdc-line-ripple"></div>
             </div>*/}
-
+          </section>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
             <div className="mdc-select mdc-select--outlined county-select">
               <i className="mdc-select__dropdown-icon"></i>
               <select className="mdc-select__native-control"
@@ -124,8 +129,6 @@ export default class CollectionFilterMapView extends React.Component {
                 <div className="mdc-notched-outline__trailing"></div>
               </div>
             </div>
-          </section>
-          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
             <button
               className="close-shopping-cart mdc-icon-button material-icons"
               onClick={this.handleBack}
@@ -135,7 +138,8 @@ export default class CollectionFilterMapView extends React.Component {
           </section>
         </div>
         <CollectionFilterMapContainer
-          selectedCountyName={this.state.selectedCountyName} />
+          selectedCountyName={this.state.selectedCountyName}
+          moveMap={this.state.moveMap} />
       </div>
     );
   }

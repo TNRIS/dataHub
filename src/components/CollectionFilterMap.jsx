@@ -20,7 +20,9 @@ export default class CollectionFilterMap extends React.Component {
     super(props);
     this.state = {
       mapFilteredCollectionIds: this.props.collectionFilterMapFilter,
-      countyNames: []
+      countyNames: [],
+      selectedCountyName: this.props.selectedCountyName,
+      moveMap: true
     }
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
@@ -28,6 +30,8 @@ export default class CollectionFilterMap extends React.Component {
     this.enableUserInteraction = this.enableUserInteraction.bind(this);
     this.disableUserInteraction = this.disableUserInteraction.bind(this);
     this.handleFilterButtonClick = this.handleFilterButtonClick.bind(this);
+    this.getExtentIntersectedCollectionIds = this.getExtentIntersectedCollectionIds.bind(this);
+    this.moveToSelectedMapFeature = this.moveToSelectedMapFeature.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
   }
 
@@ -37,24 +41,6 @@ export default class CollectionFilterMap extends React.Component {
     }
     if (window.innerWidth > this.downloadBreakpoint) {
       this.createMap();
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.props.selectedCountyName) {
-      console.log(this.props.selectedCountyName);
-      let county = this._map.querySourceFeatures(
-        'county-source',
-        {
-          sourceLayer: 'layer0',
-          filter: [
-                    "all",
-                    ["==", "area_type", "county"],
-                    ["==", "area_type_name", this.props.selectedCountyName]
-                  ]
-        }
-      )
-      console.log(county);
     }
   }
 
@@ -265,14 +251,14 @@ export default class CollectionFilterMap extends React.Component {
     const _this = this;
     console.log(_this._map);
     this._map.on('draw.create', (e) => {
-      getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
     })
 
     this._map.on('draw.update', (e) => {
       this.props.setCollectionFilterMapAoi({});
       this.props.setCollectionFilterMapFilter([]);
-      getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
     })
 
     this._map.on('draw.delete', (e) => {
@@ -293,48 +279,85 @@ export default class CollectionFilterMap extends React.Component {
       this.disableUserInteraction();
     }
 
-    function getExtentIntersectedCollectionIds(_this, aoiRectangle) {
-      // get the bounds from the aoi rectangle and query carto
-      // to find the area_type polygons that intersect this mbr
-      // and return the collection_ids associated with those areas
-      let bounds = turfExtent(aoiRectangle); // get the bounds with turf.js
-      let sql = new cartodb.SQL({user: 'tnris-flood'});
-      let query = `SELECT
-                     areas_view.collections
-                   FROM
-                     area_type, areas_view
-                   WHERE
-                     area_type.area_type_id = areas_view.area_type_id
-                   AND
-                     area_type.the_geom && ST_MakeEnvelope(
-                       ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-
-      sql.execute(query).done(function(data) {
-        // set up the array of collection_id arrays from the returned
-        // query object
-        let collectionIds = data.rows.map(function (obj) {
-          return obj.collections.split(",");
-        });
-        // combine all collection_id arrays into a single array of unique ids
-        let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
-        _this.setState({
-          mapFilteredCollectionIds: uniqueCollectionIds
-        });
-        _this._map.fitBounds(bounds, {padding: 100});
-        _this.props.setCollectionFilterMapAoi(aoiRectangle);
-      }).error(function(errors) {
-        // errors contains a list of errors
-        console.log("errors:" + errors);
-      })
-    }
+    // function getExtentIntersectedCollectionIds(_this, aoiRectangle) {
+    //   // get the bounds from the aoi rectangle and query carto
+    //   // to find the area_type polygons that intersect this mbr
+    //   // and return the collection_ids associated with those areas
+    //   let bounds = turfExtent(aoiRectangle); // get the bounds with turf.js
+    //   let sql = new cartodb.SQL({user: 'tnris-flood'});
+    //   let query = `SELECT
+    //                  areas_view.collections
+    //                FROM
+    //                  area_type, areas_view
+    //                WHERE
+    //                  area_type.area_type_id = areas_view.area_type_id
+    //                AND
+    //                  area_type.the_geom && ST_MakeEnvelope(
+    //                    ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+    //
+    //   sql.execute(query).done(function(data) {
+    //     // set up the array of collection_id arrays from the returned
+    //     // query object
+    //     let collectionIds = data.rows.map(function (obj) {
+    //       return obj.collections.split(",");
+    //     });
+    //     // combine all collection_id arrays into a single array of unique ids
+    //     let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+    //     _this.setState({
+    //       mapFilteredCollectionIds: uniqueCollectionIds
+    //     });
+    //     _this._map.fitBounds(bounds, {padding: 100});
+    //     _this.props.setCollectionFilterMapAoi(aoiRectangle);
+    //   }).error(function(errors) {
+    //     // errors contains a list of errors
+    //     console.log("errors:" + errors);
+    //   })
+    // }
 
     // if geo filter applied in url on load, execute here on mount
     if (this.props.collectionFilterMapAoi.coordinates) {
-      getExtentIntersectedCollectionIds(_this, this.props.collectionFilterMapAoi);
+      this.getExtentIntersectedCollectionIds(_this, this.props.collectionFilterMapAoi);
       this._draw.add(this.props.collectionFilterMapAoi);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
+
+
+  }
+
+  getExtentIntersectedCollectionIds(_this, aoi) {
+    // get the bounds from the aoi rectangle and query carto
+    // to find the area_type polygons that intersect this mbr
+    // and return the collection_ids associated with those areas
+    let bounds = turfExtent(aoi); // get the bounds with turf.js
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT
+                   areas_view.collections
+                 FROM
+                   area_type, areas_view
+                 WHERE
+                   area_type.area_type_id = areas_view.area_type_id
+                 AND
+                   area_type.the_geom && ST_MakeEnvelope(
+                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+
+    sql.execute(query).done(function(data) {
+      // set up the array of collection_id arrays from the returned
+      // query object
+      let collectionIds = data.rows.map(function (obj) {
+        return obj.collections.split(",");
+      });
+      // combine all collection_id arrays into a single array of unique ids
+      let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+      _this.setState({
+        mapFilteredCollectionIds: uniqueCollectionIds
+      });
+      _this._map.fitBounds(bounds, {padding: 100});
+      _this.props.setCollectionFilterMapAoi(aoi);
+    }).error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
   }
 
   enableUserInteraction() {
@@ -411,7 +434,32 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setViewCatalog();
   }
 
+  moveToSelectedMapFeature() {
+    console.log("function called");
+    console.log(this.props.selectedCountyName);
+    let county = this._map.querySourceFeatures(
+      'county-source',
+      {
+        sourceLayer: 'layer0',
+        filter: [
+                  "all",
+                  ["==", "area_type", "county"],
+                  ["==", "area_type_name", this.props.selectedCountyName]
+                ]
+      }
+    )
+    this.getExtentIntersectedCollectionIds(this, county[0]);
+    // let featureBounds = turfExtent(county[0]) // get the bounds with turf.js
+    // console.log(featureBounds);
+    // return featureBounds;
+  }
+
   render() {
+    if (this.props.selectedCountyName === "Aransas") {
+      // this.moveToSelectedMapFeature();
+      this.moveToSelectedMapFeature(this);
+    }
+    console.log(this.state);
     console.log(this.props);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);

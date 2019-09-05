@@ -46,6 +46,13 @@ export default function collectionFilterMapReducer(state = initialState, action)
         collectionFilterMapZoom: action.payload.collectionFilterMapZoom
       };
 
+    // case SET_COLLECTION_FILTER_MAP_ZOOM:
+    //   // Set the zoom level of the collection filter map in the state
+    //   return {
+    //     ...state,
+    //     collectionFilterMapZoom: action.payload.collectionFilterMapZoom
+    //   };
+
     case POP_BROWSER_STORE:
       return Object.assign({}, action.payload.collectionFilterMap);
 
