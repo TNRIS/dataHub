@@ -3,11 +3,13 @@ import { connect } from 'react-redux';
 import CollectionFilterMapView from '../components/CollectionFilterMapView';
 
 import { catalogActions,
+         collectionFilterMapActions,
          urlTrackerActions } from '../actions';
 
 const mapStateToProps = state => ({
   previousUrl: state.urlTracker.previousUrl,
-  catalogFilterUrl: state.urlTracker.catalogFilterUrl
+  catalogFilterUrl: state.urlTracker.catalogFilterUrl,
+  collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -16,6 +18,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setViewCatalog: () => {
     dispatch(catalogActions.setViewCatalog());
+  },
+  setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
   }
 })
 

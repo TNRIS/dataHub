@@ -101,7 +101,7 @@ export default class CollectionFilterMap extends React.Component {
         );
 
         map.addLayer({
-            id: 'counties',
+            id: 'county',
             'type': 'fill',
             'source': 'county-source',
             'source-layer': 'layer0',
@@ -114,6 +114,7 @@ export default class CollectionFilterMap extends React.Component {
               // 'fill-outline-color': styles[filler]
             }
         });
+
         map.addLayer({
             id: 'county-outline',
             'type': 'line',
@@ -141,8 +142,23 @@ export default class CollectionFilterMap extends React.Component {
               'fill-opacity': .7,
               'fill-outline-color': styles[texter]
             },
-            'filter': ["in", "cartodb_id", ""]
-        }, 'counties');
+            'filter': ["==", "area_type_name", ""]
+        }, 'county-outline');
+
+        map.addLayer({
+            id: 'county-outline-selected',
+            'type': 'line',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 2,
+            'maxzoom': 24,
+            'paint': {
+              'line-color': 'rgba(0,0,100,1)',
+              'line-width': 2,
+              'line-opacity': .2
+            },
+            'filter': ["==", "area_type_name", ""]
+        }, 'county-outline');
 
         map.addLayer({
             id: 'quad-outline',
@@ -278,6 +294,20 @@ export default class CollectionFilterMap extends React.Component {
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
+
+    // Change the cursor to a pointer when it enters a feature in the 'county-extended' layer
+  // highlight the county polys on hover if the zoom range is right
+  // this._map.on('mouseenter', 'county', (e) => {
+  //   this._map.getCanvas().style.cursor = 'pointer';
+  //   this._map.setFilter('county-selected', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
+  // });
+
+  // Change it back to a karate when the cursor leaves 'county-selected'
+  // remove the hover effect on mouseleave
+  // this._map.on('mouseleave', 'county', (e) => {
+  //   this._map.getCanvas().style.cursor = '';
+  //   this._map.setFilter('county-selected', ['==', 'area_type_name', '']);
+  // });
 
     // function getExtentIntersectedCollectionIds(_this, aoiRectangle) {
     //   // get the bounds from the aoi rectangle and query carto
@@ -449,13 +479,14 @@ export default class CollectionFilterMap extends React.Component {
       }
     )
     this.getExtentIntersectedCollectionIds(this, county[0]);
+    this.props.setCollectionFilterMapMoveMap(false);
     // let featureBounds = turfExtent(county[0]) // get the bounds with turf.js
     // console.log(featureBounds);
     // return featureBounds;
   }
 
   render() {
-    if (this.props.selectedCountyName === "Aransas") {
+    if (this.props.selectedCountyName && this.props.collectionFilterMapMoveMap) {
       // this.moveToSelectedMapFeature();
       this.moveToSelectedMapFeature(this);
     }

@@ -26,6 +26,7 @@ export default class CollectionFilterMapView extends React.Component {
 
     const select = new MDCSelect(document.querySelector('.mdc-select'));
     select.listen('MDCSelect:change', () => {
+      this.props.setCollectionFilterMapMoveMap(true);
       this.setState({
         selectedCountyName: select.value,
         moveMap: true
@@ -85,48 +86,29 @@ export default class CollectionFilterMapView extends React.Component {
             <h2 className="mdc-top-app-bar__title">
               Filter by Geography
             </h2>
-            {/*<div className="mdc-select demo-width-class">
-              <input type="hidden" name="enhanced-select"></input>
-              <i className="mdc-select__dropdown-icon"></i>
-              <div className="mdc-select__selected-text"></div>
-              <div className="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
-                <ul className="mdc-list">
-                  <li className="mdc-list-item mdc-list-item--selected" data-value="" aria-selected="true"></li>
-                  <li className="mdc-list-item" data-value="grains">
-                    Bread, Cereal, Rice, and Pasta
-                  </li>
-                  <li className="mdc-list-item" data-value="vegetables">
-                    Vegetables
-                  </li>
-                  <li className="mdc-list-item" data-value="fruit">
-                    Fruit
-                  </li>
-                </ul>
-              </div>
-              <span className="mdc-floating-label">Pick a Food Group</span>
-              <div className="mdc-line-ripple"></div>
-            </div>*/}
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-            <div className="mdc-select mdc-select--outlined county-select">
-              <i className="mdc-select__dropdown-icon"></i>
-              <select className="mdc-select__native-control"
-                defaultValue="">
-                <option value="" disabled></option>
-                {this.state.countyNames.map((countyName) =>
-                  <option
-                    value={countyName}
-                    key={countyName}>
-                    {countyName}
-                  </option>
-                )}
-              </select>
-              <div className="mdc-notched-outline">
-                <div className="mdc-notched-outline__leading"></div>
-                <div className="mdc-notched-outline__notch">
-                  <label className="mdc-floating-label">Select a County</label>
+            <div className="county-select__wrapper">
+              <div className="mdc-select mdc-select--outlined county-select">
+                <i className="mdc-select__dropdown-icon"></i>
+                <select className="mdc-select__native-control"
+                  defaultValue="">
+                  <option value="" disabled></option>
+                  {this.state.countyNames.map((countyName) =>
+                    <option
+                      value={countyName}
+                      key={countyName}>
+                      {countyName}
+                    </option>
+                  )}
+                </select>
+                <div className="mdc-notched-outline">
+                  <div className="mdc-notched-outline__leading"></div>
+                  <div className="mdc-notched-outline__notch">
+                    <label className="mdc-floating-label">Select a County</label>
+                  </div>
+                  <div className="mdc-notched-outline__trailing"></div>
                 </div>
-                <div className="mdc-notched-outline__trailing"></div>
               </div>
             </div>
             <button

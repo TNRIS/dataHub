@@ -2,7 +2,8 @@ import {
   SET_COLLECTION_FILTER_MAP_AOI,
   SET_COLLECTION_FILTER_MAP_CENTER,
   SET_COLLECTION_FILTER_MAP_FILTER,
-  SET_COLLECTION_FILTER_MAP_ZOOM
+  SET_COLLECTION_FILTER_MAP_ZOOM,
+  SET_COLLECTION_FILTER_MAP_MOVE_MAP
 } from '../constants/collectionFilterMapActionTypes';
 
 import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
@@ -13,7 +14,8 @@ const initialState = {
   collectionFilterMapAoi: {},
   collectionFilterMapCenter: {lng: -99.341389, lat: 31.33},
   collectionFilterMapFilter: [],
-  collectionFilterMapZoom: 5.3
+  collectionFilterMapZoom: 5.3,
+  collectionFilterMapMoveMap: false
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
@@ -52,6 +54,13 @@ export default function collectionFilterMapReducer(state = initialState, action)
     //     ...state,
     //     collectionFilterMapZoom: action.payload.collectionFilterMapZoom
     //   };
+
+    case SET_COLLECTION_FILTER_MAP_MOVE_MAP:
+      // Set the property Move Map to true or false in the state
+      return {
+        ...state,
+        collectionFilterMapMoveMap: action.payload.collectionFilterMapMoveMap
+      };
 
     case POP_BROWSER_STORE:
       return Object.assign({}, action.payload.collectionFilterMap);
