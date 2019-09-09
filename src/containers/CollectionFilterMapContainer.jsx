@@ -16,6 +16,7 @@ const mapStateToProps = state => ({
   collectionFilterMapFilter: state.collectionFilterMap.collectionFilterMapFilter,
   collectionFilterMapZoom: state.collectionFilterMap.collectionFilterMapZoom,
   collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap,
+  collectionFilterMapSelectedCountyName: state.collectionFilterMap.collectionFilterMapSelectedCountyName,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
   view: state.catalog.view,
@@ -37,6 +38,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
     dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
+  },
+  setCollectionFilterMapSelectedCountyName: (collectionFilterMapSelectedCountyName) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapSelectedCountyName(collectionFilterMapSelectedCountyName));
   },
   setUrl: (newUrl, history) => {
     dispatch(urlTrackerActions.setUrl(newUrl, history))

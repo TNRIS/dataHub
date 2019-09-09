@@ -8,7 +8,6 @@ export const getAllResources = createSelector(
   (resources) => {
     // Check if resources are ready in the state
     if (resources) {
-      console.log(resources);
       return resources;
     }
   }

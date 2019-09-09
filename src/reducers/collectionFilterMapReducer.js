@@ -3,7 +3,8 @@ import {
   SET_COLLECTION_FILTER_MAP_CENTER,
   SET_COLLECTION_FILTER_MAP_FILTER,
   SET_COLLECTION_FILTER_MAP_ZOOM,
-  SET_COLLECTION_FILTER_MAP_MOVE_MAP
+  SET_COLLECTION_FILTER_MAP_MOVE_MAP,
+  SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME
 } from '../constants/collectionFilterMapActionTypes';
 
 import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
@@ -15,7 +16,8 @@ const initialState = {
   collectionFilterMapCenter: {lng: -99.341389, lat: 31.33},
   collectionFilterMapFilter: [],
   collectionFilterMapZoom: 5.3,
-  collectionFilterMapMoveMap: false
+  collectionFilterMapMoveMap: false,
+  collectionFilterMapSelectedCountyName: ""
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
@@ -60,6 +62,13 @@ export default function collectionFilterMapReducer(state = initialState, action)
       return {
         ...state,
         collectionFilterMapMoveMap: action.payload.collectionFilterMapMoveMap
+      };
+
+    case SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME:
+      // Set the property SelectedCountyName to the user selected county in the state
+      return {
+        ...state,
+        collectionFilterMapSelectedCountyName: action.payload.collectionFilterMapSelectedCountyName
       };
 
     case POP_BROWSER_STORE:

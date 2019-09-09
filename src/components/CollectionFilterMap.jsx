@@ -20,9 +20,7 @@ export default class CollectionFilterMap extends React.Component {
     super(props);
     this.state = {
       mapFilteredCollectionIds: this.props.collectionFilterMapFilter,
-      countyNames: [],
-      selectedCountyName: this.props.selectedCountyName,
-      moveMap: true
+      countyNames: []
     }
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
@@ -41,6 +39,12 @@ export default class CollectionFilterMap extends React.Component {
     }
     if (window.innerWidth > this.downloadBreakpoint) {
       this.createMap();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.collectionFilterMapSelectedCountyName && this.props.collectionFilterMapMoveMap) {
+      this.moveToSelectedMapFeature();
     }
   }
 
@@ -89,7 +93,6 @@ export default class CollectionFilterMap extends React.Component {
         }
 
         const countyTiles = result.tiles.map(function (tileUrl) {
-          console.log(tileUrl);
           return tileUrl
             .replace('{s}', 'a')
             .replace(/\.png/, '.mvt');
@@ -130,50 +133,50 @@ export default class CollectionFilterMap extends React.Component {
             'filter': ["==", "area_type", "county"]
         });
 
-        map.addLayer({
-            id: 'county-selected',
-            'type': 'fill',
-            'source': 'county-source',
-            'source-layer': 'layer0',
-            'minzoom': 2,
-            'maxzoom': 24,
-            'paint': {
-              'fill-color': styles[filler],
-              'fill-opacity': .7,
-              'fill-outline-color': styles[texter]
-            },
-            'filter': ["==", "area_type_name", ""]
-        }, 'county-outline');
-
-        map.addLayer({
-            id: 'county-outline-selected',
-            'type': 'line',
-            'source': 'county-source',
-            'source-layer': 'layer0',
-            'minzoom': 2,
-            'maxzoom': 24,
-            'paint': {
-              'line-color': 'rgba(0,0,100,1)',
-              'line-width': 2,
-              'line-opacity': .2
-            },
-            'filter': ["==", "area_type_name", ""]
-        }, 'county-outline');
-
-        map.addLayer({
-            id: 'quad-outline',
-            'type': 'line',
-            'source': 'county-source',
-            'source-layer': 'layer0',
-            'minzoom': 9,
-            'maxzoom': 24,
-            'paint': {
-              'line-color': 'rgba(100,0,100,1)',
-              'line-width': 2,
-              'line-opacity': .05
-            },
-            'filter': ["==", "area_type", "quad"]
-          });
+        // map.addLayer({
+        //     id: 'county-selected',
+        //     'type': 'fill',
+        //     'source': 'county-source',
+        //     'source-layer': 'layer0',
+        //     'minzoom': 2,
+        //     'maxzoom': 24,
+        //     'paint': {
+        //       'fill-color': styles[filler],
+        //       'fill-opacity': .7,
+        //       'fill-outline-color': styles[texter]
+        //     },
+        //     'filter': ["==", "area_type_name", ""]
+        // }, 'county-outline');
+        //
+        // map.addLayer({
+        //     id: 'county-outline-selected',
+        //     'type': 'line',
+        //     'source': 'county-source',
+        //     'source-layer': 'layer0',
+        //     'minzoom': 2,
+        //     'maxzoom': 24,
+        //     'paint': {
+        //       'line-color': 'rgba(0,0,100,1)',
+        //       'line-width': 2,
+        //       'line-opacity': .2
+        //     },
+        //     'filter': ["==", "area_type_name", ""]
+        // }, 'county-outline');
+        //
+        // map.addLayer({
+        //     id: 'quad-outline',
+        //     'type': 'line',
+        //     'source': 'county-source',
+        //     'source-layer': 'layer0',
+        //     'minzoom': 9,
+        //     'maxzoom': 24,
+        //     'paint': {
+        //       'line-color': 'rgba(100,0,100,1)',
+        //       'line-width': 2,
+        //       'line-opacity': .05
+        //     },
+        //     'filter': ["==", "area_type", "quad"]
+        //   });
       });
     })
 
@@ -265,7 +268,6 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     const _this = this;
-    console.log(_this._map);
     this._map.on('draw.create', (e) => {
       this.getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
@@ -465,33 +467,51 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   moveToSelectedMapFeature() {
+    let countyName = this.props.collectionFilterMapSelectedCountyName;
     console.log("function called");
-    console.log(this.props.selectedCountyName);
-    let county = this._map.querySourceFeatures(
-      'county-source',
-      {
-        sourceLayer: 'layer0',
-        filter: [
-                  "all",
-                  ["==", "area_type", "county"],
-                  ["==", "area_type_name", this.props.selectedCountyName]
-                ]
-      }
-    )
-    this.getExtentIntersectedCollectionIds(this, county[0]);
-    this.props.setCollectionFilterMapMoveMap(false);
+    console.log(countyName);
+    console.log(this._map.getSource('county-source'));
+
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT
+                   area_type.the_geom
+                 FROM
+                   area_type
+                 WHERE
+                   area_type.area_type_name = 'Angelina'`;
+
+    sql.execute(query).done(function(data) {console.log(data);})
+
+
+    // let county = this._map.querySourceFeatures(
+    //   'county-source',
+    //   {
+    //     sourceLayer: 'layer0',
+    //     filter: [
+    //               "all",
+    //               ["==", "area_type", "county"],
+    //               ["==", "area_type_name", countyName]
+    //             ]
+    //   }
+    // )
+    // console.log(county);
+    // if (county.length > 0) {
+    //   this.getExtentIntersectedCollectionIds(this, county[0]);
+    //   this.props.setCollectionFilterMapMoveMap(false);
+    // }
     // let featureBounds = turfExtent(county[0]) // get the bounds with turf.js
     // console.log(featureBounds);
     // return featureBounds;
   }
 
   render() {
-    if (this.props.selectedCountyName && this.props.collectionFilterMapMoveMap) {
-      // this.moveToSelectedMapFeature();
-      this.moveToSelectedMapFeature(this);
-    }
-    console.log(this.state);
+    // if (this.props.selectedCountyName && this.props.collectionFilterMapMoveMap) {
+    //   this.moveToSelectedMapFeature();
+    //   // this.moveToSelectedMapFeature(this);
+    // }
+    // console.log(this.state);
     console.log(this.props);
+    console.log(this.state);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (

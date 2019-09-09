@@ -3,7 +3,8 @@ import {
   SET_COLLECTION_FILTER_MAP_CENTER,
   SET_COLLECTION_FILTER_MAP_FILTER,
   SET_COLLECTION_FILTER_MAP_ZOOM,
-  SET_COLLECTION_FILTER_MAP_MOVE_MAP
+  SET_COLLECTION_FILTER_MAP_MOVE_MAP,
+  SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME
 } from '../constants/collectionFilterMapActionTypes';
 
 export const setCollectionFilterMapAoi = (collectionFilterMapAoi) => {
@@ -47,6 +48,15 @@ export const setCollectionFilterMapMoveMap = (collectionFilterMapMoveMap) => {
     dispatch({
       type: SET_COLLECTION_FILTER_MAP_MOVE_MAP,
       payload: { collectionFilterMapMoveMap }
+    })
+  }
+};
+
+export const setCollectionFilterMapSelectedCountyName = (collectionFilterMapSelectedCountyName) => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME,
+      payload: { collectionFilterMapSelectedCountyName }
     })
   }
 };

@@ -9,7 +9,8 @@ import { catalogActions,
 const mapStateToProps = state => ({
   previousUrl: state.urlTracker.previousUrl,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
-  collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap
+  collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap,
+  collectionFilterMapSelectedCountyName: state.collectionFilterMap.collectionFilterMapSelectedCountyName
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -21,6 +22,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
     dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
+  },
+  setCollectionFilterMapSelectedCountyName: (collectionFilterMapSelectedCountyName) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapSelectedCountyName(collectionFilterMapSelectedCountyName));
   }
 })
 

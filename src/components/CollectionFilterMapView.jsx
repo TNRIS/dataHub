@@ -12,9 +12,7 @@ export default class CollectionFilterMapView extends React.Component {
   constructor() {
     super();
     this.state = {
-      countyNames: [],
-      selectedCountyName: "",
-      moveMap: false
+      countyNames: []
     }
     this.handleBack = this.handleBack.bind(this);
     this.getCountyAndQuadNames = this.getCountyAndQuadNames.bind(this);
@@ -26,11 +24,12 @@ export default class CollectionFilterMapView extends React.Component {
 
     const select = new MDCSelect(document.querySelector('.mdc-select'));
     select.listen('MDCSelect:change', () => {
+      this.props.setCollectionFilterMapSelectedCountyName(select.value);
       this.props.setCollectionFilterMapMoveMap(true);
-      this.setState({
-        selectedCountyName: select.value,
-        moveMap: true
-      })
+      // this.setState({
+      //   selectedCountyName: select.value,
+      //   moveMap: true
+      // })
       // alert(`Selected option at index ${select.selectedIndex} with value "${select.value}"`);
     });
   }
@@ -78,7 +77,7 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   render() {
-    console.log(this.state);
+    console.log(this.props);
     return (
       <div className="filter-map-view">
         <div className="mdc-top-app-bar__row">
@@ -119,9 +118,7 @@ export default class CollectionFilterMapView extends React.Component {
             </button>
           </section>
         </div>
-        <CollectionFilterMapContainer
-          selectedCountyName={this.state.selectedCountyName}
-          moveMap={this.state.moveMap} />
+        <CollectionFilterMapContainer />
       </div>
     );
   }
