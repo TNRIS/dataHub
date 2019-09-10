@@ -34,6 +34,12 @@ export default class CollectionFilterMapView extends React.Component {
     });
   }
 
+  componentDidUpdate() {
+    if (!this.props.collectionFilterMapSelectedCountyName) {
+      document.getElementById("county-select").selectedIndex = 0
+    }
+  }
+
   handleBack() {
     this.props.setViewCatalog();
     if (window.location.pathname === this.props.previousUrl) {
@@ -91,6 +97,7 @@ export default class CollectionFilterMapView extends React.Component {
               <div className="mdc-select mdc-select--outlined county-select">
                 <i className="mdc-select__dropdown-icon"></i>
                 <select className="mdc-select__native-control"
+                  id="county-select"
                   defaultValue="">
                   <option value="" disabled></option>
                   {this.state.countyNames.map((countyName) =>

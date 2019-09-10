@@ -43,7 +43,8 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.collectionFilterMapSelectedCountyName && this.props.collectionFilterMapMoveMap) {
+    if (this.props.collectionFilterMapSelectedCountyName &&
+      this.props.collectionFilterMapMoveMap) {
       this.moveToSelectedMapFeature();
     }
   }
@@ -72,8 +73,22 @@ export default class CollectionFilterMap extends React.Component {
     this._navControl = new mapboxgl.NavigationControl()
     map.addControl(this._navControl, 'top-left');
 
-    map.on('load', function() {
-      // define harris county footprint layer and add it to the map
+    map.on('load', () => {
+      // Need to find out which is the first symbol layer
+      // in the map so our feature layers can be placed
+      // below the map labels.
+      const layers = map.getStyle().layers;
+      console.log(layers);
+      // Find the index of the first symbol layer in the map style
+      let firstSymbolId;
+      for (let i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol') {
+          firstSymbolId = layers[i].id;
+          break;
+        }
+      }
+
+      // define county and quad layers and add to the map
       const layerData = {
           user_name: 'tnris-flood',
           sublayers: [{
@@ -104,19 +119,19 @@ export default class CollectionFilterMap extends React.Component {
         );
 
         map.addLayer({
-            id: 'county',
-            'type': 'fill',
+            id: 'county-outline-selected',
+            'type': 'line',
             'source': 'county-source',
             'source-layer': 'layer0',
             'minzoom': 2,
             'maxzoom': 24,
             'paint': {
-              'fill-color': 'rgba(100,100,100,0)',
-              // 'fill-color': styles[filler],
-              // 'fill-opacity': .05,
-              // 'fill-outline-color': styles[filler]
-            }
-        });
+              'line-color': '#1E8DC1',
+              'line-width': 4,
+              'line-opacity': 1
+            },
+            'filter': ["==", "area_type_name", ""]
+        }, 'boundary_country_inner');
 
         map.addLayer({
             id: 'county-outline',
@@ -131,7 +146,22 @@ export default class CollectionFilterMap extends React.Component {
               'line-opacity': .2
             },
             'filter': ["==", "area_type", "county"]
-        });
+        }, 'county-outline-selected');
+
+        map.addLayer({
+            id: 'county',
+            'type': 'fill',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 2,
+            'maxzoom': 24,
+            'paint': {
+              'fill-color': 'rgba(100,100,100,0)',
+              // 'fill-color': styles[filler],
+              // 'fill-opacity': .05,
+              // 'fill-outline-color': styles[filler]
+            }
+        }, 'county-outline');
 
         // map.addLayer({
         //     id: 'county-selected',
@@ -147,36 +177,21 @@ export default class CollectionFilterMap extends React.Component {
         //     },
         //     'filter': ["==", "area_type_name", ""]
         // }, 'county-outline');
-        //
-        // map.addLayer({
-        //     id: 'county-outline-selected',
-        //     'type': 'line',
-        //     'source': 'county-source',
-        //     'source-layer': 'layer0',
-        //     'minzoom': 2,
-        //     'maxzoom': 24,
-        //     'paint': {
-        //       'line-color': 'rgba(0,0,100,1)',
-        //       'line-width': 2,
-        //       'line-opacity': .2
-        //     },
-        //     'filter': ["==", "area_type_name", ""]
-        // }, 'county-outline');
-        //
-        // map.addLayer({
-        //     id: 'quad-outline',
-        //     'type': 'line',
-        //     'source': 'county-source',
-        //     'source-layer': 'layer0',
-        //     'minzoom': 9,
-        //     'maxzoom': 24,
-        //     'paint': {
-        //       'line-color': 'rgba(100,0,100,1)',
-        //       'line-width': 2,
-        //       'line-opacity': .05
-        //     },
-        //     'filter': ["==", "area_type", "quad"]
-        //   });
+
+        map.addLayer({
+            id: 'quad-outline',
+            'type': 'line',
+            'source': 'county-source',
+            'source-layer': 'layer0',
+            'minzoom': 9,
+            'maxzoom': 24,
+            'paint': {
+              'line-color': 'rgba(100,0,100,1)',
+              'line-width': 2,
+              'line-opacity': .05
+            },
+            'filter': ["==", "area_type", "quad"]
+          });
       });
     })
 
@@ -267,25 +282,24 @@ export default class CollectionFilterMap extends React.Component {
       }
     })
 
-    const _this = this;
     this._map.on('draw.create', (e) => {
-      this.getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(this, e.features[0].geometry);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
     })
 
     this._map.on('draw.update', (e) => {
       this.props.setCollectionFilterMapAoi({});
       this.props.setCollectionFilterMapFilter([]);
-      this.getExtentIntersectedCollectionIds(_this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(this, e.features[0].geometry);
     })
 
     this._map.on('draw.delete', (e) => {
       this.resetTheMap();
     })
 
-    this._map.on('moveend', function() {
-      _this.props.setCollectionFilterMapCenter(_this._map.getCenter());
-      _this.props.setCollectionFilterMapZoom(_this._map.getZoom());
+    this._map.on('moveend', () => {
+      this.props.setCollectionFilterMapCenter(this._map.getCenter());
+      this.props.setCollectionFilterMapZoom(this._map.getZoom());
     })
 
     if (this.props.collectionFilterMapFilter.length > 0) {
@@ -297,68 +311,18 @@ export default class CollectionFilterMap extends React.Component {
       this.disableUserInteraction();
     }
 
-    // Change the cursor to a pointer when it enters a feature in the 'county-extended' layer
-  // highlight the county polys on hover if the zoom range is right
-  // this._map.on('mouseenter', 'county', (e) => {
-  //   this._map.getCanvas().style.cursor = 'pointer';
-  //   this._map.setFilter('county-selected', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
-  // });
-
-  // Change it back to a karate when the cursor leaves 'county-selected'
-  // remove the hover effect on mouseleave
-  // this._map.on('mouseleave', 'county', (e) => {
-  //   this._map.getCanvas().style.cursor = '';
-  //   this._map.setFilter('county-selected', ['==', 'area_type_name', '']);
-  // });
-
-    // function getExtentIntersectedCollectionIds(_this, aoiRectangle) {
-    //   // get the bounds from the aoi rectangle and query carto
-    //   // to find the area_type polygons that intersect this mbr
-    //   // and return the collection_ids associated with those areas
-    //   let bounds = turfExtent(aoiRectangle); // get the bounds with turf.js
-    //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-    //   let query = `SELECT
-    //                  areas_view.collections
-    //                FROM
-    //                  area_type, areas_view
-    //                WHERE
-    //                  area_type.area_type_id = areas_view.area_type_id
-    //                AND
-    //                  area_type.the_geom && ST_MakeEnvelope(
-    //                    ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-    //
-    //   sql.execute(query).done(function(data) {
-    //     // set up the array of collection_id arrays from the returned
-    //     // query object
-    //     let collectionIds = data.rows.map(function (obj) {
-    //       return obj.collections.split(",");
-    //     });
-    //     // combine all collection_id arrays into a single array of unique ids
-    //     let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
-    //     _this.setState({
-    //       mapFilteredCollectionIds: uniqueCollectionIds
-    //     });
-    //     _this._map.fitBounds(bounds, {padding: 100});
-    //     _this.props.setCollectionFilterMapAoi(aoiRectangle);
-    //   }).error(function(errors) {
-    //     // errors contains a list of errors
-    //     console.log("errors:" + errors);
-    //   })
-    // }
-
     // if geo filter applied in url on load, execute here on mount
     if (this.props.collectionFilterMapAoi.coordinates) {
-      this.getExtentIntersectedCollectionIds(_this, this.props.collectionFilterMapAoi);
+      this.getExtentIntersectedCollectionIds(this, this.props.collectionFilterMapAoi);
       this._draw.add(this.props.collectionFilterMapAoi);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
 
-
   }
 
   getExtentIntersectedCollectionIds(_this, aoi) {
-    // get the bounds from the aoi rectangle and query carto
+    // get the bounds from the aoi and query carto
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
     let bounds = turfExtent(aoi); // get the bounds with turf.js
@@ -443,6 +407,13 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       this._draw.deleteAll();
+      if (this.props.collectionFilterMapSelectedCountyName) {
+        this._map.setFilter(
+          'county-outline-selected',
+            ["==", "area_type_name", ""]
+        );
+        this.props.setCollectionFilterMapSelectedCountyName("");
+      }
       delete filterObj['geo'];
     } else {
       this.props.setCollectionFilterMapFilter(this.state.mapFilteredCollectionIds);
@@ -450,68 +421,73 @@ export default class CollectionFilterMap extends React.Component {
       this.disableUserInteraction();
     }
 
-    // if map aoi is empty, remove from the url
-    if (filterObj['geo'] === {}) {
-      delete filterObj['geo'];
-    }
-    const filterString = JSON.stringify(filterObj);
-    // if empty filter settings, use the base home url instead of the filter url
-    Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
-      this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
-    // log filter change in store
-    Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
-      this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
-
-    // jump back into catalog view regardless of setting or clearing the geo filter
-    this.props.setViewCatalog();
+    // // if map aoi is empty, remove from the url
+    // if (filterObj['geo'] === {}) {
+    //   delete filterObj['geo'];
+    // }
+    // const filterString = JSON.stringify(filterObj);
+    // // if empty filter settings, use the base home url instead of the filter url
+    // Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
+    //   this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
+    // // log filter change in store
+    // Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
+    //   this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
+    //
+    // // jump back into catalog view regardless of setting or clearing the geo filter
+    // this.props.setViewCatalog();
   }
 
   moveToSelectedMapFeature() {
     let countyName = this.props.collectionFilterMapSelectedCountyName;
+    console.log(this._map.getStyle());
     console.log("function called");
     console.log(countyName);
-    console.log(this._map.getSource('county-source'));
 
     let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT
-                   area_type.the_geom
-                 FROM
-                   area_type
-                 WHERE
-                   area_type.area_type_name = 'Angelina'`;
+    let query = `SELECT row_to_json(fc)
+                 FROM (
+                   SELECT
+                     'FeatureCollection' AS "type",
+                     array_to_json(array_agg(f)) AS "features"
+                   FROM (
+                     SELECT
+                       'Feature' AS "type",
+                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+                         (
+                           SELECT json_strip_nulls(row_to_json(t))
+                           FROM (
+                             SELECT
+                               area_type.area_type_name
+                           ) t
+                           ) AS "properties"
+                     FROM area_type
+                     WHERE
+                       area_type.area_type_name = '${countyName}' AND
+                       area_type.area_type = 'county'
+                   ) as f
+                 ) as fc`;
 
-    sql.execute(query).done(function(data) {console.log(data);})
-
-
-    // let county = this._map.querySourceFeatures(
-    //   'county-source',
-    //   {
-    //     sourceLayer: 'layer0',
-    //     filter: [
-    //               "all",
-    //               ["==", "area_type", "county"],
-    //               ["==", "area_type_name", countyName]
-    //             ]
-    //   }
-    // )
-    // console.log(county);
-    // if (county.length > 0) {
-    //   this.getExtentIntersectedCollectionIds(this, county[0]);
-    //   this.props.setCollectionFilterMapMoveMap(false);
-    // }
-    // let featureBounds = turfExtent(county[0]) // get the bounds with turf.js
-    // console.log(featureBounds);
-    // return featureBounds;
+    sql.execute(query).done( (data) => {
+      let countyGeoJson = data.rows[0].row_to_json;
+      console.log(turfExtent(data.rows[0].row_to_json));
+      console.log(countyGeoJson);
+      if (Object.keys(countyGeoJson).length > 0) {
+        this.getExtentIntersectedCollectionIds(this, countyGeoJson);
+        this._map.setFilter(
+          'county-outline-selected',
+          [
+            "all",
+            ["==", "area_type", "county"],
+            ["==", "area_type_name", countyName]
+          ]
+        );
+        document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+        this.props.setCollectionFilterMapMoveMap(false);
+      }
+    })
   }
 
   render() {
-    // if (this.props.selectedCountyName && this.props.collectionFilterMapMoveMap) {
-    //   this.moveToSelectedMapFeature();
-    //   // this.moveToSelectedMapFeature(this);
-    // }
-    // console.log(this.state);
-    console.log(this.props);
-    console.log(this.state);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (
