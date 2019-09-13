@@ -31,6 +31,7 @@ export default class CollectionFilterMap extends React.Component {
     this.getExtentIntersectedCollectionIds = this.getExtentIntersectedCollectionIds.bind(this);
     this.moveToSelectedMapFeature = this.moveToSelectedMapFeature.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
+    this.getAreaTypeGeoJson = this.getAreaTypeGeoJson.bind(this);
   }
 
   componentDidMount() {
@@ -283,14 +284,14 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('draw.create', (e) => {
-      this.getExtentIntersectedCollectionIds(this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0].geometry);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
     })
 
     this._map.on('draw.update', (e) => {
       this.props.setCollectionFilterMapAoi({});
       this.props.setCollectionFilterMapFilter([]);
-      this.getExtentIntersectedCollectionIds(this, e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0].geometry);
     })
 
     this._map.on('draw.delete', (e) => {
@@ -303,25 +304,25 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     if (this.props.collectionFilterMapFilter.length > 0) {
-      if (Object.keys(this.props.collectionFilterMapAoi).length) {
-        this._draw.add(this.props.collectionFilterMapAoi);
-        this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi), {padding: 100});
+      if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+        this._draw.add(this.props.collectionFilterMapAoi.payload);
+        this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
       }
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
 
     // if geo filter applied in url on load, execute here on mount
-    if (this.props.collectionFilterMapAoi.coordinates) {
-      this.getExtentIntersectedCollectionIds(this, this.props.collectionFilterMapAoi);
-      this._draw.add(this.props.collectionFilterMapAoi);
+    if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+      this.getExtentIntersectedCollectionIds(this, 'draw', this.props.collectionFilterMapAoi.payload);
+      this._draw.add(this.props.collectionFilterMapAoi.payload);
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
 
   }
 
-  getExtentIntersectedCollectionIds(_this, aoi) {
+  getExtentIntersectedCollectionIds(_this, aoiType, aoi) {
     // get the bounds from the aoi and query carto
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
@@ -349,7 +350,8 @@ export default class CollectionFilterMap extends React.Component {
         mapFilteredCollectionIds: uniqueCollectionIds
       });
       _this._map.fitBounds(bounds, {padding: 100});
-      _this.props.setCollectionFilterMapAoi(aoi);
+      // _this.props.setCollectionFilterMapAoi(aoi);
+      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
     }).error(function(errors) {
       // errors contains a list of errors
       console.log("errors:" + errors);
@@ -400,7 +402,12 @@ export default class CollectionFilterMap extends React.Component {
     const prevFilter = this.props.catalogFilterUrl.includes('/catalog/') ?
                        JSON.parse(decodeURIComponent(this.props.catalogFilterUrl.replace('/catalog/', '')))
                        : {};
-    const filterObj = {...prevFilter, geo: this.props.collectionFilterMapAoi};
+    let filterObj;
+    if (this.props.collectionFilterMapAoi.aoiType === 'county') {
+      filterObj = {...prevFilter, geo: {'county': this.props.collectionFilterMapSelectedCountyName}};
+    } else {
+      filterObj = {...prevFilter, geo: this.props.collectionFilterMapAoi.payload};
+    }
 
     // sets the collection_ids array in the filter to drive the view
     // and disables/enables the user interaction handlers and navigation controls
@@ -417,32 +424,69 @@ export default class CollectionFilterMap extends React.Component {
       delete filterObj['geo'];
     } else {
       this.props.setCollectionFilterMapFilter(this.state.mapFilteredCollectionIds);
-      this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi), {padding: 100});
+      this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
       this.disableUserInteraction();
     }
 
-    // // if map aoi is empty, remove from the url
-    // if (filterObj['geo'] === {}) {
-    //   delete filterObj['geo'];
-    // }
-    // const filterString = JSON.stringify(filterObj);
-    // // if empty filter settings, use the base home url instead of the filter url
-    // Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
-    //   this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
-    // // log filter change in store
-    // Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
-    //   this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
-    //
-    // // jump back into catalog view regardless of setting or clearing the geo filter
+    // if map aoi is empty, remove from the url
+    if (filterObj['geo'] === {}) {
+      delete filterObj['geo'];
+    }
+    const filterString = JSON.stringify(filterObj);
+    // if empty filter settings, use the base home url instead of the filter url
+    Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
+      this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
+    // log filter change in store
+    Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
+      this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
+
+    // jump back into catalog view regardless of setting or clearing the geo filter
     // this.props.setViewCatalog();
   }
+
+  getAreaTypeGeoJson(areaType, areaTypeName) {
+    let countyName = this.props.collectionFilterMapSelectedCountyName;
+    console.log("function called");
+    console.log(areaTypeName);
+    let areaTypeGeoJson = {};
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT row_to_json(fc)
+                 FROM (
+                   SELECT
+                     'FeatureCollection' AS "type",
+                     array_to_json(array_agg(f)) AS "features"
+                   FROM (
+                     SELECT
+                       'Feature' AS "type",
+                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+                         (
+                           SELECT json_strip_nulls(row_to_json(t))
+                           FROM (
+                             SELECT
+                               area_type.area_type_name
+                           ) t
+                           ) AS "properties"
+                     FROM area_type
+                     WHERE
+                       area_type.area_type_name = '${areaTypeName}' AND
+                       area_type.area_type = '${areaType}'
+                   ) as f
+                 ) as fc`;
+
+    sql.execute(query).done( (data) => {
+      areaTypeGeoJson = data.rows[0].row_to_json;
+      console.log(turfExtent(data.rows[0].row_to_json));
+      console.log(areaTypeGeoJson);
+      return areaTypeGeoJson;
+    })
+    return areaTypeGeoJson;
+}
 
   moveToSelectedMapFeature() {
     let countyName = this.props.collectionFilterMapSelectedCountyName;
     console.log(this._map.getStyle());
     console.log("function called");
     console.log(countyName);
-
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT row_to_json(fc)
                  FROM (
@@ -472,7 +516,7 @@ export default class CollectionFilterMap extends React.Component {
       console.log(turfExtent(data.rows[0].row_to_json));
       console.log(countyGeoJson);
       if (Object.keys(countyGeoJson).length > 0) {
-        this.getExtentIntersectedCollectionIds(this, countyGeoJson);
+        this.getExtentIntersectedCollectionIds(this, 'county', countyGeoJson);
         this._map.setFilter(
           'county-outline-selected',
           [
@@ -488,6 +532,7 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (

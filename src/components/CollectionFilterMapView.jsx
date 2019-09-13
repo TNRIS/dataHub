@@ -15,28 +15,23 @@ export default class CollectionFilterMapView extends React.Component {
       countyNames: []
     }
     this.handleBack = this.handleBack.bind(this);
-    this.getCountyAndQuadNames = this.getCountyAndQuadNames.bind(this);
+    this.handleGetCountyAndQuadNames = this.handleGetCountyAndQuadNames.bind(this);
+    this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
   }
 
   componentDidMount() {
     window.scrollTo(0,0);
-    this.getCountyAndQuadNames();
+    this.handleGetCountyAndQuadNames();
 
     const select = new MDCSelect(document.querySelector('.mdc-select'));
-    select.listen('MDCSelect:change', () => {
-      this.props.setCollectionFilterMapSelectedCountyName(select.value);
-      this.props.setCollectionFilterMapMoveMap(true);
-      // this.setState({
-      //   selectedCountyName: select.value,
-      //   moveMap: true
-      // })
-      // alert(`Selected option at index ${select.selectedIndex} with value "${select.value}"`);
-    });
+    console.log(select);
   }
 
   componentDidUpdate() {
     if (!this.props.collectionFilterMapSelectedCountyName) {
-      document.getElementById("county-select").selectedIndex = 0
+      const select = document.getElementById("county-select");
+      select.selectedIndex = 0;
+      select.blur();
     }
   }
 
@@ -53,7 +48,7 @@ export default class CollectionFilterMapView extends React.Component {
     }
   }
 
-  getCountyAndQuadNames() {
+  handleGetCountyAndQuadNames() {
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT
                    areas_view.area_type_name, areas_view.area_type
@@ -82,8 +77,21 @@ export default class CollectionFilterMapView extends React.Component {
     })
   }
 
+  handleChangeCountyName(event) {
+    console.log("Name Change");
+    this.props.setCollectionFilterMapSelectedCountyName(event.target.value);
+    this.props.setCollectionFilterMapMoveMap(true);
+  }
+
   render() {
     console.log(this.props);
+
+    let countyNameOptions = [
+      <option value="" key="" disabled></option>
+    ].concat(this.state.countyNames.map(countyName => {
+      return <option value={countyName} key={countyName}>{countyName}</option>;
+    }));
+
     return (
       <div className="filter-map-view">
         <div className="mdc-top-app-bar__row">
@@ -94,19 +102,15 @@ export default class CollectionFilterMapView extends React.Component {
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
             <div className="county-select__wrapper">
-              <div className="mdc-select mdc-select--outlined county-select">
+              <div className="mdc-select mdc-select--outlined">
                 <i className="mdc-select__dropdown-icon"></i>
                 <select className="mdc-select__native-control"
                   id="county-select"
-                  defaultValue="">
-                  <option value="" disabled></option>
-                  {this.state.countyNames.map((countyName) =>
-                    <option
-                      value={countyName}
-                      key={countyName}>
-                      {countyName}
-                    </option>
-                  )}
+                  value={this.props.collectionFilterMapSelectedCountyName ?
+                    this.props.collectionFilterMapSelectedCountyName : ""}
+                  onChange={this.handleChangeCountyName}
+                  ref="countySelect">
+                  {countyNameOptions}
                 </select>
                 <div className="mdc-notched-outline">
                   <div className="mdc-notched-outline__leading"></div>
