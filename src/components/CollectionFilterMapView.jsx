@@ -16,22 +16,22 @@ export default class CollectionFilterMapView extends React.Component {
     }
     this.handleBack = this.handleBack.bind(this);
     this.handleGetCountyAndQuadNames = this.handleGetCountyAndQuadNames.bind(this);
+    this.handleGetAreaTypeGeoJson = this.handleGetAreaTypeGeoJson.bind(this);
     this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
   }
 
   componentDidMount() {
     window.scrollTo(0,0);
     this.handleGetCountyAndQuadNames();
-
     const select = new MDCSelect(document.querySelector('.mdc-select'));
-    console.log(select);
   }
 
   componentDidUpdate() {
-    if (!this.props.collectionFilterMapSelectedCountyName) {
+    console.log("component updated");
+    if (!this.props.collectionFilterMapSelectedAreaTypeName) {
       const select = document.getElementById("county-select");
       select.selectedIndex = 0;
-      select.blur();
+      // select.blur();
     }
   }
 
@@ -77,9 +77,48 @@ export default class CollectionFilterMapView extends React.Component {
     })
   }
 
+  handleGetAreaTypeGeoJson(areaType, areaTypeName) {
+    console.log("function called");
+    console.log(areaTypeName);
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT row_to_json(fc)
+                 FROM (
+                   SELECT
+                     'FeatureCollection' AS "type",
+                     array_to_json(array_agg(f)) AS "features"
+                   FROM (
+                     SELECT
+                       'Feature' AS "type",
+                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+                         (
+                           SELECT json_strip_nulls(row_to_json(t))
+                           FROM (
+                             SELECT
+                               area_type.area_type_name
+                           ) t
+                           ) AS "properties"
+                     FROM area_type
+                     WHERE
+                       area_type.area_type_name = '${areaTypeName}' AND
+                       area_type.area_type = '${areaType}'
+                   ) as f
+                 ) as fc`;
+
+    sql.execute(query).done( (data) => {
+      let areaTypeGeoJson = data.rows[0].row_to_json;
+      this.props.setCollectionFilterMapSelectedAreaType({
+        areaType: areaType,
+        areaTypeName: areaTypeName,
+        areaTypeGeoJson: areaTypeGeoJson
+      });
+    })
+  }
+
   handleChangeCountyName(event) {
-    console.log("Name Change");
-    this.props.setCollectionFilterMapSelectedCountyName(event.target.value);
+    let areaType = event.target.id.split("-")[0];
+    let areaTypeName = event.target.value;
+    this.props.setCollectionFilterMapSelectedAreaType(areaType);
+    this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
     this.props.setCollectionFilterMapMoveMap(true);
   }
 
@@ -106,8 +145,9 @@ export default class CollectionFilterMapView extends React.Component {
                 <i className="mdc-select__dropdown-icon"></i>
                 <select className="mdc-select__native-control"
                   id="county-select"
-                  value={this.props.collectionFilterMapSelectedCountyName ?
-                    this.props.collectionFilterMapSelectedCountyName : ""}
+                  value={
+                    this.props.collectionFilterMapSelectedAreaTypeName ?
+                    this.props.collectionFilterMapSelectedAreaTypeName : ""}
                   onChange={this.handleChangeCountyName}
                   ref="countySelect">
                   {countyNameOptions}

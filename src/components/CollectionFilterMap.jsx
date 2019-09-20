@@ -44,9 +44,19 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.collectionFilterMapSelectedCountyName &&
+    if (Object.keys(this.props.collectionFilterMapSelectedAreaType).length > 0 &&
       this.props.collectionFilterMapMoveMap) {
-      this.moveToSelectedMapFeature();
+        console.log("trying to move the map");
+        console.log(this.props.collectionFilterMapSelectedAreaTypeName);
+        this.getAreaTypeGeoJson(
+          this.props.collectionFilterMapSelectedAreaType,
+          this.props.collectionFilterMapSelectedAreaTypeName
+        )
+        // this.moveToSelectedMapFeature(
+        //   this.props.collectionFilterMapSelectedAreaType.areaType,
+        //   this.props.collectionFilterMapSelectedAreaType.areaTypeName,
+        //   this.props.collectionFilterMapSelectedAreaType.areaTypeGeoJson
+        // );
     }
   }
 
@@ -79,7 +89,6 @@ export default class CollectionFilterMap extends React.Component {
       // in the map so our feature layers can be placed
       // below the map labels.
       const layers = map.getStyle().layers;
-      console.log(layers);
       // Find the index of the first symbol layer in the map style
       let firstSymbolId;
       for (let i = 0; i < layers.length; i++) {
@@ -305,6 +314,7 @@ export default class CollectionFilterMap extends React.Component {
 
     if (this.props.collectionFilterMapFilter.length > 0) {
       if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+        console.log(this.props.collectionFilterMapAoi);
         this._draw.add(this.props.collectionFilterMapAoi.payload);
         this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
       }
@@ -403,10 +413,16 @@ export default class CollectionFilterMap extends React.Component {
                        JSON.parse(decodeURIComponent(this.props.catalogFilterUrl.replace('/catalog/', '')))
                        : {};
     let filterObj;
-    if (this.props.collectionFilterMapAoi.aoiType === 'county') {
-      filterObj = {...prevFilter, geo: {'county': this.props.collectionFilterMapSelectedCountyName}};
+    if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+      filterObj = {
+        ...prevFilter,
+        geo: this.props.collectionFilterMapAoi.payload
+      };
     } else {
-      filterObj = {...prevFilter, geo: this.props.collectionFilterMapAoi.payload};
+      filterObj = {
+        ...prevFilter,
+        geo: {'county': this.props.collectionFilterMapSelectedAreaTypeName}
+      };
     }
 
     // sets the collection_ids array in the filter to drive the view
@@ -414,12 +430,12 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       this._draw.deleteAll();
-      if (this.props.collectionFilterMapSelectedCountyName) {
+      if (this.props.collectionFilterMapSelectedAreaType) {
         this._map.setFilter(
           'county-outline-selected',
             ["==", "area_type_name", ""]
         );
-        this.props.setCollectionFilterMapSelectedCountyName("");
+        this.props.setCollectionFilterMapSelectedAreaType({});
       }
       delete filterObj['geo'];
     } else {
@@ -444,11 +460,90 @@ export default class CollectionFilterMap extends React.Component {
     // this.props.setViewCatalog();
   }
 
+  // getAreaTypeGeoJson(areaType, areaTypeName) {
+  //   console.log("function called");
+  //   console.log(areaTypeName);
+  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
+  //   let query = `SELECT row_to_json(fc)
+  //                FROM (
+  //                  SELECT
+  //                    'FeatureCollection' AS "type",
+  //                    array_to_json(array_agg(f)) AS "features"
+  //                  FROM (
+  //                    SELECT
+  //                      'Feature' AS "type",
+  //                        ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+  //                        (
+  //                          SELECT json_strip_nulls(row_to_json(t))
+  //                          FROM (
+  //                            SELECT
+  //                              area_type.area_type_name
+  //                          ) t
+  //                          ) AS "properties"
+  //                    FROM area_type
+  //                    WHERE
+  //                      area_type.area_type_name = '${areaTypeName}' AND
+  //                      area_type.area_type = '${areaType}'
+  //                  ) as f
+  //                ) as fc`;
+  //
+  //   sql.execute(query).done( (data) => {
+  //     let areaTypeGeoJson = data.rows[0].row_to_json;
+  //     console.log(areaTypeGeoJson);
+  //   })
+  // }
+
+  // moveToSelectedMapFeature() {
+  //   let countyName = this.props.collectionFilterMapSelectedCountyName;
+  //   console.log(this._map.getStyle());
+  //   console.log("function called");
+  //   console.log(countyName);
+  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
+  //   let query = `SELECT row_to_json(fc)
+  //                FROM (
+  //                  SELECT
+  //                    'FeatureCollection' AS "type",
+  //                    array_to_json(array_agg(f)) AS "features"
+  //                  FROM (
+  //                    SELECT
+  //                      'Feature' AS "type",
+  //                        ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+  //                        (
+  //                          SELECT json_strip_nulls(row_to_json(t))
+  //                          FROM (
+  //                            SELECT
+  //                              area_type.area_type_name
+  //                          ) t
+  //                          ) AS "properties"
+  //                    FROM area_type
+  //                    WHERE
+  //                      area_type.area_type_name = '${countyName}' AND
+  //                      area_type.area_type = 'county'
+  //                  ) as f
+  //                ) as fc`;
+  //
+  //   sql.execute(query).done( (data) => {
+  //     let countyGeoJson = data.rows[0].row_to_json;
+  //     console.log(turfExtent(data.rows[0].row_to_json));
+  //     console.log(countyGeoJson);
+  //     if (Object.keys(countyGeoJson).length > 0) {
+  //       this.getExtentIntersectedCollectionIds(this, 'county', countyGeoJson);
+  //       this._map.setFilter(
+  //         'county-outline-selected',
+  //         [
+  //           "all",
+  //           ["==", "area_type", "county"],
+  //           ["==", "area_type_name", countyName]
+  //         ]
+  //       );
+  //       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+  //       this.props.setCollectionFilterMapMoveMap(false);
+  //     }
+  //   })
+  // }
   getAreaTypeGeoJson(areaType, areaTypeName) {
-    let countyName = this.props.collectionFilterMapSelectedCountyName;
     console.log("function called");
     console.log(areaTypeName);
-    let areaTypeGeoJson = {};
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT row_to_json(fc)
                  FROM (
@@ -474,61 +569,25 @@ export default class CollectionFilterMap extends React.Component {
                  ) as fc`;
 
     sql.execute(query).done( (data) => {
-      areaTypeGeoJson = data.rows[0].row_to_json;
-      console.log(turfExtent(data.rows[0].row_to_json));
-      console.log(areaTypeGeoJson);
-      return areaTypeGeoJson;
+      let areaTypeGeoJson = data.rows[0].row_to_json;
+      this.props.setCollectionFilterMapSelectedAreaTypeGeoJson(areaTypeGeoJson);
+      this.moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson);
     })
-    return areaTypeGeoJson;
-}
+  }
 
-  moveToSelectedMapFeature() {
-    let countyName = this.props.collectionFilterMapSelectedCountyName;
-    console.log(this._map.getStyle());
-    console.log("function called");
-    console.log(countyName);
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT row_to_json(fc)
-                 FROM (
-                   SELECT
-                     'FeatureCollection' AS "type",
-                     array_to_json(array_agg(f)) AS "features"
-                   FROM (
-                     SELECT
-                       'Feature' AS "type",
-                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-                         (
-                           SELECT json_strip_nulls(row_to_json(t))
-                           FROM (
-                             SELECT
-                               area_type.area_type_name
-                           ) t
-                           ) AS "properties"
-                     FROM area_type
-                     WHERE
-                       area_type.area_type_name = '${countyName}' AND
-                       area_type.area_type = 'county'
-                   ) as f
-                 ) as fc`;
-
-    sql.execute(query).done( (data) => {
-      let countyGeoJson = data.rows[0].row_to_json;
-      console.log(turfExtent(data.rows[0].row_to_json));
-      console.log(countyGeoJson);
-      if (Object.keys(countyGeoJson).length > 0) {
-        this.getExtentIntersectedCollectionIds(this, 'county', countyGeoJson);
-        this._map.setFilter(
-          'county-outline-selected',
-          [
-            "all",
-            ["==", "area_type", "county"],
-            ["==", "area_type_name", countyName]
-          ]
-        );
-        document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-        this.props.setCollectionFilterMapMoveMap(false);
-      }
-    })
+  moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson) {
+    console.log(areaTypeName);
+    this.getExtentIntersectedCollectionIds(this, areaType, areaTypeGeoJson);
+    this._map.setFilter(
+      'county-outline-selected',
+      [
+        "all",
+        ["==", "area_type", areaType],
+        ["==", "area_type_name", areaTypeName]
+      ]
+    );
+    document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+    this.props.setCollectionFilterMapMoveMap(false);
   }
 
   render() {

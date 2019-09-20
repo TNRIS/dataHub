@@ -4,7 +4,9 @@ import {
   SET_COLLECTION_FILTER_MAP_FILTER,
   SET_COLLECTION_FILTER_MAP_ZOOM,
   SET_COLLECTION_FILTER_MAP_MOVE_MAP,
-  SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON
 } from '../constants/collectionFilterMapActionTypes';
 
 export const setCollectionFilterMapAoi = (collectionFilterMapAoi) => {
@@ -52,11 +54,29 @@ export const setCollectionFilterMapMoveMap = (collectionFilterMapMoveMap) => {
   }
 };
 
-export const setCollectionFilterMapSelectedCountyName = (collectionFilterMapSelectedCountyName) => {
+export const setCollectionFilterMapSelectedAreaType = (collectionFilterMapSelectedAreaType) => {
   return (dispatch) => {
     dispatch({
-      type: SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME,
-      payload: { collectionFilterMapSelectedCountyName }
+      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
+      payload: { collectionFilterMapSelectedAreaType }
+    })
+  }
+};
+
+export const setCollectionFilterMapSelectedAreaTypeName = (collectionFilterMapSelectedAreaTypeName) => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
+      payload: { collectionFilterMapSelectedAreaTypeName }
+    })
+  }
+};
+
+export const setCollectionFilterMapSelectedAreaTypeGeoJson = (collectionFilterMapSelectedAreaTypeGeoJson) => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON,
+      payload: { collectionFilterMapSelectedAreaTypeGeoJson }
     })
   }
 };

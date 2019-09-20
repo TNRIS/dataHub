@@ -45,38 +45,43 @@ export default class CollectionFilter extends React.Component {
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
           console.log(allFilters);
-          if (allFilters.geo.hasOwnProperty('county')) {
-            console.log(allFilters.geo.county);
+          if (allFilters.geo.hasOwnProperty('coordinates')) {
+            console.log(allFilters.geo);
+            // set the filter map aoi
+            this.props.setCollectionFilterMapAoi({
+              aoiType: 'draw',
+              payload: allFilters.geo
+            });
+            // run the spatial query to set the filtered collection id list
+            let bounds = turfExtent(allFilters.geo); // get the bounds with turf.js
+            let sql = new cartodb.SQL({user: 'tnris-flood'});
+            let query = `SELECT
+                           areas_view.collections
+                         FROM
+                           area_type, areas_view
+                         WHERE
+                           area_type.area_type_id = areas_view.area_type_id
+                         AND
+                           area_type.the_geom && ST_MakeEnvelope(
+                             ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+
+            const _this = this;
+            sql.execute(query).done(function(data) {
+              // set up the array of collection_id arrays from the returned
+              // query object
+              let collectionIds = data.rows.map(function (obj) {
+                return obj.collections.split(",");
+              });
+              // combine all collection_id arrays into a single array of unique ids
+              let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+              _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
+            }).error(function(errors) {
+              // errors contains a list of errors
+              console.log("errors:" + errors);
+            })
+          } else {
+            console.log(allFilters.geo);
           }
-          // set the filter map aoi
-          // this.props.setCollectionFilterMapAoi(allFilters.geo);
-          // run the spatial query to set the filtered collection id list
-        //   let bounds = turfExtent(allFilters.geo); // get the bounds with turf.js
-        //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-        //   let query = `SELECT
-        //                  areas_view.collections
-        //                FROM
-        //                  area_type, areas_view
-        //                WHERE
-        //                  area_type.area_type_id = areas_view.area_type_id
-        //                AND
-        //                  area_type.the_geom && ST_MakeEnvelope(
-        //                    ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-        //
-        //   const _this = this;
-        //   sql.execute(query).done(function(data) {
-        //     // set up the array of collection_id arrays from the returned
-        //     // query object
-        //     let collectionIds = data.rows.map(function (obj) {
-        //       return obj.collections.split(",");
-        //     });
-        //     // combine all collection_id arrays into a single array of unique ids
-        //     let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
-        //     _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
-        //   }).error(function(errors) {
-        //     // errors contains a list of errors
-        //     console.log("errors:" + errors);
-        //   })
         }
       } catch (e) {
         console.log(e);

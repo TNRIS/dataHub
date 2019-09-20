@@ -11,12 +11,22 @@ import { getAllResources
        } from '../selectors/resourceSelectors';
 
 const mapStateToProps = state => ({
-  collectionFilterMapAoi: state.collectionFilterMap.collectionFilterMapAoi,
-  collectionFilterMapCenter: state.collectionFilterMap.collectionFilterMapCenter,
-  collectionFilterMapFilter: state.collectionFilterMap.collectionFilterMapFilter,
-  collectionFilterMapZoom: state.collectionFilterMap.collectionFilterMapZoom,
-  collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap,
-  collectionFilterMapSelectedCountyName: state.collectionFilterMap.collectionFilterMapSelectedCountyName,
+  collectionFilterMapAoi:
+    state.collectionFilterMap.collectionFilterMapAoi,
+  collectionFilterMapCenter:
+    state.collectionFilterMap.collectionFilterMapCenter,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapZoom:
+    state.collectionFilterMap.collectionFilterMapZoom,
+  collectionFilterMapMoveMap:
+    state.collectionFilterMap.collectionFilterMapMoveMap,
+  collectionFilterMapSelectedAreaType:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
+  collectionFilterMapSelectedAreaTypeName:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
+  collectionFilterMapSelectedAreaTypeGeoJson:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeGeoJson,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
   view: state.catalog.view,
@@ -39,8 +49,26 @@ const mapDispatchToProps = dispatch => ({
   setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
     dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
   },
-  setCollectionFilterMapSelectedCountyName: (collectionFilterMapSelectedCountyName) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapSelectedCountyName(collectionFilterMapSelectedCountyName));
+  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
+        collectionFilterMapSelectedAreaType
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
+        collectionFilterMapSelectedAreaTypeName
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeGeoJson: (collectionFilterMapSelectedAreaTypeGeoJson) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeGeoJson(
+        collectionFilterMapSelectedAreaTypeGeoJson
+      )
+    );
   },
   setUrl: (newUrl, history) => {
     dispatch(urlTrackerActions.setUrl(newUrl, history))

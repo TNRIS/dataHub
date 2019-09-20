@@ -7,10 +7,16 @@ import { catalogActions,
          urlTrackerActions } from '../actions';
 
 const mapStateToProps = state => ({
-  previousUrl: state.urlTracker.previousUrl,
-  catalogFilterUrl: state.urlTracker.catalogFilterUrl,
-  collectionFilterMapMoveMap: state.collectionFilterMap.collectionFilterMapMoveMap,
-  collectionFilterMapSelectedCountyName: state.collectionFilterMap.collectionFilterMapSelectedCountyName
+  previousUrl:
+    state.urlTracker.previousUrl,
+  catalogFilterUrl:
+    state.urlTracker.catalogFilterUrl,
+  collectionFilterMapMoveMap:
+    state.collectionFilterMap.collectionFilterMapMoveMap,
+  collectionFilterMapSelectedAreaType:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
+  collectionFilterMapSelectedAreaTypeName:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -21,10 +27,25 @@ const mapDispatchToProps = dispatch => ({
     dispatch(catalogActions.setViewCatalog());
   },
   setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapMoveMap(
+        collectionFilterMapMoveMap
+      )
+    );
   },
-  setCollectionFilterMapSelectedCountyName: (collectionFilterMapSelectedCountyName) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapSelectedCountyName(collectionFilterMapSelectedCountyName));
+  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
+        collectionFilterMapSelectedAreaType
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
+        collectionFilterMapSelectedAreaTypeName
+      )
+    );
   }
 })
 

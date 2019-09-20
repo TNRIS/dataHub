@@ -4,7 +4,9 @@ import {
   SET_COLLECTION_FILTER_MAP_FILTER,
   SET_COLLECTION_FILTER_MAP_ZOOM,
   SET_COLLECTION_FILTER_MAP_MOVE_MAP,
-  SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON
 } from '../constants/collectionFilterMapActionTypes';
 
 import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
@@ -17,7 +19,9 @@ const initialState = {
   collectionFilterMapFilter: [],
   collectionFilterMapZoom: 5.3,
   collectionFilterMapMoveMap: false,
-  collectionFilterMapSelectedCountyName: ""
+  collectionFilterMapSelectedAreaType: "",
+  collectionFilterMapSelectedAreaTypeName: "",
+  collectionFilterMapSelectedAreaTypeGeoJson: {}
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
@@ -64,11 +68,25 @@ export default function collectionFilterMapReducer(state = initialState, action)
         collectionFilterMapMoveMap: action.payload.collectionFilterMapMoveMap
       };
 
-    case SET_COLLECTION_FILTER_MAP_SELECTED_COUNTY_NAME:
-      // Set the property SelectedCountyName to the user selected county in the state
+    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE:
+      // Set the property SelectedArea to the user selected area_type in the state
       return {
         ...state,
-        collectionFilterMapSelectedCountyName: action.payload.collectionFilterMapSelectedCountyName
+        collectionFilterMapSelectedAreaType: action.payload.collectionFilterMapSelectedAreaType
+      };
+
+    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME:
+      // Set the property SelectedAreaTypeName to the user selected area_type in the state
+      return {
+        ...state,
+        collectionFilterMapSelectedAreaTypeName: action.payload.collectionFilterMapSelectedAreaTypeName
+      };
+
+    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON:
+      // Set the property SelectedAreaTypeGeoJson to the user selected area_type in the state
+      return {
+        ...state,
+        collectionFilterMapSelectedAreaTypeGeoJson: action.payload.collectionFilterMapSelectedAreaTypeGeoJson
       };
 
     case POP_BROWSER_STORE:
