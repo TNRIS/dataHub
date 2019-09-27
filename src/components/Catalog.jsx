@@ -27,6 +27,8 @@ import noDataImage666 from '../images/no-data-satan.png';
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss';
 
+import ScrollTop from './ScrollTop';
+
 export default class Catalog extends React.Component {
   constructor(props) {
     super(props);
@@ -214,6 +216,7 @@ export default class Catalog extends React.Component {
               ? (
                   <div className="catalog-grid mdc-layout-grid">
                     <ul className="mdc-layout-grid__inner">
+                      <ScrollTop />
                       {this.props.visibleCollections.map((collectionId, index) =>
                         <li
                           className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
