@@ -13,7 +13,14 @@ import { getCollectionFilterChoices } from '../selectors/collectionSelectors';
 const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,
   collectionFilterChoices: getCollectionFilterChoices(state),
-  collectionFilterMapFilter: state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapSelectedAreaType:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
+  collectionFilterMapSelectedAreaTypeName:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
+  collectionFilterMapSelectedAreaTypeGeoJson:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeGeoJson,
   view: state.catalog.view
 });
 
@@ -35,6 +42,27 @@ const mapDispatchToProps = dispatch => ({
   },
   setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
     dispatch(collectionFilterMapActions.setCollectionFilterMapFilter(collectionFilterMapFilter));
+  },
+  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
+        collectionFilterMapSelectedAreaType
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
+        collectionFilterMapSelectedAreaTypeName
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeGeoJson: (collectionFilterMapSelectedAreaTypeGeoJson) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeGeoJson(
+        collectionFilterMapSelectedAreaTypeGeoJson
+      )
+    );
   },
   setViewGeoFilter: () => {
     dispatch(catalogActions.setViewGeoFilter());

@@ -13,6 +13,8 @@ export default class CollectionFilter extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.showGeoFilter = this.showGeoFilter.bind(this);
     this.handleKeySetFilter = this.handleKeySetFilter.bind(this);
+    this.handleSetGeoFilter = this.handleSetGeoFilter.bind(this);
+    this.getAreaTypeGeoJson = this.getAreaTypeGeoJson.bind(this);
   }
 
   componentDidMount () {
@@ -45,42 +47,16 @@ export default class CollectionFilter extends React.Component {
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
           console.log(allFilters);
+          // check if the filter is a user defined polygon or
+          // if it is a county filter
           if (allFilters.geo.hasOwnProperty('coordinates')) {
             console.log(allFilters.geo);
-            // set the filter map aoi
-            this.props.setCollectionFilterMapAoi({
-              aoiType: 'draw',
-              payload: allFilters.geo
-            });
-            // run the spatial query to set the filtered collection id list
-            let bounds = turfExtent(allFilters.geo); // get the bounds with turf.js
-            let sql = new cartodb.SQL({user: 'tnris-flood'});
-            let query = `SELECT
-                           areas_view.collections
-                         FROM
-                           area_type, areas_view
-                         WHERE
-                           area_type.area_type_id = areas_view.area_type_id
-                         AND
-                           area_type.the_geom && ST_MakeEnvelope(
-                             ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-
-            const _this = this;
-            sql.execute(query).done(function(data) {
-              // set up the array of collection_id arrays from the returned
-              // query object
-              let collectionIds = data.rows.map(function (obj) {
-                return obj.collections.split(",");
-              });
-              // combine all collection_id arrays into a single array of unique ids
-              let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
-              _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
-            }).error(function(errors) {
-              // errors contains a list of errors
-              console.log("errors:" + errors);
-            })
-          } else {
-            console.log(allFilters.geo);
+            this.handleSetGeoFilter(this, 'draw', allFilters.geo);
+          } else if (allFilters.geo.hasOwnProperty('county')) {
+            console.log(allFilters.geo.county);
+            // set the filter map aoi, selected area type,
+            // selected area type name, aand selected area type geojson
+            this.getAreaTypeGeoJson('county', allFilters.geo.county);
           }
         }
       } catch (e) {
@@ -113,6 +89,78 @@ export default class CollectionFilter extends React.Component {
         return key;
       });
     }
+  }
+
+  // Gets the selected area_type geometry as geojson from
+  // carto and sets this in the app state. We'll also set the
+  // selected area_type and area_type_name in the app state
+  // for use in the geo filter. This method willl then call
+  // the method that sets the geofilter property, "handleSetGeoFilter".
+  getAreaTypeGeoJson(areaType, areaTypeName) {
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT row_to_json(fc)
+                 FROM (
+                   SELECT
+                     'FeatureCollection' AS "type",
+                     array_to_json(array_agg(f)) AS "features"
+                   FROM (
+                     SELECT
+                       'Feature' AS "type",
+                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
+                         (
+                           SELECT json_strip_nulls(row_to_json(t))
+                           FROM (
+                             SELECT
+                               area_type.area_type_name
+                           ) t
+                           ) AS "properties"
+                     FROM area_type
+                     WHERE
+                       area_type.area_type_name = '${areaTypeName}' AND
+                       area_type.area_type = '${areaType}'
+                   ) as f
+                 ) as fc`;
+
+    sql.execute(query).done( (data) => {
+      let areaTypeGeoJson = data.rows[0].row_to_json;
+      console.log(areaTypeGeoJson);
+      this.props.setCollectionFilterMapSelectedAreaType(areaType);
+      this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
+      this.props.setCollectionFilterMapSelectedAreaTypeGeoJson(areaTypeGeoJson);
+      this.handleSetGeoFilter(this, areaType, areaTypeGeoJson);
+    })
+  }
+
+  handleSetGeoFilter(_this, aoiType, aoi) {
+    // get the bounds from the aoi and query carto
+    // to find the area_type polygons that intersect this mbr
+    // and return the collection_ids associated with those areas
+    let bounds = turfExtent(aoi); // get the bounds with turf.js
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT
+                   areas_view.collections
+                 FROM
+                   area_type, areas_view
+                 WHERE
+                   area_type.area_type_id = areas_view.area_type_id
+                 AND
+                   area_type.the_geom && ST_MakeEnvelope(
+                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+
+    sql.execute(query).done(function(data) {
+      // set up the array of collection_id arrays from the returned
+      // query object
+      let collectionIds = data.rows.map(function (obj) {
+        return obj.collections.split(",");
+      });
+      // combine all collection_id arrays into a single array of unique ids
+      let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+      _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
+      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
+    }).error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
   }
 
   handleOpenFilterMenu(e) {
@@ -192,6 +240,7 @@ export default class CollectionFilter extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     const filterSet = "mdc-list-item filter-list-title mdc-list-item--activated";
 
     const filterNotSet = "mdc-list-item filter-list-title";

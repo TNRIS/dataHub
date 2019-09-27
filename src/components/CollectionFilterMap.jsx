@@ -52,11 +52,6 @@ export default class CollectionFilterMap extends React.Component {
           this.props.collectionFilterMapSelectedAreaType,
           this.props.collectionFilterMapSelectedAreaTypeName
         )
-        // this.moveToSelectedMapFeature(
-        //   this.props.collectionFilterMapSelectedAreaType.areaType,
-        //   this.props.collectionFilterMapSelectedAreaType.areaTypeName,
-        //   this.props.collectionFilterMapSelectedAreaType.areaTypeGeoJson
-        // );
     }
   }
 
@@ -83,6 +78,9 @@ export default class CollectionFilterMap extends React.Component {
 
     this._navControl = new mapboxgl.NavigationControl()
     map.addControl(this._navControl, 'top-left');
+
+    // Define the color to use to show selected areas on the map
+    const selectedAreaColor = '#1E8DC1';
 
     map.on('load', () => {
       // Need to find out which is the first symbol layer
@@ -136,7 +134,7 @@ export default class CollectionFilterMap extends React.Component {
             'minzoom': 2,
             'maxzoom': 24,
             'paint': {
-              'line-color': '#1E8DC1',
+              'line-color': selectedAreaColor,
               'line-width': 4,
               'line-opacity': 1
             },
@@ -205,9 +203,6 @@ export default class CollectionFilterMap extends React.Component {
       });
     })
 
-    const filler = this.props.theme + "Fill";
-    const texter = this.props.theme + "Text";
-
     // create the draw control and define its functionality
     // update the mapbox draw modes with the rectangle mode
     const modes = MapboxDraw.modes;
@@ -225,9 +220,9 @@ export default class CollectionFilterMap extends React.Component {
             ['!=', 'mode', 'static']
           ],
           'paint': {
-            'fill-color': styles[filler],
-            'fill-outline-color': styles[texter],
-            'fill-opacity': 0.6
+            'fill-color': '#1E8DC1',
+            'fill-outline-color': selectedAreaColor,
+            'fill-opacity': 0
           }
         },
         {
@@ -237,8 +232,8 @@ export default class CollectionFilterMap extends React.Component {
             ['==', '$type', 'Polygon']
           ],
           'paint': {
-            'fill-color': styles[filler],
-            'fill-outline-color': styles[filler],
+            'fill-color': '#1E8DC1',
+            'fill-outline-color': selectedAreaColor,
             'fill-opacity': 0.2
           }
         },
@@ -254,7 +249,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': styles[filler],
+            'line-color': selectedAreaColor,
             'line-width': 3
           }
         },
@@ -269,7 +264,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': styles[filler],
+            'line-color': selectedAreaColor,
             'line-dasharray': [0.2, 2],
             'line-width': 2
           }
@@ -312,23 +307,41 @@ export default class CollectionFilterMap extends React.Component {
       this.props.setCollectionFilterMapZoom(this._map.getZoom());
     })
 
-    if (this.props.collectionFilterMapFilter.length > 0) {
-      if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
-        console.log(this.props.collectionFilterMapAoi);
+    if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+      console.log(this.props.collectionFilterMapAoi);
+      if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
         this._draw.add(this.props.collectionFilterMapAoi.payload);
-        this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
+      } else {
+        // TODO figure out how to implement reloading the map
+        // once an area type is already chosen
+        // this.moveToSelectedMapFeature(
+        //   this.props.collectionFilterMapAoiType,
+        //   this.props.collectionFilterMapSelectedAreaTypeName,
+        //   this.props.collectionFilterMapAoi.payload
+        // );
       }
+      this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
       this.disableUserInteraction();
     }
 
+    // if (this.props.collectionFilterMapFilter.length > 0) {
+    //   if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+    //     console.log(this.props.collectionFilterMapAoi);
+    //     this._draw.add(this.props.collectionFilterMapAoi.payload);
+    //     this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
+    //   }
+    //   document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+    //   this.disableUserInteraction();
+    // }
+
     // if geo filter applied in url on load, execute here on mount
-    if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
-      this.getExtentIntersectedCollectionIds(this, 'draw', this.props.collectionFilterMapAoi.payload);
-      this._draw.add(this.props.collectionFilterMapAoi.payload);
-      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-      this.disableUserInteraction();
-    }
+    // if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+    //   this.getExtentIntersectedCollectionIds(this, 'draw', this.props.collectionFilterMapAoi.payload);
+    //   this._draw.add(this.props.collectionFilterMapAoi.payload);
+    //   document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+    //   this.disableUserInteraction();
+    // }
 
   }
 
@@ -460,87 +473,6 @@ export default class CollectionFilterMap extends React.Component {
     // this.props.setViewCatalog();
   }
 
-  // getAreaTypeGeoJson(areaType, areaTypeName) {
-  //   console.log("function called");
-  //   console.log(areaTypeName);
-  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-  //   let query = `SELECT row_to_json(fc)
-  //                FROM (
-  //                  SELECT
-  //                    'FeatureCollection' AS "type",
-  //                    array_to_json(array_agg(f)) AS "features"
-  //                  FROM (
-  //                    SELECT
-  //                      'Feature' AS "type",
-  //                        ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-  //                        (
-  //                          SELECT json_strip_nulls(row_to_json(t))
-  //                          FROM (
-  //                            SELECT
-  //                              area_type.area_type_name
-  //                          ) t
-  //                          ) AS "properties"
-  //                    FROM area_type
-  //                    WHERE
-  //                      area_type.area_type_name = '${areaTypeName}' AND
-  //                      area_type.area_type = '${areaType}'
-  //                  ) as f
-  //                ) as fc`;
-  //
-  //   sql.execute(query).done( (data) => {
-  //     let areaTypeGeoJson = data.rows[0].row_to_json;
-  //     console.log(areaTypeGeoJson);
-  //   })
-  // }
-
-  // moveToSelectedMapFeature() {
-  //   let countyName = this.props.collectionFilterMapSelectedCountyName;
-  //   console.log(this._map.getStyle());
-  //   console.log("function called");
-  //   console.log(countyName);
-  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-  //   let query = `SELECT row_to_json(fc)
-  //                FROM (
-  //                  SELECT
-  //                    'FeatureCollection' AS "type",
-  //                    array_to_json(array_agg(f)) AS "features"
-  //                  FROM (
-  //                    SELECT
-  //                      'Feature' AS "type",
-  //                        ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-  //                        (
-  //                          SELECT json_strip_nulls(row_to_json(t))
-  //                          FROM (
-  //                            SELECT
-  //                              area_type.area_type_name
-  //                          ) t
-  //                          ) AS "properties"
-  //                    FROM area_type
-  //                    WHERE
-  //                      area_type.area_type_name = '${countyName}' AND
-  //                      area_type.area_type = 'county'
-  //                  ) as f
-  //                ) as fc`;
-  //
-  //   sql.execute(query).done( (data) => {
-  //     let countyGeoJson = data.rows[0].row_to_json;
-  //     console.log(turfExtent(data.rows[0].row_to_json));
-  //     console.log(countyGeoJson);
-  //     if (Object.keys(countyGeoJson).length > 0) {
-  //       this.getExtentIntersectedCollectionIds(this, 'county', countyGeoJson);
-  //       this._map.setFilter(
-  //         'county-outline-selected',
-  //         [
-  //           "all",
-  //           ["==", "area_type", "county"],
-  //           ["==", "area_type_name", countyName]
-  //         ]
-  //       );
-  //       document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-  //       this.props.setCollectionFilterMapMoveMap(false);
-  //     }
-  //   })
-  // }
   getAreaTypeGeoJson(areaType, areaTypeName) {
     console.log("function called");
     console.log(areaTypeName);
