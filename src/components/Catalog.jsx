@@ -27,11 +27,13 @@ import noDataImage666 from '../images/no-data-satan.png';
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss';
 
-import ScrollTop from './ScrollTop';
-
 export default class Catalog extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      showButton: 'no'
+    }
 
     this.handleResize = this.handleResize.bind(this);
     this.handleToolDrawerDisplay = this.handleToolDrawerDisplay.bind(this);
@@ -40,6 +42,8 @@ export default class Catalog extends React.Component {
     this.handleToast = this.handleToast.bind(this);
     this.handleCloseBetaNotice = this.handleCloseBetaNotice.bind(this);
     this.chunkCatalogCards = this.chunkCatalogCards.bind(this);
+    this.detectScroll = this.detectScroll.bind(this);
+    this.scrollTop = this.scrollTop.bind(this);
     // this.loadingMessage = (
     //   <div className="catalog-component__loading">
     //     <img src={loadingImage} alt="Holodeck Loading..." className="holodeck-loading-image" />
@@ -61,6 +65,7 @@ export default class Catalog extends React.Component {
     this.props.fetchCollections();
     this.props.fetchStoredShoppingCart();
     window.addEventListener("resize", this.handleResize);
+    window.addEventListener("scroll", this.detectScroll);
     window.innerWidth >= parseInt(breakpoints.desktop, 10) ? this.props.setDismissibleDrawer() : this.props.setModalDrawer();
     window.onpopstate = (e) => {
       if (e.state) {
@@ -85,6 +90,7 @@ export default class Catalog extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("scroll", this.detectScroll);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -104,6 +110,14 @@ export default class Catalog extends React.Component {
         }
       }
     }
+  }
+
+  detectScroll() {
+    window.pageYOffset > 500 ? this.setState({showButton: 'yes'}) : this.setState({showButton: 'no'});
+  }
+
+  scrollTop() {
+    window.scrollTo(0, 0);
   }
 
   handleCloseBetaNotice() {
@@ -201,6 +215,13 @@ export default class Catalog extends React.Component {
   }
 
   setCatalogView() {
+    const scrollTopButton = this.state.showButton === 'yes' ? (
+      <div className="scrolltop-container">
+        <button className="scrolltop mdc-fab" aria-label="Back to top" onClick={this.scrollTop} title="Back to top">
+          <span className="mdc-fab__icon material-icons">keyboard_arrow_up</span>
+        </button>
+      </div>
+    ) : '';
     const catalogCards = this.props.visibleCollections && this.props.visibleCollections.length < 1 ?
       <div className='no-data'>
         <img
@@ -215,8 +236,8 @@ export default class Catalog extends React.Component {
               this.props.visibleCollections.length < 900
               ? (
                   <div className="catalog-grid mdc-layout-grid">
+                    {scrollTopButton}
                     <ul className="mdc-layout-grid__inner">
-                      <ScrollTop />
                       {this.props.visibleCollections.map((collectionId, index) =>
                         <li
                           className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
@@ -228,7 +249,10 @@ export default class Catalog extends React.Component {
                       )}
                     </ul>
                   </div>
-                ) : <div className="catalog-grid mdc-layout-grid">{this.chunkCatalogCards()}</div>
+                ) : <div className="catalog-grid mdc-layout-grid">
+                      {scrollTopButton}
+                      {this.chunkCatalogCards()}
+                    </div>
               )
         );
 
