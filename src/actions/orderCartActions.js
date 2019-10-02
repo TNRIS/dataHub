@@ -180,7 +180,7 @@ export function uploadOrderFile(collectionId, cartInfo) {
              // iterate all cart files since mulitple screenshot images permitted
              cartFiles.forEach((file, index) => {
                // build fake form to do the upload. required to use the s3 rest api
-               const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name;
+               const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name.split(' ').join('_');
                let formData = new FormData();
                formData.append('key', fileKey);
                formData.append('acl', 'private');
