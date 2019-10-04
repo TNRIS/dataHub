@@ -52,9 +52,10 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     //                       collection_name={this.props.collection.name} />)
     //                     : "";
 
-    const downloadMap = this.props.collection.template === 'tnris-download' ? (
-                      <TnrisDownloadTemplateDownload collection={this.props.collection} />)
-                     : "";
+    // const downloadMap = this.props.collection.template === 'tnris-download' ? (
+    //                   <TnrisDownloadTemplateDownload collection={this.props.collection} />)
+    //                  : "";
+    const downloadMap = "";
 
     console.log(this.props.collection);
 
