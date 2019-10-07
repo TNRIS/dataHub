@@ -1,12 +1,15 @@
-import React from 'react';
-import {MDCTopAppBar} from '@material/top-app-bar/index';
-import {MDCTabBar} from '@material/tab-bar';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import {MDCTopAppBar} from '@material/top-app-bar/index'
+import {MDCTabBar} from '@material/tab-bar'
+import { MDCMenu } from '@material/menu'
 
-import HistoricalAerialTemplateDetails from './HistoricalAerialTemplateDetails';
-import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
-import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer';
-import ContactContainer from '../../containers/ContactContainer';
+import HistoricalAerialTemplateDetails from './HistoricalAerialTemplateDetails'
+
+import Images from '../Images'
+
+// import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
+import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
+import ContactContainer from '../../containers/ContactContainer'
 
 export default class HistoricalAerialTemplate extends React.Component {
   constructor(props) {
@@ -32,7 +35,7 @@ export default class HistoricalAerialTemplate extends React.Component {
       case 'details':
         tabIndex = 0;
         break;
-      case 'coverage':
+      case 'images':
         tabIndex = 1;
         break;
       case 'order':
@@ -59,8 +62,15 @@ export default class HistoricalAerialTemplate extends React.Component {
       case 'details':
         showComponent = <HistoricalAerialTemplateDetails collection={this.props.collection} />;
         break;
-      case 'coverage':
-        showComponent = <CountyCoverageContainer counties={this.props.collection.counties} />;
+      // case 'coverage':
+      //   showComponent = <CountyCoverageContainer counties={this.props.collection.counties} />;
+      //   break;
+      case 'images':
+        showComponent = (
+          <Images
+            thumbnail={this.props.collection.thumbnail_image}
+            images={this.props.collection.images} />
+        )
         break;
       case 'order':
         showComponent = (
@@ -124,24 +134,21 @@ export default class HistoricalAerialTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      { this.props.collection.counties ? (
-                          <button
-                            className="mdc-tab"
-                            role="tab"
-                            aria-selected="false"
-                            tabIndex="-1"
-                            onClick={() => this.setTemplateView("coverage")}
-                            title="Coverage Map">
-                            <span className="mdc-tab__content">coverage</span>
-                            <span className="mdc-tab-indicator">
-                              <span
-                                className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
-                              </span>
-                            </span>
-                            <span className="mdc-tab__ripple"></span>
-                          </button>
-                        ) : ""
-                      }
+                      <button
+                        className="mdc-tab"
+                        role="tab"
+                        aria-selected="false"
+                        tabIndex="-1"
+                        onClick={() => this.setTemplateView("images")}
+                        title="Preview Images">
+                        <span className="mdc-tab__content">images</span>
+                        <span className="mdc-tab-indicator">
+                          <span
+                            className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
+                          </span>
+                        </span>
+                        <span className="mdc-tab__ripple"></span>
+                      </button>
 
                       <button
                         className="mdc-tab"
@@ -159,7 +166,6 @@ export default class HistoricalAerialTemplate extends React.Component {
 
                       <button className="mdc-tab" role="tab" aria-selected="false" tabIndex="-1"  onClick={() => this.setTemplateView("contact")} title="Contact">
                         <span className="mdc-tab__content">contact
-                          {/*<span className="mdc-tab__icon material-icons">contact_support</span>*/}
                         </span>
                         <span className="mdc-tab-indicator">
                           <span className="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -183,26 +189,22 @@ export default class HistoricalAerialTemplate extends React.Component {
                       className={
                         this.state.view === 'details' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'
                       }
-                      onClick={() => this.setTemplateView("details")}>
-                      Details
+                      onClick={() => this.setTemplateView("details")}>Details
                     </div>
-                    { this.props.collection.counties ? (
-                      <div className={this.state.view === 'coverage' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
-                         onClick={() => this.setTemplateView("coverage")}>Coverage
-                         {/*<i className="mdc-tab__icon material-icons">details</i>*/}
-                      </div>
-                      ) : ""
-                    }
+                    <div
+                      className={
+                        this.state.view === 'images' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'
+                      }
+                      onClick={() => this.setTemplateView("images")}>Images
+                    </div>
                     <div
                       className={
                         this.state.view === 'order' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'
                       }
-                      onClick={() => this.setTemplateView("order")}>
-                      Order
+                      onClick={() => this.setTemplateView("order")}>Order
                     </div>
                     <div className={this.state.view === 'contact' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("contact")}>Contact
-                       {/*<i className="mdc-tab__icon material-icons">contact_support</i>*/}
                     </div>
                   </nav>
                 </div>

@@ -1,13 +1,15 @@
-import React from 'react';
-import {MDCTopAppBar} from '@material/top-app-bar/index';
-import {MDCTabBar} from '@material/tab-bar';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import {MDCTopAppBar} from '@material/top-app-bar/index'
+import {MDCTabBar} from '@material/tab-bar'
+import { MDCMenu } from '@material/menu'
 
-import TnrisDownloadTemplateDetails from './TnrisDownloadTemplateDetails';
+import TnrisDownloadTemplateDetails from './TnrisDownloadTemplateDetails'
 
-import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer';
-import ContactContainer from '../../containers/ContactContainer';
-import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer';
+import Images from '../Images'
+
+import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer'
+import ContactContainer from '../../containers/ContactContainer'
+import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 
 export default class TnrisDownloadTemplate extends React.Component {
   constructor(props) {
@@ -44,7 +46,7 @@ export default class TnrisDownloadTemplate extends React.Component {
       case 'details':
         tabIndex = 0;
         break;
-      case 'download':
+      case 'images':
         tabIndex = 1;
         break;
       case 'order':
@@ -69,10 +71,14 @@ export default class TnrisDownloadTemplate extends React.Component {
 
     switch(this.state.view) {
       case 'details':
-        showComponent = <TnrisDownloadTemplateDetails collection={this.props.collection} />;
+        showComponent = <TnrisDownloadTemplateDetails collection={this.props.collection} />
         break;
-      case 'download':
-        showComponent = <TnrisDownloadTemplateDownloadContainer collectionName={this.props.collection.name}/>;
+      case 'images':
+        showComponent = (
+          <Images
+            thumbnail={this.props.collection.thumbnail_image}
+            images={this.props.collection.images} />
+        )
         break;
       case 'order':
         showComponent = (
@@ -141,9 +147,9 @@ export default class TnrisDownloadTemplate extends React.Component {
                         role="tab"
                         aria-selected="false"
                         tabIndex="-1"
-                        onClick={() => this.setTemplateView("download")}
+                        onClick={() => this.setTemplateView("images")}
                         title="Download">
-                        <span className="mdc-tab__content">download</span>
+                        <span className="mdc-tab__content">images</span>
                         <span className="mdc-tab-indicator">
                           <span
                             className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
@@ -202,8 +208,8 @@ export default class TnrisDownloadTemplate extends React.Component {
                       onClick={() => this.setTemplateView("details")}>Details
                       {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
-                    <div className={this.state.view === 'download' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
-                      onClick={() => this.setTemplateView("download")}>Download
+                    <div className={this.state.view === 'images' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
+                      onClick={() => this.setTemplateView("images")}>Images
                       {/*<i className="mdc-tab__icon material-icons">save_alt</i>*/}
                     </div>
                     <div className={this.state.view === 'order' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}

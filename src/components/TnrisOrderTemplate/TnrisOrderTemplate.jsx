@@ -5,6 +5,8 @@ import { MDCMenu } from '@material/menu';
 
 import TnrisOrderTemplateDetails from './TnrisOrderTemplateDetails'
 
+import Images from '../Images'
+
 import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 import ContactContainer from '../../containers/ContactContainer';
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer';
@@ -33,7 +35,7 @@ export default class TnrisOrderTemplate extends React.Component {
       case 'details':
         tabIndex = 0;
         break;
-      case 'coverage':
+      case 'images':
         tabIndex = 1;
         break;
       case 'order':
@@ -59,8 +61,13 @@ export default class TnrisOrderTemplate extends React.Component {
       case 'details':
         showComponent = <TnrisOrderTemplateDetails collection={this.props.collection} />;
         break;
-      case 'coverage':
-        showComponent = <CountyCoverageContainer counties={this.props.collection.counties} />;
+      case 'images':
+        // showComponent = <CountyCoverageContainer counties={this.props.collection.counties} />;
+        showComponent = (
+          <Images
+            thumbnail={this.props.collection.thumbnail_image}
+            images={this.props.collection.images} />
+        )
         break;
       case 'order':
         showComponent = (
@@ -126,7 +133,23 @@ export default class TnrisOrderTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      { this.props.collection.counties ? (
+                      <button
+                        className="mdc-tab"
+                        role="tab"
+                        aria-selected="false"
+                        tabIndex="-1"
+                        onClick={() => this.setTemplateView("images")}
+                        title="Order">
+                        <span className="mdc-tab__content">images</span>
+                        <span className="mdc-tab-indicator">
+                          <span
+                            className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
+                          </span>
+                        </span>
+                        <span className="mdc-tab__ripple"></span>
+                      </button>
+
+                      {/* this.props.collection.counties ? (
                           <button
                             className="mdc-tab"
                             role="tab"
@@ -143,7 +166,7 @@ export default class TnrisOrderTemplate extends React.Component {
                             <span className="mdc-tab__ripple"></span>
                           </button>
                         ) : ""
-                      }
+                      */}
 
                       <button
                         className="mdc-tab"
@@ -187,13 +210,17 @@ export default class TnrisOrderTemplate extends React.Component {
                        onClick={() => this.setTemplateView("details")}>Details
                        {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
-                    { this.props.collection.counties ? (
+                    <div className={this.state.view === 'images' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
+                       onClick={() => this.setTemplateView("images")}>Images
+                       {/*<i className="mdc-tab__icon material-icons">details</i>*/}
+                    </div>
+                    {/* this.props.collection.counties ? (
                       <div className={this.state.view === 'coverage' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                          onClick={() => this.setTemplateView("coverage")}>Coverage
-                         {/*<i className="mdc-tab__icon material-icons">details</i>*/}
+
                       </div>
                       ) : ""
-                    }
+                    */}
                     <div className={this.state.view === 'order' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("order")}>Order
                        {/*<i className="mdc-tab__icon material-icons">shopping_basket</i>*/}

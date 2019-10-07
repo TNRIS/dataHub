@@ -7,8 +7,9 @@ import Metadata from '../DialogTemplateListItems/Metadata'
 import Services from '../DialogTemplateListItems/Services'
 import Supplementals from '../DialogTemplateListItems/Supplementals'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
-// import Images from '../DialogTemplateListItems/Images'
-import TnrisDownloadTemplateDownload from './TnrisDownloadTemplateDownload'
+
+import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer'
+// import TnrisDownloadTemplateDownload from './TnrisDownloadTemplateDownload'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss';
@@ -52,10 +53,11 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     //                       collection_name={this.props.collection.name} />)
     //                     : "";
 
-    // const downloadMap = this.props.collection.template === 'tnris-download' ? (
-    //                   <TnrisDownloadTemplateDownload collection={this.props.collection} />)
-    //                  : "";
-    const downloadMap = "";
+    const downloadMap = this.props.collection.template === 'tnris-download' ? (
+      <TnrisDownloadTemplateDownloadContainer collectionName={this.props.collection.name}/>
+    ) : "";
+
+    console.log(downloadMap);
 
     console.log(this.props.collection);
 

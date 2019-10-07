@@ -9,9 +9,8 @@ export default class Images extends React.Component {
     carousel_images.unshift(this.props.thumbnail);
     const multiImage = carousel_images.length > 1 ? true : false;
     return (
-
-      <div className="template-content-div">
-        <div>
+      <div className="tnris-template-images">
+        <div className="image-container">
           <Carousel
             autoPlay={multiImage}
             infiniteLoop={multiImage}

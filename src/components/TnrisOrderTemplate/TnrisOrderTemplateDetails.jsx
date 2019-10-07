@@ -7,7 +7,8 @@ import Metadata from '../DialogTemplateListItems/Metadata'
 import Services from '../DialogTemplateListItems/Services'
 import Supplementals from '../DialogTemplateListItems/Supplementals'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
-import Images from '../DialogTemplateListItems/Images'
+
+import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss';
@@ -44,11 +45,16 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
-    const imageCarousel = this.props.collection.images ? (
-                        <Images
-                          thumbnail={this.props.collection.thumbnail_image}
-                          images={this.props.collection.images} />)
-                        : "";
+    // const imageCarousel = this.props.collection.images ? (
+    //                     <Images
+    //                       thumbnail={this.props.collection.thumbnail_image}
+    //                       images={this.props.collection.images} />)
+    //                     : "";
+    console.log(this.props.collection.counties);
+
+    const countyCoverage = this.props.collection.counties ? (
+      <CountyCoverageContainer counties={this.props.collection.counties} />
+    ) : "";
 
     const lidarCard = this.props.collection.category.includes('Lidar') ? (
                         <LidarBlurb />)
@@ -84,7 +90,8 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                               <ShareButtons />
                             </div>
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                              {imageCarousel}
+                              {/*{imageCarousel}*/}
+                              {countyCoverage}
                               <div className="mdc-layout-grid__inner">
                                 <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
                                   {description}
@@ -97,7 +104,8 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                           </div>) : (
                           <div className="mdc-layout-grid__inner">
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                              {imageCarousel}
+                              {/*{imageCarousel}*/}
+                              {countyCoverage}
                               <Metadata collection={this.props.collection} />
                               {description}
                               {sourceCitation}
