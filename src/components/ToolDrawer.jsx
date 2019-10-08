@@ -24,15 +24,20 @@ export default class ToolDrawer extends React.Component {
     this.props.sortNew();
     this.props.setCollectionFilter({});
     this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     this.props.setCollectionFilterMapFilter([]);
-    this.props.setCollectionFilterMapZoom(5.8);
+    if (this.props.collectionFilterMapSelectedAreaType) {
+      this.props.setCollectionFilterMapSelectedAreaType("");
+      this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    }
+    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
+    this.props.setCollectionFilterMapZoom(5.3);
     this.props.setCollectionTimeslider(this.props.collectionTimesliderRange);
     this.props.setUrl('/');
     this.props.logFilterChange('/');
   }
 
   render() {
+    console.log(this.props);
     const drawerTypeClass = this.props.toolDrawerVariant=== 'dismissible' ?
       'mdc-drawer mdc-drawer--dismissible tool-drawer' : 'mdc-drawer mdc-drawer--modal tool-drawer';
     const openClass = this.props.toolDrawerVariant === 'dismissible' && this.props.toolDrawerStatus === 'open' ?

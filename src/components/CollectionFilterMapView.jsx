@@ -15,28 +15,41 @@ export default class CollectionFilterMapView extends React.Component {
       countyNames: []
     }
     this.handleBack = this.handleBack.bind(this);
-    this.handleGetCountyAndQuadNames = this.handleGetCountyAndQuadNames.bind(this);
-    this.handleGetAreaTypeGeoJson = this.handleGetAreaTypeGeoJson.bind(this);
+    this.getAreaTypeNames = this.getAreaTypeNames.bind(this);
     this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
   }
 
   componentDidMount() {
     window.scrollTo(0,0);
-    this.handleGetCountyAndQuadNames();
-    const select = new MDCSelect(document.querySelector('.mdc-select'));
+    this.getAreaTypeNames();
+    const countySelect = new MDCSelect(document.querySelector('.county-select'));
+    // float the label above the select element if there
+    // is an area type selected on render.
+    if (
+      this.props.collectionFilterMapSelectedAreaTypeName &&
+      this.props.collectionFilterMapSelectedAreaType === "county"
+    ) {
+      let adapter = countySelect.foundation_.adapter_;
+      adapter.floatLabel(true);
+      adapter.notchOutline(84.75);
+    }
   }
 
   componentDidUpdate() {
     console.log("component updated");
+    const select = document.getElementById("county-select");
     if (!this.props.collectionFilterMapSelectedAreaTypeName) {
-      const select = document.getElementById("county-select");
       select.selectedIndex = 0;
-      // select.blur();
     }
   }
 
   handleBack() {
     this.props.setViewCatalog();
+    this.props.setCollectionFilterMapAoi({});
+    this.props.setCollectionFilterMapSelectedAreaType("");
+    this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
+    this.props.setCollectionFilterMapZoom(5.3);
     if (window.location.pathname === this.props.previousUrl) {
       this.props.setUrl('/');
     }
@@ -48,7 +61,7 @@ export default class CollectionFilterMapView extends React.Component {
     }
   }
 
-  handleGetCountyAndQuadNames() {
+  getAreaTypeNames() {
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT
                    areas_view.area_type_name, areas_view.area_type
@@ -77,43 +90,6 @@ export default class CollectionFilterMapView extends React.Component {
     })
   }
 
-  handleGetAreaTypeGeoJson(areaType, areaTypeName) {
-    console.log("function called");
-    console.log(areaTypeName);
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT row_to_json(fc)
-                 FROM (
-                   SELECT
-                     'FeatureCollection' AS "type",
-                     array_to_json(array_agg(f)) AS "features"
-                   FROM (
-                     SELECT
-                       'Feature' AS "type",
-                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-                         (
-                           SELECT json_strip_nulls(row_to_json(t))
-                           FROM (
-                             SELECT
-                               area_type.area_type_name
-                           ) t
-                           ) AS "properties"
-                     FROM area_type
-                     WHERE
-                       area_type.area_type_name = '${areaTypeName}' AND
-                       area_type.area_type = '${areaType}'
-                   ) as f
-                 ) as fc`;
-
-    sql.execute(query).done( (data) => {
-      let areaTypeGeoJson = data.rows[0].row_to_json;
-      this.props.setCollectionFilterMapSelectedAreaType({
-        areaType: areaType,
-        areaTypeName: areaTypeName,
-        areaTypeGeoJson: areaTypeGeoJson
-      });
-    })
-  }
-
   handleChangeCountyName(event) {
     let areaType = event.target.id.split("-")[0];
     let areaTypeName = event.target.value;
@@ -139,7 +115,7 @@ export default class CollectionFilterMapView extends React.Component {
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
             <div className="county-select__wrapper">
-              <div className="mdc-select mdc-select--outlined">
+              <div className="mdc-select mdc-select--outlined county-select">
                 <i className="mdc-select__dropdown-icon"></i>
                 <select className="mdc-select__native-control"
                   id="county-select"

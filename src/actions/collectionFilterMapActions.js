@@ -5,8 +5,7 @@ import {
   SET_COLLECTION_FILTER_MAP_ZOOM,
   SET_COLLECTION_FILTER_MAP_MOVE_MAP,
   SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME
 } from '../constants/collectionFilterMapActionTypes';
 
 export const setCollectionFilterMapAoi = (collectionFilterMapAoi) => {
@@ -68,15 +67,6 @@ export const setCollectionFilterMapSelectedAreaTypeName = (collectionFilterMapSe
     dispatch({
       type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
       payload: { collectionFilterMapSelectedAreaTypeName }
-    })
-  }
-};
-
-export const setCollectionFilterMapSelectedAreaTypeGeoJson = (collectionFilterMapSelectedAreaTypeGeoJson) => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON,
-      payload: { collectionFilterMapSelectedAreaTypeGeoJson }
     })
   }
 };

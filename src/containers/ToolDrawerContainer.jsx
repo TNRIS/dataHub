@@ -14,7 +14,10 @@ import ToolDrawer from '../components/ToolDrawer';
 
 const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,
-  collectionFilterMapFilter: state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapSelectedAreaType:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionTimesliderRange: getCollectionTimesliderRange(state),
   toolDrawerStatus: state.toolDrawer.toolDrawerStatus,
   toolDrawerVariant: state.toolDrawer.toolDrawerVariant
@@ -38,6 +41,20 @@ const mapDispatchToProps = dispatch => ({
   },
   setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
     dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
+  },
+  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
+        collectionFilterMapSelectedAreaType
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
+        collectionFilterMapSelectedAreaTypeName
+      )
+    );
   },
   setCollectionTimeslider: (collectionTimeslider) => {
     dispatch(collectionTimesliderActions.setCollectionTimeslider(collectionTimeslider));

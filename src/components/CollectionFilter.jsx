@@ -126,7 +126,6 @@ export default class CollectionFilter extends React.Component {
       console.log(areaTypeGeoJson);
       this.props.setCollectionFilterMapSelectedAreaType(areaType);
       this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
-      this.props.setCollectionFilterMapSelectedAreaTypeGeoJson(areaTypeGeoJson);
       this.handleSetGeoFilter(this, areaType, areaTypeGeoJson);
     })
   }
@@ -297,7 +296,10 @@ export default class CollectionFilter extends React.Component {
             )
           }
           <li key='filter-map-button'>
-            <div className={this.props.collectionFilterMapFilter.length > 0 ? filterSet : filterNotSet}
+            <div className={
+                  this.props.collectionFilterMapFilter.length > 0 ?
+                    filterSet : filterNotSet
+                }
                  id='filter-map-button'
                  onClick={() => this.showGeoFilter()}
                  onKeyDown={(e) => this.handleKeyPress(e)}

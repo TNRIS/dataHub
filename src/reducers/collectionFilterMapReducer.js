@@ -5,8 +5,7 @@ import {
   SET_COLLECTION_FILTER_MAP_ZOOM,
   SET_COLLECTION_FILTER_MAP_MOVE_MAP,
   SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME
 } from '../constants/collectionFilterMapActionTypes';
 
 import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
@@ -15,13 +14,12 @@ import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
 // these will be passed to the component when it is instantiated
 const initialState = {
   collectionFilterMapAoi: {},
-  collectionFilterMapCenter: {lng: -99.341389, lat: 31.33},
+  collectionFilterMapCenter: {lng: -99.341389, lat: 31.33}, // the center of Texas
   collectionFilterMapFilter: [],
   collectionFilterMapZoom: 5.3,
   collectionFilterMapMoveMap: false,
   collectionFilterMapSelectedAreaType: "",
-  collectionFilterMapSelectedAreaTypeName: "",
-  collectionFilterMapSelectedAreaTypeGeoJson: {}
+  collectionFilterMapSelectedAreaTypeName: ""
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
@@ -80,13 +78,6 @@ export default function collectionFilterMapReducer(state = initialState, action)
       return {
         ...state,
         collectionFilterMapSelectedAreaTypeName: action.payload.collectionFilterMapSelectedAreaTypeName
-      };
-
-    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_GEOJSON:
-      // Set the property SelectedAreaTypeGeoJson to the user selected area_type in the state
-      return {
-        ...state,
-        collectionFilterMapSelectedAreaTypeGeoJson: action.payload.collectionFilterMapSelectedAreaTypeGeoJson
       };
 
     case POP_BROWSER_STORE:

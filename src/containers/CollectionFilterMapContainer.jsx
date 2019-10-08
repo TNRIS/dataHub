@@ -25,8 +25,6 @@ const mapStateToProps = state => ({
     state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionFilterMapSelectedAreaTypeName:
     state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
-  collectionFilterMapSelectedAreaTypeGeoJson:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeGeoJson,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
   view: state.catalog.view,
@@ -60,13 +58,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
         collectionFilterMapSelectedAreaTypeName
-      )
-    );
-  },
-  setCollectionFilterMapSelectedAreaTypeGeoJson: (collectionFilterMapSelectedAreaTypeGeoJson) => {
-    dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeGeoJson(
-        collectionFilterMapSelectedAreaTypeGeoJson
       )
     );
   },

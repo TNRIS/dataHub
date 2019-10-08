@@ -33,6 +33,15 @@ const mapDispatchToProps = dispatch => ({
       )
     );
   },
+  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
+  },
+  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
+  },
+  setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
+  },
   setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
     dispatch(
       collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
