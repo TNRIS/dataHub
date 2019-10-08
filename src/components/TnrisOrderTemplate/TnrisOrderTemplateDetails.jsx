@@ -50,11 +50,15 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     //                       thumbnail={this.props.collection.thumbnail_image}
     //                       images={this.props.collection.images} />)
     //                     : "";
-    console.log(this.props.collection.counties);
 
     const countyCoverage = this.props.collection.counties ? (
       <CountyCoverageContainer counties={this.props.collection.counties} />
-    ) : "";
+    ) : (
+      <div>
+        <p>
+          There was an error loading the County Coverage map. Please try refreshing the page.
+        </p>
+      </div>);
 
     const lidarCard = this.props.collection.category.includes('Lidar') ? (
                         <LidarBlurb />)

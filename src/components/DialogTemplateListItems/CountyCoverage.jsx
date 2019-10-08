@@ -142,11 +142,37 @@ export default class CountyCoverage extends React.Component {
 
   render() {
     window.scrollTo(0,0);
+
+    let noticeClass = 'mdc-typography--body1 show-notice'
+    // const notice = document.getElementById('county-coverage-notice')
+    const coverageNotice = (
+      `<div id='county-coverage-notice' className=${noticeClass}>
+        Imagery may have incomplete coverage for a particular county and may be of varying quality.
+      </div>`)
+
+    coverageNotice.classList.contains('show-notice') ?
+      console.log('show-notice class') : console.log('hide class');
+
+    // if (coverageNotice.classList.contains('hide')) {
+    //   coverageNotice.classList.remove('hide');
+    //   setTimeout(function () {
+    //     coverageNotice.classList.remove('visual-hide');
+    //   }, 5);
+    // } else {
+    //   coverageNotice.classList.add('visual-hide');
+    //   coverageNotice.addEventListener('transitionend', function(e) {
+    //     coverageNotice.classList.add('hide');
+    //   }, {
+    //     capture: false,
+    //     once: true,
+    //     passive: false
+    //   });
+    // }
+
     return (
+
       <div className="county-coverage-component">
-        <div id='county-coverage-notice' className='mdc-typography--body1'>
-          Imagery may have incomplete coverage for a particular county and may be of varying quality.
-        </div>
+        {coverageNotice}
         <div id='county-coverage-map'></div>
       </div>
     )

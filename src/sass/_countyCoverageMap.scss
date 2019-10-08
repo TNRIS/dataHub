@@ -4,13 +4,13 @@ styles for component: CountyCoverage
 
 // only used by tnrisOrderTemplateDetails & HistoricalAerialTemplateDetails
 .county-coverage-component {
-  height: 80vh;
+  position: relative;
 
   #county-coverage-map {
-    position: absolute;
-    top: 165px;
-    bottom: 50px;
-    width: 100%;
+    position: relative;
+    width: auto;
+    height: 55vh;
+    top: 0;
 
     .mapboxgl-canvas {
       height: 100% !important;
@@ -30,14 +30,57 @@ styles for component: CountyCoverage
     background: $main-background;
     color: $nest-text;
     position: absolute;
-    z-index: 2;
-    top: 175px;
-    right: 5px;
-    border-radius: 3px;
+    display: block;
+    top: 9px;
+    z-index: 5;
+    left: 50px;
+    border-radius: 6px;
+    box-sizing: border-box;
     border: 1px solid rgba(0,0,0,0.4);
-    padding: 6px;
+    padding: 3px;
     text-align: center;
-    max-width: 80vw;
+    max-width: 500px;
+    // fade out notice div after 5 secs
+    -webkit-animation: fadeOut 2s forwards;
+    animation: fadeOut 2s forwards;
+    -webkit-animation-delay: 5s;
+    animation-delay: 5s;
+
+    .show-notice {
+      opacity: 1;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    .visual-hide {
+      opacity: 0;
+    }
   }
+
+  // fadeOut keyframe used in coverage notice above
+  // @keyframes fadeOut {
+  //   from {
+  //     display: block;
+  //     opacity: 1;
+  //   }
+  //   to {
+  //     display: none;
+  //     opacity: 0;
+  //   }
+  // }
+
+  // fade out keyframe for -webkit used in coverage notice above
+  // @-webkit-keyframes fadeOut {
+  //   from {
+  //     display: block;
+  //     opacity: 1;
+  //   }
+  //   to {
+  //     display: none;
+  //     opacity: 0;
+  //   }
+  // }
 
 }

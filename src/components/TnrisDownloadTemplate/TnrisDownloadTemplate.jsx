@@ -7,7 +7,7 @@ import TnrisDownloadTemplateDetails from './TnrisDownloadTemplateDetails'
 
 import Images from '../Images'
 
-import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer'
+// import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer'
 import ContactContainer from '../../containers/ContactContainer'
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 

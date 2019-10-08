@@ -7,7 +7,7 @@ import TnrisOrderTemplateDetails from './TnrisOrderTemplateDetails'
 
 import Images from '../Images'
 
-import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
+// import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 import ContactContainer from '../../containers/ContactContainer';
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer';
 
