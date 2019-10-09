@@ -41,22 +41,22 @@ styles for component: CountyCoverage
     text-align: center;
     max-width: 500px;
     // fade out notice div after 5 secs
-    -webkit-animation: fadeOut 2s forwards;
-    animation: fadeOut 2s forwards;
-    -webkit-animation-delay: 5s;
-    animation-delay: 5s;
+    // -webkit-animation: fadeOut 2s forwards;
+    // animation: fadeOut 2s forwards;
+    // -webkit-animation-delay: 5s;
+    // animation-delay: 5s;
 
-    .show-notice {
-      opacity: 1;
-    }
-
-    .hide {
-      display: none;
-    }
-
-    .visual-hide {
-      opacity: 0;
-    }
+    // .show-notice {
+    //   opacity: 1;
+    // }
+    //
+    // .hide {
+    //   display: none;
+    // }
+    //
+    // .visual-hide {
+    //   opacity: 0;
+    // }
   }
 
   // fadeOut keyframe used in coverage notice above
