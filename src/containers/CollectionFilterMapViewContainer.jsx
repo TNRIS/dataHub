@@ -11,6 +11,8 @@ const mapStateToProps = state => ({
     state.urlTracker.previousUrl,
   catalogFilterUrl:
     state.urlTracker.catalogFilterUrl,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter,
   collectionFilterMapMoveMap:
     state.collectionFilterMap.collectionFilterMapMoveMap,
   collectionFilterMapSelectedAreaType:

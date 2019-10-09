@@ -45,8 +45,24 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
+    const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
+    const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      drawPolygonControl.disabled = true;
+      drawPolygonControl.classList.add('disabled-button');
+      drawTrashControl.disabled = true;
+      drawTrashControl.classList.add('disabled-button');
+    }
     if (this.props.collectionFilterMapSelectedAreaType &&
       this.props.collectionFilterMapMoveMap) {
+        // Check if there is an aoi drawn on the map. If so,
+        // delete the draw features and continue with the
+        // area type selection.
+        if (this._draw.getAll().features.length > 0) {
+          this._draw.deleteAll();
+        }
+        // Select the chosen area type and pan to that feature
+        // in the map.
         this.getAreaTypeGeoJson(
           this.props.collectionFilterMapSelectedAreaType,
           this.props.collectionFilterMapSelectedAreaTypeName

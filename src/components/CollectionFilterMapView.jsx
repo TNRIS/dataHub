@@ -37,9 +37,13 @@ export default class CollectionFilterMapView extends React.Component {
 
   componentDidUpdate() {
     console.log("component updated");
-    const select = document.getElementById("county-select");
-    if (!this.props.collectionFilterMapSelectedAreaTypeName) {
-      select.selectedIndex = 0;
+    const countySelect = new MDCSelect(document.querySelector('.county-select'));
+    // Disable the select if a map filter is set. Reenable
+    // when the filter is cleared.
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      countySelect.disabled = true;
+    } else {
+      countySelect.disabled = false;
     }
   }
 
@@ -99,6 +103,7 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     let countyNameOptions = [
       <option value="" key="" disabled></option>
     ].concat(this.state.countyNames.map(countyName => {
