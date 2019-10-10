@@ -33,17 +33,23 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   componentDidMount() {
     // on mount/load, try and launch the map. if the api response with the list
     // of downloadable resources hasn't returned we won't launch it
-    console.log(this.props)
-    // this.createMap()
+    if (this.props.loadingResources === false && this.props.resourceAreaTypes) {
+      this.areaLookup = this.props.resourceAreas;
+      if (window.innerWidth > this.downloadBreakpoint) {
+        this.createMap();
+      }
+    }
+
     // if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
     //   this.areaLookup = this.props.resourceAreas;
     //   if (window.innerWidth > this.downloadBreakpoint) {
     //     this.createMap();
     //   }
     // }
-    if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
-      this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
-    }
+    //
+    // if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
+    //   this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
+    // }
   }
 
   componentDidUpdate () {

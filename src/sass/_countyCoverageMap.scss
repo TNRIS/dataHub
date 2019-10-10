@@ -11,6 +11,7 @@ styles for component: CountyCoverage
     width: auto;
     height: 55vh;
     top: 0;
+    margin: 8px;
 
     .mapboxgl-canvas {
       height: 100% !important;
@@ -33,54 +34,13 @@ styles for component: CountyCoverage
     display: block;
     top: 9px;
     z-index: 5;
-    left: 50px;
+    left: 60px;
     border-radius: 6px;
     box-sizing: border-box;
     border: 1px solid rgba(0,0,0,0.4);
     padding: 3px;
     text-align: center;
     max-width: 500px;
-    // fade out notice div after 5 secs
-    // -webkit-animation: fadeOut 2s forwards;
-    // animation: fadeOut 2s forwards;
-    // -webkit-animation-delay: 5s;
-    // animation-delay: 5s;
-
-    // .show-notice {
-    //   opacity: 1;
-    // }
-    //
-    // .hide {
-    //   display: none;
-    // }
-    //
-    // .visual-hide {
-    //   opacity: 0;
-    // }
   }
-
-  // fadeOut keyframe used in coverage notice above
-  // @keyframes fadeOut {
-  //   from {
-  //     display: block;
-  //     opacity: 1;
-  //   }
-  //   to {
-  //     display: none;
-  //     opacity: 0;
-  //   }
-  // }
-
-  // fade out keyframe for -webkit used in coverage notice above
-  // @-webkit-keyframes fadeOut {
-  //   from {
-  //     display: block;
-  //     opacity: 1;
-  //   }
-  //   to {
-  //     display: none;
-  //     opacity: 0;
-  //   }
-  // }
 
 }
