@@ -144,14 +144,19 @@ export default class CountyCoverage extends React.Component {
     window.scrollTo(0,0);
 
     setTimeout(function() {
-      document.getElementById('county-coverage-notice').style.display = "none";
-    }, 6000);
+      const notice = document.getElementById('county-coverage-notice');
+      if (notice) {
+        notice.style.display = "none";
+      }
+    }, 10000);
 
     return (
 
       <div className="county-coverage-component">
         <div id='county-coverage-notice' className='mdc-typography--body1 display'>
-          Imagery may have incomplete coverage for a particular county and may be of varying quality.
+          <strong>Note: </strong>This is a map showing the general coverage area for this dataset. You
+          cannot download the data from here. Imagery may have incomplete coverage for a particular county
+          and may be of varying quality.
         </div>
         <div id='county-coverage-map'></div>
       </div>

@@ -8,6 +8,14 @@ export default class TnrisDownloadMapNote extends React.Component {
         noteInstruct: true
       };
       this.toggleInstructions = this.toggleInstructions.bind(this);
+      // this.update = this.update.bind(this);
+  }
+
+  componentDidMount () {
+    console.log('update function running')
+    this.change = setTimeout(() => {
+      this.setState({noteInstruct: false})
+    }, 3000)
   }
 
   toggleInstructions () {
@@ -37,6 +45,8 @@ export default class TnrisDownloadMapNote extends React.Component {
     ) : (
       <i className="material-icons" title="Download Instructions" onClick={() => {this.toggleInstructions()}}>info</i>
     );
+
+    // this.update();
 
     return (
       <div>

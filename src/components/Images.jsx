@@ -4,7 +4,7 @@ import { Carousel } from 'react-responsive-carousel';
 
 export default class Images extends React.Component {
   render() {
-    let carousel_images = this.props.images.split(',');
+    let carousel_images = this.props.images ? this.props.images.split(',') : "";
     carousel_images = carousel_images.filter(item => item !== this.props.thumbnail);
     carousel_images.unshift(this.props.thumbnail);
     const multiImage = carousel_images.length > 1 ? true : false;

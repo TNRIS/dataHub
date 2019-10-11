@@ -31,12 +31,12 @@ styles for component: CountyCoverage
     background: $main-background;
     color: $nest-text;
     position: absolute;
-    display: block;
+    // display: block;
     top: 9px;
     z-index: 5;
     left: 60px;
     border-radius: 6px;
-    box-sizing: border-box;
+    // box-sizing: border-box;
     border: 1px solid rgba(0,0,0,0.4);
     padding: 3px;
     text-align: center;
