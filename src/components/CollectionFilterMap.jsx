@@ -153,7 +153,11 @@ export default class CollectionFilterMap extends React.Component {
               'line-width': 4,
               'line-opacity': 1
             },
-            'filter': ["==", "area_type_name", ""]
+            'filter': [
+              "all",
+              ["==", "area_type", ""],
+              ["==", "area_type_name", ""]
+            ]
         }, 'boundary_country_inner');
 
         map.addLayer({
@@ -402,16 +406,21 @@ export default class CollectionFilterMap extends React.Component {
     // it is needed again
     this.props.setCollectionFilterMapAoi({});
     this.props.setCollectionFilterMapFilter([]);
-    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
-    this.props.setCollectionFilterMapZoom(5.3);
+    // this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
+    // this.props.setCollectionFilterMapZoom(5.3);
     this._draw.deleteAll();
     if (this.props.collectionFilterMapSelectedAreaType) {
-      this._map.setFilter(
-        'area-type-outline-selected',
-          ["==", "area_type_name", ""]
-      );
       this.props.setCollectionFilterMapSelectedAreaType("");
       this.props.setCollectionFilterMapSelectedAreaTypeName("");
+      console.log('resetting filter');
+      this._map.setFilter(
+        'area-type-outline-selected',
+        [
+          "all",
+          ["==", "area_type", ""],
+          ["==", "area_type_name", ""]
+        ]
+      );
     }
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
     this.enableUserInteraction();
@@ -440,26 +449,32 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       delete filterObj['geo'];
+      const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
+      const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
+      drawPolygonControl.disabled = false;
+      drawPolygonControl.classList.remove('disabled-button');
+      drawTrashControl.disabled = false;
+      drawTrashControl.classList.remove('disabled-button');
     } else {
       this.props.setCollectionFilterMapFilter(
         this.state.mapFilteredCollectionIds
       );
-      this._map.fitBounds(
-        turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100}
-      );
+      // this._map.fitBounds(
+      //   turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100}
+      // );
       this.disableUserInteraction();
     }
 
     // if map aoi is empty, remove from the url
-    if (filterObj['geo'] === {}) {
-      delete filterObj['geo'];
-    }
+    // if (filterObj['geo'] === {}) {
+    //   delete filterObj['geo'];
+    // }
     const filterString = JSON.stringify(filterObj);
     // if empty filter settings, use the base home url instead of the filter url
-    Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
+    Object.keys(filterObj).length === 0 ? this.props.setUrl('/geofilter/') :
       this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
     // log filter change in store
-    Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
+    Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/geofilter') :
       this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
 
     // jump back into catalog view regardless of setting or clearing the geo filter

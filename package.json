@@ -43,7 +43,7 @@
     "downshift": "^3.1.12",
     "elasticlunr": "^0.9.5",
     "fs-extra": "3.0.1",
-    "mapbox-gl": "^0.48.0",
+    "mapbox-gl": "^1.4.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "normalizr": "^3.2.4",
     "object-assign": "4.1.1",
