@@ -155,8 +155,8 @@ export default class CountyCoverage extends React.Component {
       <div className="county-coverage-component">
         <div id='county-coverage-notice' className='mdc-typography--body1 display'>
           <strong>Note: </strong>This is a map showing the general coverage area for this dataset. You
-          cannot download the data from here. Imagery may have incomplete coverage for a particular county
-          and may be of varying quality.
+          cannot download the data from here, but you can order the data by clicking the order tab. Imagery
+          may have incomplete coverage for a particular county and may be of varying quality.
         </div>
         <div id='county-coverage-map'></div>
       </div>

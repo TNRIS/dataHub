@@ -3,19 +3,29 @@ import React from 'react';
 export default class TnrisDownloadMapNote extends React.Component {
   constructor(props) {
       super(props);
+
       this.state = {
         noteHover: false,
         noteInstruct: true
       };
+
       this.toggleInstructions = this.toggleInstructions.bind(this);
-      // this.update = this.update.bind(this);
   }
 
   componentDidMount () {
-    console.log('update function running')
-    this.change = setTimeout(() => {
-      this.setState({noteInstruct: false})
-    }, 3000)
+    // setTimeout to close noteInstruct after 8 secs
+    this.noteInstructTimer = setTimeout(() => {
+      this.setState({
+        noteInstruct: false
+      })
+    }, 8000);
+  }
+
+  componentWillUnmount () {
+    // clear setTimeout
+    if (this.noteInstructTimer) {
+      clearTimeout(this.noteInstructTimer);
+    }
   }
 
   toggleInstructions () {
@@ -45,8 +55,6 @@ export default class TnrisDownloadMapNote extends React.Component {
     ) : (
       <i className="material-icons" title="Download Instructions" onClick={() => {this.toggleInstructions()}}>info</i>
     );
-
-    // this.update();
 
     return (
       <div>
