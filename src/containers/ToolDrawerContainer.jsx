@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 
 import {
   collectionFilterActions,
@@ -7,10 +7,11 @@ import {
   collectionSorterActions,
   collectionTimesliderActions,
   urlTrackerActions
-} from '../actions';
-import { getCollectionTimesliderRange } from '../selectors/collectionSelectors';
+} from '../actions'
 
-import ToolDrawer from '../components/ToolDrawer';
+import {getCollectionTimesliderRange} from '../selectors/collectionSelectors'
+
+import ToolDrawer from '../components/ToolDrawer'
 
 const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,

@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import NotFound from '../components/NotFound';
-import { catalogActions } from '../actions';
+import NotFound from '../components/NotFound'
+import {catalogActions} from '../actions'
 
 const mapStateToProps = (state) => ({
   view: state.catalog.view

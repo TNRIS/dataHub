@@ -1,10 +1,10 @@
-import React from 'react';
-import {MDCTopAppBar} from '@material/top-app-bar/index';
-import {MDCTabBar} from '@material/tab-bar';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import {MDCTopAppBar} from '@material/top-app-bar/index'
+import {MDCTabBar} from '@material/tab-bar'
+import {MDCMenu} from '@material/menu'
 
-import TnrisOutsideEntityTemplateDetails from './TnrisOutsideEntityTemplateDetails';
-import ContactOutsideContainer from '../../containers/ContactOutsideContainer';
+import TnrisOutsideEntityTemplateDetails from './TnrisOutsideEntityTemplateDetails'
+import ContactOutsideContainer from '../../containers/ContactOutsideContainer'
 
 export default class TnrisOutsideEntityTemplate extends React.Component {
   constructor(props) {

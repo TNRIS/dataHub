@@ -1,12 +1,13 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import OrderCart from '../components/OrderCart';
+import OrderCart from '../components/OrderCart'
 
-import { catalogActions,
-         collectionActions,
-         orderCartActions,
-         urlTrackerActions } from '../actions';
-import { getAllCollections } from '../selectors/collectionSelectors';
+import {catalogActions,
+        collectionActions,
+        orderCartActions,
+        urlTrackerActions} from '../actions'
+
+import {getAllCollections} from '../selectors/collectionSelectors'
 
 const mapStateToProps = state => ({
   collections: getAllCollections(state),

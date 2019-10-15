@@ -1,5 +1,5 @@
-import React from 'react';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import { MDCMenu } from '@material/menu'
 
 export default class Footer extends React.Component {
   constructor(props) {

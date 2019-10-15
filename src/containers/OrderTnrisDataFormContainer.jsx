@@ -1,8 +1,8 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import { orderCartActions } from '../actions';
-import { getAllCollections } from '../selectors/collectionSelectors';
-import OrderTnrisDataForm from '../components/OrderTnrisDataForm';
+import {orderCartActions} from '../actions'
+import {getAllCollections} from '../selectors/collectionSelectors'
+import OrderTnrisDataForm from '../components/OrderTnrisDataForm'
 
 const mapStateToProps = state => ({
   collections: getAllCollections(state),

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   EmailShareButton,
   EmailIcon,
@@ -8,7 +8,7 @@ import {
   RedditIcon,
   TwitterShareButton,
   TwitterIcon
-} from 'react-share';
+} from 'react-share'
 
 export default class ShareButtons extends React.Component {
   _isMounted = false;

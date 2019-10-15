@@ -1,13 +1,12 @@
-import React from 'react';
-import { GridLoader } from 'react-spinners';
-import TnrisDownloadMapNote from './TnrisDownloadMapNote';
+import React from 'react'
+import { GridLoader } from 'react-spinners'
+import TnrisDownloadMapNote from './TnrisDownloadMapNote'
 
-import mapboxgl from 'mapbox-gl';
-import styles from '../../sass/index.scss';
-// import loadingImage from '../../images/loading.gif';
+import mapboxgl from 'mapbox-gl'
+import styles from '../../sass/index.scss'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss';
+import breakpoints from '../../sass/_breakpoints.scss'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component

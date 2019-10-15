@@ -1,7 +1,7 @@
-import React from 'react';
-import Downshift from 'downshift';
-import { MDCTextField } from '@material/textfield';
-import { matchPath } from 'react-router-dom';
+import React from 'react'
+import Downshift from 'downshift'
+import { MDCTextField } from '@material/textfield'
+import { matchPath } from 'react-router-dom'
 
 export default class CollectionSearcher extends React.Component {
 

@@ -1,12 +1,10 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 
-import { catalogActions,
-         urlTrackerActions } from '../actions';
-import {
-  getAllCollections
-} from '../selectors/collectionSelectors';
-import Header from '../components/Header';
+import {catalogActions, urlTrackerActions} from '../actions'
+import {getAllCollections} from '../selectors/collectionSelectors'
+
+import Header from '../components/Header'
 
 const mapStateToProps = state => ({
   collections: getAllCollections(state),

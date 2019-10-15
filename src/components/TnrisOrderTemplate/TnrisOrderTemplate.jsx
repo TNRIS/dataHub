@@ -1,15 +1,14 @@
-import React from 'react';
-import {MDCTopAppBar} from '@material/top-app-bar/index';
-import {MDCTabBar} from '@material/tab-bar';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import {MDCTopAppBar} from '@material/top-app-bar/index'
+import {MDCTabBar} from '@material/tab-bar'
+import { MDCMenu } from '@material/menu'
 
 import TnrisOrderTemplateDetails from './TnrisOrderTemplateDetails'
 
 import Images from '../Images'
 
-// import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
-import ContactContainer from '../../containers/ContactContainer';
-import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer';
+import ContactContainer from '../../containers/ContactContainer'
+import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 
 export default class TnrisOrderTemplate extends React.Component {
   constructor(props) {

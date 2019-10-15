@@ -1,7 +1,7 @@
-import React from 'react';
-import {MDCDrawer} from "@material/drawer";
-import tnrisLogo from '../images/tnris_globe.png';
-import twdbLogo from '../images/twdb_splash_icon.png';
+import React from 'react'
+import {MDCDrawer} from "@material/drawer"
+import tnrisLogo from '../images/tnris_globe.png'
+import twdbLogo from '../images/twdb_splash_icon.png'
 
 export default class Drawer extends React.Component {
 

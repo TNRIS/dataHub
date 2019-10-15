@@ -7,7 +7,6 @@ import HistoricalAerialTemplateDetails from './HistoricalAerialTemplateDetails'
 
 import Images from '../Images'
 
-// import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 import ContactContainer from '../../containers/ContactContainer'
 

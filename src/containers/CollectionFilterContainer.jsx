@@ -1,14 +1,15 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import {
   catalogActions,
   collectionFilterActions,
   collectionFilterMapActions,
   urlTrackerActions
-} from '../actions';
-import CollectionFilter from '../components/CollectionFilter';
-import { getCollectionFilterChoices } from '../selectors/collectionSelectors';
+} from '../actions'
+
+import CollectionFilter from '../components/CollectionFilter'
+import { getCollectionFilterChoices } from '../selectors/collectionSelectors'
 
 const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,

@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import { Carousel } from 'react-responsive-carousel';
+import {Carousel} from 'react-responsive-carousel'
 
 export default class Images extends React.Component {
   render() {

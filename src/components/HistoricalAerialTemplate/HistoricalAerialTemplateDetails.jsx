@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 import Description from '../DialogTemplateListItems/Description'
 import SourceCitation from '../DialogTemplateListItems/SourceCitation'
@@ -6,11 +6,10 @@ import Metadata from '../DialogTemplateListItems/Metadata'
 import HistoricalProducts from '../DialogTemplateListItems/HistoricalProducts'
 import Ls4Links from '../DialogTemplateListItems/Ls4Links'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
-// import Images from '../DialogTemplateListItems/Images'
 import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss';
+import breakpoints from '../../sass/_breakpoints.scss'
 
 export default class TnrisDownloadTemplateDetails extends React.Component {
   constructor(props) {

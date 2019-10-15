@@ -9,11 +9,6 @@ const cartodb = window.cartodb;
 export default class CountyCoverage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      noteInstruct: true
-    };
-
-    this.toggleInstructions = this.toggleInstructions.bind(this);
     // bind our map builder functions
     this.createMap = this.createMap.bind(this);
   }
@@ -24,12 +19,6 @@ export default class CountyCoverage extends React.Component {
 
   componentWillUnmount() {
     this.map.remove();
-  }
-
-  toggleInstructions () {
-    this.setState({
-      noteInstruct: !this.state.noteInstruct
-    });
   }
 
   createMap() {
@@ -153,7 +142,6 @@ export default class CountyCoverage extends React.Component {
   }
 
   render() {
-    window.scrollTo(0,0);
 
     return (
 
