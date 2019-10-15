@@ -49,7 +49,7 @@ export default class TnrisDownloadMapNote extends React.Component {
       <div>
         <i className="material-icons close-icon" title="Minimize Information" onClick={() => {this.toggleInstructions()}}>close</i>
         <p title="Download Information">
-          Click a polygon in the map to view available downloads and information.
+          Click a polygon in the map to download available data.
         </p>
       </div>
     ) : (
