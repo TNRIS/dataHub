@@ -411,8 +411,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
 
     return (
-      <div className='tnris-download-template-download'>
+      <div className='template-content-div tnris-download-template-download'>
         <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
+          <div className='template-content-div-header mdc-typography--headline5'>
+            Download
+          </div>
         <div id='tnris-download-map'></div>
         <TnrisDownloadMapNote />
       </div>

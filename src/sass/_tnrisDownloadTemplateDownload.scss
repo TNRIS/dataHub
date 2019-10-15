@@ -41,7 +41,6 @@ styles for component: TnrisDownloadTemplateDownload
     width: auto;
     height: 55vh;
     top: 0;
-    margin: 8px;
 
     .mapboxgl-canvas {
       height: 100% !important;
@@ -64,9 +63,9 @@ styles for component: TnrisDownloadTemplateDownload
     color: $nest-text;
     position: absolute;
     z-index: 2;
-    bottom: 8px;
+    bottom: 16px;
+    left: 16px;
     text-align: center;
-    left: 15px;
     border-radius: 3px;
     border: 1px solid rgba(0,0,0,0.4);
     padding: 3px;
@@ -88,13 +87,13 @@ styles for component: TnrisDownloadTemplateDownload
     color: $nest-text;
     position: absolute;
     z-index: 2;
-    top: 110px;
+    top: 145px;
     left: 16px;
     border-radius: 5px;
     border: 1.5px solid rgba(0,0,0,0.15);
     padding: 3px;
     line-height: 12px;
-    max-width: 20vw;
+    max-width: 200px;
 
     .close-icon {
       cursor: pointer;
@@ -124,7 +123,6 @@ styles for component: TnrisDownloadTemplateDownload
     background: $main-background;
     color: $nest-text;
     padding: 35px;
-    // text-align: center;
   }
 
   .tnris-download-template-download__loading {

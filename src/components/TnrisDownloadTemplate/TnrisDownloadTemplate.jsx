@@ -149,8 +149,8 @@ export default class TnrisDownloadTemplate extends React.Component {
                           aria-selected="false"
                           tabIndex="-1"
                           onClick={() => this.setTemplateView("images")}
-                          title="Images">
-                          <span className="mdc-tab__content">images</span>
+                          title="Preview">
+                          <span className="mdc-tab__content">preview</span>
                           <span className="mdc-tab-indicator">
                             <span
                               className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
