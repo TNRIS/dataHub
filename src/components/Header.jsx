@@ -1,7 +1,7 @@
-import React from 'react';
-import {MDCTopAppBar} from '@material/top-app-bar/index';
-import NotificationBadge from 'react-notification-badge';
-import {Effect} from 'react-notification-badge';
+import React from 'react'
+import {MDCTopAppBar} from '@material/top-app-bar/index'
+import NotificationBadge from 'react-notification-badge'
+import {Effect} from 'react-notification-badge'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss';

@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import {MDCTextField} from '@material/textfield';
-import {MDCFloatingLabel} from '@material/floating-label';
-import {MDCLineRipple} from '@material/line-ripple';
-import {MDCRipple} from '@material/ripple';
-import {MDCSwitch} from '@material/switch';
-import {MDCTextFieldHelperText} from '@material/textfield/helper-text';
+import React, { Component } from 'react'
+import {MDCTextField} from '@material/textfield'
+import {MDCFloatingLabel} from '@material/floating-label'
+import {MDCLineRipple} from '@material/line-ripple'
+import {MDCRipple} from '@material/ripple'
+import {MDCSwitch} from '@material/switch'
+import {MDCTextFieldHelperText} from '@material/textfield/helper-text'
 
 class OrderTnrisDataForm extends Component {
 

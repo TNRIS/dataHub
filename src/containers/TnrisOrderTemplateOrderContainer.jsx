@@ -1,9 +1,9 @@
-import { connect } from 'react-redux';
-import { getResourceAreas,
-         getResourceAreaTypes
-       } from '../selectors/resourceSelectors';
-import TnrisOrderTemplateOrder from '../components/TnrisOrderTemplate/TnrisOrderTemplateOrder';
-// import OrderTnrisDataForm from '../components/OrderTnrisDataForm';
+import {connect} from 'react-redux'
+import {getResourceAreas,
+        getResourceAreaTypes
+       } from '../selectors/resourceSelectors'
+
+import TnrisOrderTemplateOrder from '../components/TnrisOrderTemplate/TnrisOrderTemplateOrder'
 
 const mapStateToProps = state => ({
   loadingResources: state.collections.loadingResources,

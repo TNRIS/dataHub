@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import CollectionFilterMapContainer from '../containers/CollectionFilterMapContainer';
+import CollectionFilterMapContainer from '../containers/CollectionFilterMapContainer'
 
 export default class CollectionFilterMapView extends React.Component {
   constructor() {

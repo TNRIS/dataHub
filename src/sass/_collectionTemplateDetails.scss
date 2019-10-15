@@ -102,59 +102,6 @@ shared styles for collection TemplateDetails components
     }
     // end source citation component
 
-    // nested images (image carousel) component - BEGIN
-    // used by all but historicalAerialTemplateDetails
-    .carousel {
-
-      .control-next.control-arrow:before {
-        border-left: 20px solid #fff;
-      }
-
-      .control-prev.control-arrow:before {
-        border-right: 20px solid #fff;
-      }
-
-      .control-arrow:before {
-        border-top: 20px solid transparent;
-        border-bottom: 20px solid transparent;
-      }
-
-      .control-arrow.control-next {
-        margin-right: 0;
-      }
-
-      .control-arrow.control-prev {
-        margin-left: 0;
-      }
-
-      .control-arrow {
-        opacity: 0.8;
-      }
-
-      p.carousel-status {
-        font-size: 16px;
-        font-weight: bold;
-        text-shadow: 2px 2px #333;
-      }
-    }
-
-    .carousel-image {
-      // force each image to be in 16:9 aspect ratio container
-      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-      overflow: hidden;
-      position: relative;
-    }
-
-    .carousel-image > img {
-      position: absolute;
-      display: block;
-      width: 100%;
-      height: auto;
-      top: 50%; /* 50% from the top of the container */
-      transform: translateY(-50%); /* -50% of the height of the image */
-    }
-    // nested images (image carousel) component - END
-
     // nested metadata list component - BEGIN
     .mdc-list {
 
