@@ -133,40 +133,24 @@ export default class TnrisOrderTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      <button
-                        className="mdc-tab"
-                        role="tab"
-                        aria-selected="false"
-                        tabIndex="-1"
-                        onClick={() => this.setTemplateView("images")}
-                        title="Order">
-                        <span className="mdc-tab__content">images</span>
-                        <span className="mdc-tab-indicator">
-                          <span
-                            className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
-                          </span>
-                        </span>
-                        <span className="mdc-tab__ripple"></span>
-                      </button>
-
-                      {/* this.props.collection.counties ? (
-                          <button
-                            className="mdc-tab"
-                            role="tab"
-                            aria-selected="false"
-                            tabIndex="-1"
-                            onClick={() => this.setTemplateView("coverage")}
-                            title="Coverage Map">
-                            <span className="mdc-tab__content">coverage</span>
-                            <span className="mdc-tab-indicator">
-                              <span
-                                className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
-                              </span>
+                      { this.props.collection.images ? (
+                        <button
+                          className="mdc-tab"
+                          role="tab"
+                          aria-selected="false"
+                          tabIndex="-1"
+                          onClick={() => this.setTemplateView("images")}
+                          title="Order">
+                          <span className="mdc-tab__content">images</span>
+                          <span className="mdc-tab-indicator">
+                            <span
+                              className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
                             </span>
-                            <span className="mdc-tab__ripple"></span>
-                          </button>
+                          </span>
+                          <span className="mdc-tab__ripple"></span>
+                        </button>
                         ) : ""
-                      */}
+                      }
 
                       <button
                         className="mdc-tab"

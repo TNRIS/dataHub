@@ -142,21 +142,24 @@ export default class TnrisDownloadTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      <button
-                        className="mdc-tab"
-                        role="tab"
-                        aria-selected="false"
-                        tabIndex="-1"
-                        onClick={() => this.setTemplateView("images")}
-                        title="Download">
-                        <span className="mdc-tab__content">images</span>
-                        <span className="mdc-tab-indicator">
-                          <span
-                            className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
+                      { this.props.collection.images ? (
+                        <button
+                          className="mdc-tab"
+                          role="tab"
+                          aria-selected="false"
+                          tabIndex="-1"
+                          onClick={() => this.setTemplateView("images")}
+                          title="Download">
+                          <span className="mdc-tab__content">images</span>
+                          <span className="mdc-tab-indicator">
+                            <span
+                              className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
+                            </span>
                           </span>
-                        </span>
-                        <span className="mdc-tab__ripple"></span>
-                      </button>
+                          <span className="mdc-tab__ripple"></span>
+                        </button>
+                        ) : ""
+                      }
 
                       <button
                         className="mdc-tab"
