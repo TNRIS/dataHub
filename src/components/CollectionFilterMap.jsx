@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import turfExtent from 'turf-extent';
 import styles from '../sass/index.scss';
 
@@ -45,9 +46,20 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
+    const mapElement = document.querySelector('.mapboxgl-canvas');
+    const zoomInControl = document.querySelector('.mapboxgl-ctrl-zoom-in');
+    const zoomOutControl = document.querySelector('.mapboxgl-ctrl-zoom-out');
+    const compassControl = document.querySelector('.mapboxgl-ctrl-compass');
     const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
     const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
     if (this.props.collectionFilterMapFilter.length > 0) {
+      mapElement.classList.add('disabled-map');
+      zoomInControl.disabled = true;
+      zoomInControl.classList.add('disabled-button');
+      zoomOutControl.disabled = true;
+      zoomOutControl.classList.add('disabled-button');
+      compassControl.disabled = true;
+      compassControl.classList.add('disabled-button');
       drawPolygonControl.disabled = true;
       drawPolygonControl.classList.add('disabled-button');
       drawTrashControl.disabled = true;
@@ -155,8 +167,8 @@ export default class CollectionFilterMap extends React.Component {
             },
             'filter': [
               "all",
-              ["==", "area_type", ""],
-              ["==", "area_type_name", ""]
+              ["==", ["get", "area_type"], ""],
+              ["==", ["get", "area_type_name"], ""]
             ]
         }, 'boundary_country_inner');
 
@@ -172,7 +184,7 @@ export default class CollectionFilterMap extends React.Component {
               'line-width': 2,
               'line-opacity': .2
             },
-            'filter': ["==", "area_type", "county"]
+            'filter': ["==", ["get", "area_type"], "county"]
         }, 'area-type-outline-selected');
 
         map.addLayer({
@@ -187,7 +199,7 @@ export default class CollectionFilterMap extends React.Component {
               'line-width': 2,
               'line-opacity': .05
             },
-            'filter': ["==", "area_type", "quad"]
+            'filter': ["==", ["get", "area_type"], "quad"]
           });
 
         map.addLayer({
@@ -226,6 +238,7 @@ export default class CollectionFilterMap extends React.Component {
     // update the mapbox draw modes with the rectangle mode
     const modes = MapboxDraw.modes;
     modes.draw_rectangle = DrawRectangle;
+    modes.static = StaticMode;
     this._draw = new MapboxDraw({
       displayControlsDefault: false,
       controls: {'polygon': true, 'trash': true},
@@ -334,30 +347,40 @@ export default class CollectionFilterMap extends React.Component {
     // aoi extent.
     this._map.on('load', () => {
       if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
-        console.log(this.props.collectionFilterMapAoi);
         if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
           this._draw.add(this.props.collectionFilterMapAoi.payload);
         } else {
-          // TODO the map's styledata doesn't all
-          // load before it triggers the event below.
-          // this looks like it may be fixed in a
-          // future release of mapboxGl. For now we
-          // get an error in the console saying that
-          // the layer isn't ready yet.
+          // We have to wait for the map's style to load, then check
+          // for the area type outline layer. Once it is loaded we
+          // set the filter to show the highlighted area.
           this._map.on('styledata', () => {
-            this._map.setFilter(
-              'area-type-outline-selected',
-              [
-                "all",
-                ["==", "area_type", this.props.collectionFilterMapAoi.aoiType],
-                ["==", "area_type_name", this.props.collectionFilterMapSelectedAreaTypeName]
-              ]
-            );
+            if (this._map.getLayer('area-type-outline-selected')) {
+              this._map.setFilter(
+                'area-type-outline-selected',
+                [
+                  "all",
+                  [
+                    "==",
+                    ["get", "area_type"],
+                    this.props.collectionFilterMapSelectedAreaType
+                  ],
+                  [
+                    "==",
+                    ["get", "area_type_name"],
+                    this.props.collectionFilterMapSelectedAreaTypeName
+                  ]
+                ]
+              );
+            }
           })
         }
-        this._map.fitBounds(turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100});
-        document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-        this.disableUserInteraction();
+        this._map.fitBounds(turfExtent(
+          this.props.collectionFilterMapAoi.payload
+        ), {padding: 100});
+        document.getElementById(
+          'map-filter-button'
+        ).classList.remove('mdc-fab--exited');
+        // this.disableUserInteraction();
       }
     })
 
@@ -412,25 +435,45 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapSelectedAreaType) {
       this.props.setCollectionFilterMapSelectedAreaType("");
       this.props.setCollectionFilterMapSelectedAreaTypeName("");
-      console.log('resetting filter');
       this._map.setFilter(
         'area-type-outline-selected',
         [
           "all",
-          ["==", "area_type", ""],
-          ["==", "area_type_name", ""]
+          ["==", ["get", "area_type"], ""],
+          ["==", ["get", "area_type_name"], ""]
         ]
       );
     }
+    const mapElement = document.querySelector('.mapboxgl-canvas');
+    const zoomInControl = document.querySelector('.mapboxgl-ctrl-zoom-in');
+    const zoomOutControl = document.querySelector('.mapboxgl-ctrl-zoom-out');
+    const compassControl = document.querySelector('.mapboxgl-ctrl-compass');
+    const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
+    const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
+    mapElement.classList.remove('disabled-map');
+    zoomInControl.disabled = false;
+    zoomInControl.classList.remove('disabled-button');
+    zoomOutControl.disabled = false;
+    zoomOutControl.classList.remove('disabled-button');
+    compassControl.disabled = false;
+    compassControl.classList.remove('disabled-button');
+    drawPolygonControl.disabled = false;
+    drawPolygonControl.classList.remove('disabled-button');
+    drawTrashControl.disabled = false;
+    drawTrashControl.classList.remove('disabled-button');
+
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
-    this.enableUserInteraction();
+    // this.enableUserInteraction();
   }
 
   handleFilterButtonClick() {
     // update URL to reflect new sort change
     const prevFilter = this.props.catalogFilterUrl.includes('/catalog/') ?
-                       JSON.parse(decodeURIComponent(this.props.catalogFilterUrl.replace('/catalog/', '')))
-                       : {};
+                       JSON.parse(
+                         decodeURIComponent(
+                           this.props.catalogFilterUrl.replace('/catalog/', '')
+                         )
+                       ) : {};
     let filterObj;
     if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
       filterObj = {
@@ -449,12 +492,6 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       delete filterObj['geo'];
-      const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
-      const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
-      drawPolygonControl.disabled = false;
-      drawPolygonControl.classList.remove('disabled-button');
-      drawTrashControl.disabled = false;
-      drawTrashControl.classList.remove('disabled-button');
     } else {
       this.props.setCollectionFilterMapFilter(
         this.state.mapFilteredCollectionIds
@@ -462,7 +499,7 @@ export default class CollectionFilterMap extends React.Component {
       // this._map.fitBounds(
       //   turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100}
       // );
-      this.disableUserInteraction();
+      // this.disableUserInteraction();
     }
 
     // if map aoi is empty, remove from the url
@@ -482,8 +519,6 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   getAreaTypeGeoJson(areaType, areaTypeName) {
-    console.log("function called");
-    console.log(areaTypeName);
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT row_to_json(fc)
                  FROM (
@@ -515,7 +550,6 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson) {
-    console.log(areaTypeName);
     this.getExtentIntersectedCollectionIds(this, areaType, areaTypeGeoJson);
     this._map.setFilter(
       'area-type-outline-selected',

@@ -18,8 +18,8 @@ const initialState = {
   collectionFilterMapFilter: [],
   collectionFilterMapZoom: 5.3,
   collectionFilterMapMoveMap: false,
-  collectionFilterMapSelectedAreaType: "",
-  collectionFilterMapSelectedAreaTypeName: ""
+  collectionFilterMapSelectedAreaType: null,
+  collectionFilterMapSelectedAreaTypeName: null
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
