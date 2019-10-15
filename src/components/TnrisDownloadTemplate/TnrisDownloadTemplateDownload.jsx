@@ -414,7 +414,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       <div className='template-content-div tnris-download-template-download'>
         <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
           <div className='template-content-div-header mdc-typography--headline5'>
-            Download
+            Download Area
           </div>
         <div id='tnris-download-map'></div>
         <TnrisDownloadMapNote />
