@@ -44,17 +44,10 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
-    // const imageCarousel = this.props.collection.images ? (
-    //                       <Images
-    //                         thumbnail={this.props.collection.thumbnail_image}
-    //                         images={this.props.collection.images} />)
-    //                     : (
-    //                       <Images
-    //                         thumbnail={this.props.collection.thumbnail_image}
-    //                         images={this.props.collection.thumbnail_image} />
-    //                     );
 
-    const countyCoverage = <CountyCoverageContainer counties={this.props.collection.counties} />
+    const countyCoverage = this.props.collection.counties ? (
+                              <CountyCoverageContainer counties={this.props.collection.counties} />
+                            ) : "";
 
     const productsCard = this.props.collection.products ? (
                           <HistoricalProducts products={this.props.collection.products} />)

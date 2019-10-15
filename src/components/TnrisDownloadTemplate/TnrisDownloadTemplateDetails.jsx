@@ -18,10 +18,10 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     super(props)
 
     window.innerWidth >= parseInt(breakpoints.desktop, 10) ? this.state = {
-      gridLayout:'desktop'
-    } : this.state = {
-      gridLayout:'mobile'
-    };
+        gridLayout:'desktop'
+      } : this.state = {
+        gridLayout:'mobile'
+      };
 
     this.handleResize = this.handleResize.bind(this);
   }
@@ -45,12 +45,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
-    // const imageCarousel = this.props.collection.images ? (
-    //                     <Images
-    //                       thumbnail={this.props.collection.thumbnail_image}
-    //                       images={this.props.collection.images}
-    //                       collection_name={this.props.collection.name} />)
-    //                     : "";
 
     const downloadMap = this.props.collection.template === 'tnris-download' ? (
                           <TnrisDownloadTemplateDownloadContainer collectionName={this.props.collection.name} />
@@ -90,7 +84,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                             <ShareButtons />
                           </div>
                           <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                            {/*{imageCarousel}*/}
                             {downloadMap}
                             <div className="mdc-layout-grid__inner">
                               <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
@@ -104,7 +97,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                         </div>) : (
                         <div className="mdc-layout-grid__inner">
                           <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                            {/*{imageCarousel}*/}
                             {downloadMap}
                             <Metadata collection={this.props.collection} />
                             {description}

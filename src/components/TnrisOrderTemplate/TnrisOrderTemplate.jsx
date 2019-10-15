@@ -140,7 +140,7 @@ export default class TnrisOrderTemplate extends React.Component {
                           aria-selected="false"
                           tabIndex="-1"
                           onClick={() => this.setTemplateView("images")}
-                          title="Order">
+                          title="Images">
                           <span className="mdc-tab__content">images</span>
                           <span className="mdc-tab-indicator">
                             <span

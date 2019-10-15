@@ -45,11 +45,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
-    // const imageCarousel = this.props.collection.images ? (
-    //                     <Images
-    //                       thumbnail={this.props.collection.thumbnail_image}
-    //                       images={this.props.collection.images} />)
-    //                     : "";
 
     const countyCoverage = this.props.collection.counties ? (
                               <CountyCoverageContainer counties={this.props.collection.counties} />

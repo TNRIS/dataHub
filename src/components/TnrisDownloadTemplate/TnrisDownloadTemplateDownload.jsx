@@ -39,17 +39,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this.createMap();
       }
     }
-
-    // if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
-    //   this.areaLookup = this.props.resourceAreas;
-    //   if (window.innerWidth > this.downloadBreakpoint) {
-    //     this.createMap();
-    //   }
-    // }
-    //
-    // if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
-    //   this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
-    // }
   }
 
   componentDidUpdate () {

@@ -62,9 +62,6 @@ export default class HistoricalAerialTemplate extends React.Component {
       case 'details':
         showComponent = <HistoricalAerialTemplateDetails collection={this.props.collection} />;
         break;
-      // case 'coverage':
-      //   showComponent = <CountyCoverageContainer counties={this.props.collection.counties} />;
-      //   break;
       case 'images':
         showComponent = (
           <Images
@@ -141,7 +138,7 @@ export default class HistoricalAerialTemplate extends React.Component {
                           aria-selected="false"
                           tabIndex="-1"
                           onClick={() => this.setTemplateView("images")}
-                          title="Preview Images">
+                          title="Images">
                           <span className="mdc-tab__content">images</span>
                           <span className="mdc-tab-indicator">
                             <span
