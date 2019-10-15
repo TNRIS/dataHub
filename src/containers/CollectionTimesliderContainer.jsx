@@ -1,10 +1,10 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 
 
-import CollectionTimeslider from '../components/CollectionTimeslider';
-import { collectionTimesliderActions, urlTrackerActions } from '../actions';
-import { getCollectionTimesliderRange } from '../selectors/collectionSelectors';
+import CollectionTimeslider from '../components/CollectionTimeslider'
+import {collectionTimesliderActions, urlTrackerActions} from '../actions'
+import {getCollectionTimesliderRange} from '../selectors/collectionSelectors'
 
 const mapStateToProps = (state) => ({
   collectionTimeslider: state.collectionTimeslider.collectionTimeslider,

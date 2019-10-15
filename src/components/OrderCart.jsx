@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import {MDCTextField} from '@material/textfield';
-import {MDCFloatingLabel} from '@material/floating-label';
-import {MDCLineRipple} from '@material/line-ripple';
-import {MDCRipple} from '@material/ripple';
-import {MDCSelect} from '@material/select';
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { Component } from 'react'
+import {MDCTextField} from '@material/textfield'
+import {MDCFloatingLabel} from '@material/floating-label'
+import {MDCLineRipple} from '@material/line-ripple'
+import {MDCRipple} from '@material/ripple'
+import {MDCSelect} from '@material/select'
+import ReCAPTCHA from "react-google-recaptcha"
 
 class OrderCart extends Component {
 

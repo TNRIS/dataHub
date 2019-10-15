@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 
-import { collectionSorterActions, urlTrackerActions } from '../actions';
+import {collectionSorterActions, urlTrackerActions} from '../actions'
 import CollectionSorter from '../components/CollectionSorter';
 
 const mapStateToProps = state => ({

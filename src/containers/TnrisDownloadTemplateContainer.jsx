@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import { collectionActions } from '../actions';
-import TnrisDownloadTemplate from '../components/TnrisDownloadTemplate/TnrisDownloadTemplate';
+import {collectionActions} from '../actions'
+import TnrisDownloadTemplate from '../components/TnrisDownloadTemplate/TnrisDownloadTemplate'
 
 const mapStateToProps = state => ({});
 

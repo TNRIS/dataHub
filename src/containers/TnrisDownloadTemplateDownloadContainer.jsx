@@ -1,8 +1,9 @@
-import { connect } from 'react-redux';
-import { getResourceAreas,
-         getResourceAreaTypes
-       } from '../selectors/resourceSelectors';
-import TnrisDownloadTemplateDownload from '../components/TnrisDownloadTemplate/TnrisDownloadTemplateDownload';
+import {connect} from 'react-redux'
+import {getResourceAreas,
+        getResourceAreaTypes
+       } from '../selectors/resourceSelectors'
+
+import TnrisDownloadTemplateDownload from '../components/TnrisDownloadTemplate/TnrisDownloadTemplateDownload'
 
 const mapStateToProps = state => ({
   loadingResources: state.collections.loadingResources,

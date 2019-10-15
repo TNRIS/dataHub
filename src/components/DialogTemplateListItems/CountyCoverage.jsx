@@ -1,6 +1,7 @@
-import React from 'react';
-import mapboxgl from 'mapbox-gl';
-import styles from '../../sass/index.scss';
+import React from 'react'
+import mapboxgl from 'mapbox-gl'
+import styles from '../../sass/index.scss'
+import CountyCoverageNote from './CountyCoverageNote'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -141,13 +142,15 @@ export default class CountyCoverage extends React.Component {
   }
 
   render() {
-    window.scrollTo(0,0);
+
     return (
-      <div className="county-coverage-component">
-        <div id='county-coverage-notice' className='mdc-typography--body1'>
-          Imagery may have incomplete coverage for a particular county and may be of varying quality.
+
+      <div className="template-content-div county-coverage-component">
+        <div className='mdc-typography--headline5 template-content-div-header'>
+          Coverage Area
         </div>
         <div id='county-coverage-map'></div>
+        <CountyCoverageNote />
       </div>
     )
   }

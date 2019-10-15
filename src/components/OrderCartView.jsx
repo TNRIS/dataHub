@@ -1,5 +1,5 @@
-import React from 'react';
-import OrderCartContainer from '../containers/OrderCartContainer';
+import React from 'react'
+import OrderCartContainer from '../containers/OrderCartContainer'
 
 class OrderCartView extends React.Component {
   constructor() {

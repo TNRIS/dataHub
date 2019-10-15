@@ -3,7 +3,7 @@ styles for component: TnrisDownloadTemplateDownload
 */
 
 .tnris-download-template-download {
-  height: 80vh;
+  position: relative;
 
   button {
     margin: 0;
@@ -14,8 +14,8 @@ styles for component: TnrisDownloadTemplateDownload
     color: $nest-text;
     position: absolute;
     z-index: 1;
-    top: 175px;
-    right: 10px;
+    top: 48px;
+    right: 16px;
     border-radius: 3px;
     border: 1px solid rgba(0,0,0,0.4);
 
@@ -37,10 +37,10 @@ styles for component: TnrisDownloadTemplateDownload
   }
 
   #tnris-download-map {
-    position: absolute;
-    top: 165px;
-    bottom: 50px;
-    width: 100%;
+    position: relative;
+    width: auto;
+    height: 55vh;
+    top: 0;
 
     .mapboxgl-canvas {
       height: 100% !important;
@@ -63,8 +63,9 @@ styles for component: TnrisDownloadTemplateDownload
     color: $nest-text;
     position: absolute;
     z-index: 2;
-    bottom: 60px;
-    left: 5px;
+    bottom: 16px;
+    left: 16px;
+    text-align: center;
     border-radius: 3px;
     border: 1px solid rgba(0,0,0,0.4);
     padding: 3px;
@@ -77,7 +78,7 @@ styles for component: TnrisDownloadTemplateDownload
     p {
       margin: 0;
       line-height: 20px;
-      max-width: 80vw;
+      max-width: 250px;
     }
   }
 
@@ -86,13 +87,13 @@ styles for component: TnrisDownloadTemplateDownload
     color: $nest-text;
     position: absolute;
     z-index: 2;
-    top: 270px;
-    left: 8px;
+    top: 145px;
+    left: 16px;
     border-radius: 5px;
     border: 1.5px solid rgba(0,0,0,0.15);
     padding: 3px;
     line-height: 12px;
-    max-width: 20vw;
+    max-width: 200px;
 
     .close-icon {
       cursor: pointer;
@@ -122,7 +123,6 @@ styles for component: TnrisDownloadTemplateDownload
     background: $main-background;
     color: $nest-text;
     padding: 35px;
-    // text-align: center;
   }
 
   .tnris-download-template-download__loading {

@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import CountyCoverage from '../components/DialogTemplateListItems/CountyCoverage';
+import CountyCoverage from '../components/DialogTemplateListItems/CountyCoverage'
 
 const mapStateToProps = state => ({
   theme: state.colorTheme.theme

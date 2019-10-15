@@ -1,6 +1,6 @@
-import React from 'react';
-import { matchPath } from 'react-router-dom';
-import turfExtent from 'turf-extent';
+import React from 'react'
+import { matchPath } from 'react-router-dom'
+import turfExtent from 'turf-extent'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
