@@ -5,7 +5,6 @@ import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import turfExtent from 'turf-extent';
 import styles from '../sass/index.scss';
 
@@ -47,23 +46,18 @@ export default class CollectionFilterMap extends React.Component {
 
   componentDidUpdate() {
     const mapElement = document.querySelector('.mapboxgl-canvas');
-    const zoomInControl = document.querySelector('.mapboxgl-ctrl-zoom-in');
-    const zoomOutControl = document.querySelector('.mapboxgl-ctrl-zoom-out');
-    const compassControl = document.querySelector('.mapboxgl-ctrl-compass');
-    const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
-    const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
+    const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
+    const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
     if (this.props.collectionFilterMapFilter.length > 0) {
       mapElement.classList.add('disabled-map');
-      zoomInControl.disabled = true;
-      zoomInControl.classList.add('disabled-button');
-      zoomOutControl.disabled = true;
-      zoomOutControl.classList.add('disabled-button');
-      compassControl.disabled = true;
-      compassControl.classList.add('disabled-button');
-      drawPolygonControl.disabled = true;
-      drawPolygonControl.classList.add('disabled-button');
-      drawTrashControl.disabled = true;
-      drawTrashControl.classList.add('disabled-button');
+      mapControls.forEach((mapControl) => {
+        mapControl.disabled = true;
+        mapControl.classList.add('disabled-button');
+      })
+      drawControls.forEach((drawControl) => {
+        drawControl.disabled = true;
+        drawControl.classList.add('disabled-button');
+      })
     }
     if (this.props.collectionFilterMapSelectedAreaType &&
       this.props.collectionFilterMapMoveMap) {
@@ -80,6 +74,14 @@ export default class CollectionFilterMap extends React.Component {
           this.props.collectionFilterMapSelectedAreaTypeName
         )
     }
+  }
+
+  componentWillUnmount() {
+    this.props.setCollectionFilterMapAoi({});
+    this.props.setCollectionFilterMapSelectedAreaType("");
+    this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
+    this.props.setCollectionFilterMapZoom(5.3);
   }
 
   createMap() {
@@ -105,6 +107,49 @@ export default class CollectionFilterMap extends React.Component {
 
     this._navControl = new mapboxgl.NavigationControl()
     map.addControl(this._navControl, 'top-left');
+
+    // Define custom map control to reset the map to its
+    // initial extent
+    class NavigateToExtentControl {
+      onAdd(map){
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+        const button = this._createButton();
+        this._container.appendChild(button);
+        return this._container;
+      }
+      onRemove(){
+        this._container.parentNode.removeChild(this.container);
+        this._map = undefined;
+      }
+
+      _createButton() {
+        const el = window.document.createElement('button')
+        el.className = 'mapboxgl-ctrl-icon material-icons navigate-to-extent';
+        el.type = 'button';
+        el.title = 'Reset to initial extent';
+        el.setAttribute('aria-label', 'Reset to initial extent');
+        el.textContent = 'home';
+        el.addEventListener('click',
+          (e) => {
+            this._map.easeTo({
+              center: [-99.341389, 31.33],
+              zoom: 5.3,
+              pitch: 0,
+              bearing: 0
+            });
+            e.stopPropagation();
+          },
+          false
+        )
+        return el;
+      }
+    }
+
+    // Instantiate the custom navigation control and add it to our map
+    const navigateToExtentControl = new NavigateToExtentControl();
+    map.addControl(navigateToExtentControl, 'top-left');
 
     // Define the color to use to show selected areas on the map
     const selectedAreaColor = '#1E8DC1';
@@ -238,7 +283,6 @@ export default class CollectionFilterMap extends React.Component {
     // update the mapbox draw modes with the rectangle mode
     const modes = MapboxDraw.modes;
     modes.draw_rectangle = DrawRectangle;
-    modes.static = StaticMode;
     this._draw = new MapboxDraw({
       displayControlsDefault: false,
       controls: {'polygon': true, 'trash': true},
@@ -445,22 +489,17 @@ export default class CollectionFilterMap extends React.Component {
       );
     }
     const mapElement = document.querySelector('.mapboxgl-canvas');
-    const zoomInControl = document.querySelector('.mapboxgl-ctrl-zoom-in');
-    const zoomOutControl = document.querySelector('.mapboxgl-ctrl-zoom-out');
-    const compassControl = document.querySelector('.mapboxgl-ctrl-compass');
-    const drawPolygonControl = document.querySelector('.mapbox-gl-draw_polygon');
-    const drawTrashControl = document.querySelector('.mapbox-gl-draw_trash');
+    const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
+    const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
     mapElement.classList.remove('disabled-map');
-    zoomInControl.disabled = false;
-    zoomInControl.classList.remove('disabled-button');
-    zoomOutControl.disabled = false;
-    zoomOutControl.classList.remove('disabled-button');
-    compassControl.disabled = false;
-    compassControl.classList.remove('disabled-button');
-    drawPolygonControl.disabled = false;
-    drawPolygonControl.classList.remove('disabled-button');
-    drawTrashControl.disabled = false;
-    drawTrashControl.classList.remove('disabled-button');
+    mapControls.forEach((mapControl) => {
+      mapControl.disabled = false;
+      mapControl.classList.remove('disabled-button');
+    })
+    drawControls.forEach((drawControl) => {
+      drawControl.disabled = false;
+      drawControl.classList.remove('disabled-button');
+    })
 
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
     // this.enableUserInteraction();
@@ -496,6 +535,7 @@ export default class CollectionFilterMap extends React.Component {
       this.props.setCollectionFilterMapFilter(
         this.state.mapFilteredCollectionIds
       );
+      this.props.setViewCatalog();
       // this._map.fitBounds(
       //   turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100}
       // );

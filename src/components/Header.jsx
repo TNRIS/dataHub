@@ -64,6 +64,8 @@ export default class Header extends React.Component {
   }
 
   handleCatalogView() {
+    console.log(this.props.view);
+    console.log(this.props.catalogFilterUrl);
     if (this.props.view !== 'catalog') {
       this.props.setViewCatalog();
       this.props.setUrl(this.props.catalogFilterUrl);

@@ -49,11 +49,11 @@ export default class CollectionFilterMapView extends React.Component {
 
   handleBack() {
     this.props.setViewCatalog();
-    this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapSelectedAreaType("");
-    this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
-    this.props.setCollectionFilterMapZoom(5.3);
+    // this.props.setCollectionFilterMapAoi({});
+    // this.props.setCollectionFilterMapSelectedAreaType("");
+    // this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    // this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
+    // this.props.setCollectionFilterMapZoom(5.3);
     if (window.location.pathname === this.props.previousUrl) {
       this.props.setUrl('/');
     }
