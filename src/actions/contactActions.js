@@ -31,7 +31,8 @@ function handleErrors(response) {
 }
 
 export function submitContactTnrisForm(formInfo) {
-  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8001/' : 'https://contact.tnris.org/';
+  // if in development mode, use local api build for forms; otherwise, use prod deployed api
+  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1/contact/submit/' : 'https://api.tnris.org/api/v1/contact/submit/';
   return (dispatch, getState) => {
     dispatch(submitContactBegin());
     const payload = {
