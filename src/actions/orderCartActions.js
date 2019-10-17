@@ -163,7 +163,7 @@ function getPolicy(policyUrl, dispatch) {
 export function uploadOrderFile(collectionId, cartInfo) {
   const bucket = 'https://contact-uploads.s3.amazonaws.com/';
   // if in development mode, use local api build for forms; otherwise, use prod deployed api
-  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1/contact/policy/' : 'https://api.tnris.org/api/v1/contact/policy/';
+  const contactUrl = process.env.REACT_APP_API_URL + '/api/v1/contact/policy/';
   let policyUrl;
   // different policy permissions based on file type (zip vs image)
   if (cartInfo.type === 'AOI') {
@@ -256,7 +256,7 @@ export function uploadOrderFile(collectionId, cartInfo) {
 // --- submit order form actions ---
 export function submitOrderCartForm(formInfo) {
   // if in development mode, use local api build for forms; otherwise, use prod deployed api
-  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1/contact/submit/' : 'https://api.tnris.org/api/v1/contact/submit/';
+  const contactUrl = process.env.REACT_APP_API_URL + '/api/v1/contact/submit/';
   return (dispatch, getState) => {
     dispatch(submitOrderBegin());
     const payload = {
