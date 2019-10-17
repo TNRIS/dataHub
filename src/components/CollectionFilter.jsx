@@ -104,6 +104,15 @@ export default class CollectionFilter extends React.Component {
         return key;
       });
     }
+
+    // expand filter titles in tool drawer if filter is applied
+    const filterTitleList = document.querySelectorAll("#availability-title, #category-title");
+    filterTitleList.forEach(function(item) {
+      if (item.classList.contains('mdc-list-item--activated')) {
+        item.children[0].innerHTML = 'expand_less';
+        item.nextSibling.classList.remove('hide-filter-list');
+      }
+    })
   }
 
   handleOpenFilterMenu(e) {
