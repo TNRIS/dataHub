@@ -36,7 +36,6 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log("component updated");
     const countySelect = new MDCSelect(document.querySelector('.county-select'));
     // Disable the select if a map filter is set. Reenable
     // when the filter is cleared.
@@ -49,20 +48,13 @@ export default class CollectionFilterMapView extends React.Component {
 
   handleBack() {
     this.props.setViewCatalog();
-    // this.props.setCollectionFilterMapAoi({});
-    // this.props.setCollectionFilterMapSelectedAreaType("");
-    // this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    // this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     // this.props.setCollectionFilterMapZoom(5.3);
-    if (window.location.pathname === this.props.previousUrl) {
-      this.props.setUrl('/');
-    }
-    else if (this.props.previousUrl === '/cart/') {
-      this.props.setUrl(this.props.catalogFilterUrl);
-    }
-    else {
-      this.props.setUrl(this.props.previousUrl);
-    }
+    // if (window.location.pathname === this.props.previousUrl) {
+    //   this.props.setUrl('/');
+    // } else {
+    //   this.props.setUrl(this.props.catalogFilterUrl);
+    // }
+    this.props.setUrl(this.props.catalogFilterUrl);
   }
 
   getAreaTypeNames() {

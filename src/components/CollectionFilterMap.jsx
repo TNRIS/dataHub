@@ -502,17 +502,17 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
-    // this.enableUserInteraction();
   }
 
   handleFilterButtonClick() {
-    // update URL to reflect new sort change
+    // update URL to reflect new filter change
     const prevFilter = this.props.catalogFilterUrl.includes('/catalog/') ?
                        JSON.parse(
                          decodeURIComponent(
                            this.props.catalogFilterUrl.replace('/catalog/', '')
                          )
                        ) : {};
+    console.log(prevFilter);
     let filterObj;
     if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
       filterObj = {
@@ -525,37 +525,29 @@ export default class CollectionFilterMap extends React.Component {
         geo: {'county': this.props.collectionFilterMapSelectedAreaTypeName}
       };
     }
+    const filterString = JSON.stringify(filterObj);
+    console.log(filterString);
 
-    // sets the collection_ids array in the filter to drive the view
-    // and disables/enables the user interaction handlers and navigation controls
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       delete filterObj['geo'];
+      // if empty filter settings, use the base home url instead of the filter url
+      // log filter change in store
+      Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
+        this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
     } else {
       this.props.setCollectionFilterMapFilter(
         this.state.mapFilteredCollectionIds
       );
+      // if empty filter settings, use the base home url instead of the filter url
+      Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
+        this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
+      // log filter change in store
+      Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
+        this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
+
       this.props.setViewCatalog();
-      // this._map.fitBounds(
-      //   turfExtent(this.props.collectionFilterMapAoi.payload), {padding: 100}
-      // );
-      // this.disableUserInteraction();
     }
-
-    // if map aoi is empty, remove from the url
-    // if (filterObj['geo'] === {}) {
-    //   delete filterObj['geo'];
-    // }
-    const filterString = JSON.stringify(filterObj);
-    // if empty filter settings, use the base home url instead of the filter url
-    Object.keys(filterObj).length === 0 ? this.props.setUrl('/geofilter/') :
-      this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
-    // log filter change in store
-    Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/geofilter') :
-      this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
-
-    // jump back into catalog view regardless of setting or clearing the geo filter
-    // this.props.setViewCatalog();
   }
 
   getAreaTypeGeoJson(areaType, areaTypeName) {

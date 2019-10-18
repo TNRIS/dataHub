@@ -46,14 +46,11 @@ export default class CollectionFilter extends React.Component {
         }
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
-          console.log(allFilters);
           // check if the filter is a user defined polygon or
           // if it is a county filter
           if (allFilters.geo.hasOwnProperty('coordinates')) {
-            console.log(allFilters.geo);
             this.handleSetGeoFilter(this, 'draw', allFilters.geo);
           } else if (allFilters.geo.hasOwnProperty('county')) {
-            console.log(allFilters.geo.county);
             // set the filter map aoi, selected area type,
             // selected area type name, aand selected area type geojson
             this.getAreaTypeGeoJson('county', allFilters.geo.county);
@@ -123,7 +120,6 @@ export default class CollectionFilter extends React.Component {
 
     sql.execute(query).done( (data) => {
       let areaTypeGeoJson = data.rows[0].row_to_json;
-      console.log(areaTypeGeoJson);
       this.props.setCollectionFilterMapSelectedAreaType(areaType);
       this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
       this.handleSetGeoFilter(this, areaType, areaTypeGeoJson);
