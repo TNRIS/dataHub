@@ -1,10 +1,10 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import OrderCartView from '../components/OrderCartView';
+import OrderCartView from '../components/OrderCartView'
 
-import { catalogActions,
-         collectionActions,
-         urlTrackerActions } from '../actions';
+import {catalogActions,
+        collectionActions,
+        urlTrackerActions} from '../actions'
 
 const mapStateToProps = state => ({
   previousUrl: state.urlTracker.previousUrl

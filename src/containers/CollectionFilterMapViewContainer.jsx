@@ -1,9 +1,9 @@
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
-import CollectionFilterMapView from '../components/CollectionFilterMapView';
+import CollectionFilterMapView from '../components/CollectionFilterMapView'
 
 import { catalogActions,
-         urlTrackerActions } from '../actions';
+         urlTrackerActions } from '../actions'
 
 const mapStateToProps = state => ({
   previousUrl: state.urlTracker.previousUrl,

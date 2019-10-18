@@ -1,13 +1,12 @@
-import React from 'react';
-import { GridLoader } from 'react-spinners';
-import TnrisDownloadMapNote from './TnrisDownloadMapNote';
+import React from 'react'
+import { GridLoader } from 'react-spinners'
+import TnrisDownloadMapNote from './TnrisDownloadMapNote'
 
-import mapboxgl from 'mapbox-gl';
-import styles from '../../sass/index.scss';
-// import loadingImage from '../../images/loading.gif';
+import mapboxgl from 'mapbox-gl'
+import styles from '../../sass/index.scss'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss';
+import breakpoints from '../../sass/_breakpoints.scss'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
@@ -33,14 +32,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   componentDidMount() {
     // on mount/load, try and launch the map. if the api response with the list
     // of downloadable resources hasn't returned we won't launch it
-    if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
+    if (this.props.loadingResources === false && this.props.resourceAreaTypes) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
       }
-    }
-    if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
-      this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
   }
 
@@ -362,6 +358,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       return (
         <div className='tnris-download-template-download'>
           <div className="tnris-download-template-download__mobile">
+            <h3>Download Map Disabled for Mobile Devices</h3>
             <p>
               Due to the average size of data downloads and in consideration of user experience,
               data downloads have been <strong>disabled</strong> for small browser windows and mobile devices.
@@ -413,8 +410,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
 
     return (
-      <div className='tnris-download-template-download'>
+      <div className='template-content-div tnris-download-template-download'>
         <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
+          <div className='template-content-div-header mdc-typography--headline5'>
+            Download
+          </div>
         <div id='tnris-download-map'></div>
         <TnrisDownloadMapNote />
       </div>

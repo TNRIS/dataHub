@@ -1,5 +1,5 @@
-import React from 'react';
-import { matchPath } from 'react-router-dom';
+import React from 'react'
+import { matchPath } from 'react-router-dom'
 
 class CollectionSorter extends React.Component {
 

@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import { colorThemeActions } from '../actions';
-import ThemeChooser from '../components/ThemeChooser';
+import {colorThemeActions} from '../actions'
+import ThemeChooser from '../components/ThemeChooser'
 
 const mapStateToProps = state => ({
   theme: state.colorTheme.theme,

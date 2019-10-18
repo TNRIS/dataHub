@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import Footer from '../components/Footer';
+import Footer from '../components/Footer'
 
 const mapStateToProps = state => ({
   theme: state.colorTheme.theme,

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Redirect } from 'react-router';
-import image404 from '../images/404.jpg';
+import React, { Component } from 'react'
+import { Redirect } from 'react-router'
+import image404 from '../images/404.jpg'
 
 class NotFound extends Component {
   componentDidMount() {

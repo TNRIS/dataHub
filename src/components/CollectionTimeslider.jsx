@@ -1,8 +1,8 @@
-import React from 'react';
-import { matchPath } from 'react-router-dom';
-import Range from 'rc-slider/lib/Range';
+import React from 'react'
+import { matchPath } from 'react-router-dom'
+import Range from 'rc-slider/lib/Range'
 
-import 'rc-slider/assets/index.css';
+import 'rc-slider/assets/index.css'
 
 export default class CollectionTimeslider extends React.Component {
   constructor(props) {

@@ -1,18 +1,19 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
-import Catalog from '../components/Catalog';
+import Catalog from '../components/Catalog'
 import {
   catalogActions,
   collectionActions,
   colorThemeActions,
   orderCartActions,
   resourceActions,
-  toolDrawerActions } from '../actions';
+  toolDrawerActions } from '../actions'
+
 import {
   getAllCollections,
   getSortedCollections
-} from '../selectors/collectionSelectors';
+} from '../selectors/collectionSelectors'
 
 const mapStateToProps = (state) => ({
   collections: getAllCollections(state),

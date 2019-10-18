@@ -1,15 +1,15 @@
-import React from 'react';
-import CollectionFilterMapInstructions from './CollectionFilterMapInstructions';
+import React from 'react'
+import CollectionFilterMapInstructions from './CollectionFilterMapInstructions'
 
-import mapboxgl from 'mapbox-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import turfExtent from 'turf-extent';
-import styles from '../sass/index.scss';
+import mapboxgl from 'mapbox-gl'
+import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
+import turfExtent from 'turf-extent'
+import styles from '../sass/index.scss'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../sass/_breakpoints.scss';
+import breakpoints from '../sass/_breakpoints.scss'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component

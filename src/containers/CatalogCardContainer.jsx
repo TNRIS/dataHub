@@ -1,10 +1,11 @@
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
 import { catalogActions,
          collectionActions,
          collectionSearcherActions,
-         urlTrackerActions } from '../actions';
-import CatalogCard from '../components/CatalogCard';
+         urlTrackerActions } from '../actions'
+         
+import CatalogCard from '../components/CatalogCard'
 
 const mapStateToProps = state => ({
   selectedCollection: state.collections.selectedCollection
