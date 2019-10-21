@@ -85,7 +85,6 @@ export default class Header extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     const tablet = parseInt(breakpoints.tablet, 10);
 
     let drawerStatusClass = 'closed-drawer';

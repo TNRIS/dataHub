@@ -427,15 +427,6 @@ export default class CollectionFilterMap extends React.Component {
         // this.disableUserInteraction();
       }
     })
-
-    // if geo filter applied in url on load, execute here on mount
-    // if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
-    //   this.getExtentIntersectedCollectionIds(this, 'draw', this.props.collectionFilterMapAoi.payload);
-    //   this._draw.add(this.props.collectionFilterMapAoi.payload);
-    //   document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-    //   this.disableUserInteraction();
-    // }
-
   }
 
   enableUserInteraction() {
@@ -512,7 +503,6 @@ export default class CollectionFilterMap extends React.Component {
                            this.props.catalogFilterUrl.replace('/catalog/', '')
                          )
                        ) : {};
-    console.log(prevFilter);
     let filterObj;
     if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
       filterObj = {
@@ -525,26 +515,30 @@ export default class CollectionFilterMap extends React.Component {
         geo: {'county': this.props.collectionFilterMapSelectedAreaTypeName}
       };
     }
-    const filterString = JSON.stringify(filterObj);
-    console.log(filterString);
 
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.resetTheMap();
       delete filterObj['geo'];
       // if empty filter settings, use the base home url instead of the filter url
-      // log filter change in store
+      // and log filter change in store
       Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
-        this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
+        this.props.logFilterChange(
+          '/catalog/' + encodeURIComponent(JSON.stringify(filterObj))
+        );
     } else {
       this.props.setCollectionFilterMapFilter(
         this.state.mapFilteredCollectionIds
       );
       // if empty filter settings, use the base home url instead of the filter url
       Object.keys(filterObj).length === 0 ? this.props.setUrl('/') :
-        this.props.setUrl('/catalog/' + encodeURIComponent(filterString));
+        this.props.setUrl(
+          '/catalog/' + encodeURIComponent(JSON.stringify(filterObj))
+        );
       // log filter change in store
       Object.keys(filterObj).length === 0 ? this.props.logFilterChange('/') :
-        this.props.logFilterChange('/catalog/' + encodeURIComponent(filterString));
+        this.props.logFilterChange(
+          '/catalog/' + encodeURIComponent(JSON.stringify(filterObj))
+        );
 
       this.props.setViewCatalog();
     }
@@ -631,7 +625,6 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (

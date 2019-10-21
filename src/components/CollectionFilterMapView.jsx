@@ -48,12 +48,6 @@ export default class CollectionFilterMapView extends React.Component {
 
   handleBack() {
     this.props.setViewCatalog();
-    // this.props.setCollectionFilterMapZoom(5.3);
-    // if (window.location.pathname === this.props.previousUrl) {
-    //   this.props.setUrl('/');
-    // } else {
-    //   this.props.setUrl(this.props.catalogFilterUrl);
-    // }
     this.props.setUrl(this.props.catalogFilterUrl);
   }
 
@@ -95,7 +89,6 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     let countyNameOptions = [
       <option value="" key="" disabled></option>
     ].concat(this.state.countyNames.map(countyName => {

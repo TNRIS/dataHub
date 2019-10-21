@@ -235,7 +235,6 @@ export default class CollectionFilter extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     const filterSet = "mdc-list-item filter-list-title mdc-list-item--activated";
 
     const filterNotSet = "mdc-list-item filter-list-title";
