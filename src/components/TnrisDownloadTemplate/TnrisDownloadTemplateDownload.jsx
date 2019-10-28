@@ -24,7 +24,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
       this.createLayers = this.createLayers.bind(this);
-      this.toggleInstructions = this.toggleInstructions.bind(this);
       this.toggleLayers = this.toggleLayers.bind(this);
       this.layerRef = {};
       this.stateMinZoom = 5;
@@ -114,14 +113,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     }, this);
   }
 
-  toggleInstructions () {
-    this.setState({
-      noteInstruct: !this.state.noteInstruct
-    });
-
-    console.log(this.state.noteInstruction);
-  }
-
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -134,25 +125,28 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     this.map = map;
     // add regular out-of-the-box mapbox controls!
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    map.addControl(new mapboxgl.FullscreenControl());
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     // add tooltips for map controls
     document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
     document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
     document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
     document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
     // class for custom map control buttons used below
-    class MapboxGLButtonControl {
+    class ButtonControl {
       constructor({
+        id = "",
         className = "",
         title = "",
         eventHandler = ""
       }) {
+        this._id = id;
         this._className = className;
         this._title = title;
         this._eventHandler = eventHandler;
       }
       onAdd(map){
         this._btn = document.createElement("button");
+        this._btn.id = this._id;
         this._btn.className = this._className;
         this._btn.type = "button";
         this._btn.title = this._title;
@@ -168,44 +162,48 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._container.parentNode.removeChild(this._container);
       }
     }
-    const paragraph = document.createElement("p");
-    paragraph.setAttribute("style", "width:200px; height:auto; z-index:1200; display:block;");
-    paragraph.innerHTML = "Click a polygon in the map to download available data.";
-    // const downloadTemplate = document.getElementsByClassName("tnris-download-template-download")[0];
-
+    
     // event handlers for custom controls
-    const info = this.toggleInstructions();
-    // const info = (event) => {
-    //   console.log(this.state.noteInstruct);
-    //   // this.state.noteInstruct ? this.toggleInstructions() && console.log('show') : this.toggleInstructions() && console.log('hide');
-    //   if (this.state.noteInstruct) {
-    //     this.toggleInstructions();
-    //     // downloadTemplate.appendChild(paragraph);
-    //
-    //   }
-    //   else {
-    //     this.toggleInstructions();
-    //     // console.log(false);
-    //     downloadTemplate.removeChild(paragraph);
-    //   }
-    // }
-    // const note = (event) => {
-    //   console.log('note event handler fired');
-    // }
+    const info = () => {
+      const instructionBtn = document.getElementById('toggle-instructions');
+      // const expand = () => {
+      //   instructionBtn.style.width = '200px';
+      // }
+      if (instructionBtn.classList.contains('close')) {
+        // instructionBtn.parentNode.parentNode.removeChild(instructionBtn.parentNode);
+        instructionBtn.classList.remove('close');
+      }
+      else {
+        // map.addControl(ctrlInfoText, 'top-left');
+        instructionBtn.classList.add('close');
+      }
+    }
+    const note = (event) => {
+      console.log('note event handler fired');
+    }
     // custom control variables
-    const ctrlInfo = new MapboxGLButtonControl({
+    const ctrlInfo = new ButtonControl({
+      id: 'toggle-instructions',
       className: 'tnris-download-instructions',
-      title: 'Minimize Information',
+      text: "Click a polygon in the map to download available data.",
+      title: 'Download Information',
       eventHandler: info
     });
-    // const ctrlNote = new MapboxGLButtonControl({
-    //   className: 'tnris-download-note',
-    //   title: 'Download Note',
-    //   eventHandler: note
+    // const ctrlInfoText = new DivControl({
+    //   id: 'instructions-text',
+    //   className: 'tnris-download-instructions-text',
+    //   text: "Click a polygon in the map to download available data.",
+    //   title: 'Instructions'
     // });
+    const ctrlNote = new ButtonControl({
+      id: 'download-note',
+      className: 'tnris-download-note',
+      title: 'Download Note',
+      eventHandler: note
+    });
     // add custom controls to map
     map.addControl(ctrlInfo, 'top-left');
-    // map.addControl(ctrlNote, 'bottom-left');
+    map.addControl(ctrlNote, 'bottom-left');
 
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
