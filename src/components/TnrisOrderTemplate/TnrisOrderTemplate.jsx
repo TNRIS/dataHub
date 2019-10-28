@@ -34,7 +34,7 @@ export default class TnrisOrderTemplate extends React.Component {
       case 'details':
         tabIndex = 0;
         break;
-      case 'images':
+      case 'preview':
         tabIndex = 1;
         break;
       case 'order':
@@ -60,7 +60,7 @@ export default class TnrisOrderTemplate extends React.Component {
       case 'details':
         showComponent = <TnrisOrderTemplateDetails collection={this.props.collection} />;
         break;
-      case 'images':
+      case 'preview':
         showComponent = (
           <Images
             thumbnail={this.props.collection.thumbnail_image}
@@ -137,7 +137,7 @@ export default class TnrisOrderTemplate extends React.Component {
                           role="tab"
                           aria-selected="false"
                           tabIndex="-1"
-                          onClick={() => this.setTemplateView("images")}
+                          onClick={() => this.setTemplateView("preview")}
                           title="Preview">
                           <span className="mdc-tab__content">preview</span>
                           <span className="mdc-tab-indicator">
@@ -192,8 +192,8 @@ export default class TnrisOrderTemplate extends React.Component {
                        onClick={() => this.setTemplateView("details")}>Details
                        {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
-                    <div className={this.state.view === 'images' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
-                       onClick={() => this.setTemplateView("images")}>Images
+                    <div className={this.state.view === 'preview' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
+                       onClick={() => this.setTemplateView("preview")}>Preview
                        {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
                     {/* this.props.collection.counties ? (
