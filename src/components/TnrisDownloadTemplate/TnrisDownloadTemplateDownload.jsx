@@ -162,19 +162,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._container.parentNode.removeChild(this._container);
       }
     }
-    
+
     // event handlers for custom controls
     const info = () => {
       const instructionBtn = document.getElementById('toggle-instructions');
-      // const expand = () => {
-      //   instructionBtn.style.width = '200px';
-      // }
       if (instructionBtn.classList.contains('close')) {
-        // instructionBtn.parentNode.parentNode.removeChild(instructionBtn.parentNode);
         instructionBtn.classList.remove('close');
       }
       else {
-        // map.addControl(ctrlInfoText, 'top-left');
         instructionBtn.classList.add('close');
       }
     }
@@ -189,12 +184,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       title: 'Download Information',
       eventHandler: info
     });
-    // const ctrlInfoText = new DivControl({
-    //   id: 'instructions-text',
-    //   className: 'tnris-download-instructions-text',
-    //   text: "Click a polygon in the map to download available data.",
-    //   title: 'Instructions'
-    // });
     const ctrlNote = new ButtonControl({
       id: 'download-note',
       className: 'tnris-download-note',
