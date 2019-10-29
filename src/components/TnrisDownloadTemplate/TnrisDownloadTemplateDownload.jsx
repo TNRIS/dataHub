@@ -17,8 +17,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       super(props);
       this.state = {
         resourceLength: null,
-        areaTypesLength: 1,
-        noteInstruct: true
+        areaTypesLength: 1
       };
 
       // bind our map builder functions
@@ -40,13 +39,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this.createMap();
       }
     }
-
-    // setTimeout to close noteInstruct after 8 secs
-    // this.noteInstructTimer = setTimeout(() => {
-    //   this.setState({
-    //     noteInstruct: false
-    //   })
-    // }, 8000);
   }
 
   componentDidUpdate () {
@@ -57,22 +49,23 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
       }
+      // add .close class after data loads, then setTimeout function to close automatically after 8 secs
+      document.querySelector('#toggle-instructions').classList.add('close');
+      setTimeout(() => {
+        document.querySelector('#toggle-instructions').classList.remove('close');
+      }, 8000);
     }
 
     if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
       this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
+
   }
 
   componentWillUnmount() {
     if (this.map) {
       this.map.remove();
     }
-
-    // clear setTimeout
-    // if (this.noteInstructTimer) {
-    //   clearTimeout(this.noteInstructTimer);
-    // }
   }
 
   toggleLayers (e, map, areaType) {
@@ -165,22 +158,17 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
     // event handlers for custom controls
     const info = () => {
-      const instructionBtn = document.getElementById('toggle-instructions');
-      if (instructionBtn.classList.contains('close')) {
-        instructionBtn.classList.remove('close');
-      }
-      else {
-        instructionBtn.classList.add('close');
-      }
+      const instructionBtn = document.querySelector('#toggle-instructions');
+      instructionBtn.classList.contains('close') ? instructionBtn.classList.remove('close') : instructionBtn.classList.add('close');
     }
-    const note = (event) => {
-      console.log('note event handler fired');
+    const note = () => {
+      const noteBtn = document.querySelector('#download-note');
+      noteBtn.classList.contains('close') ? noteBtn.classList.remove('close') : noteBtn.classList.add('close');
     }
     // custom control variables
     const ctrlInfo = new ButtonControl({
       id: 'toggle-instructions',
       className: 'tnris-download-instructions',
-      text: "Click a polygon in the map to download available data.",
       title: 'Download Information',
       eventHandler: info
     });
