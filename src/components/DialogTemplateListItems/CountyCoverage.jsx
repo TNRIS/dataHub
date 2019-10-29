@@ -206,7 +206,6 @@ export default class CountyCoverage extends React.Component {
           Coverage Area
         </div>
         <div id='county-coverage-map'></div>
-        {/*<CountyCoverageNote />*/}
       </div>
     )
   }

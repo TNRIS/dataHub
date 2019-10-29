@@ -1,6 +1,5 @@
 import React from 'react'
 import { GridLoader } from 'react-spinners'
-// import TnrisDownloadMapNote from './TnrisDownloadMapNote'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -486,7 +485,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             Download
           </div>
         <div id='tnris-download-map'></div>
-        {/*<TnrisDownloadMapNote />*/}
       </div>
     );
   }
