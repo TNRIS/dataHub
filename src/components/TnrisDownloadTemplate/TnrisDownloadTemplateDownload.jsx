@@ -116,7 +116,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         zoom: 6.1
     });
     this.map = map;
-    // add regular out-of-the-box mapbox controls!
+    // add regular out-of-the-box controls
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
     map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     // add tooltips for map controls
@@ -155,7 +155,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._container.parentNode.removeChild(this._container);
       }
     }
-
     // event handlers for custom controls
     const info = () => {
       const instructionBtn = document.querySelector('#toggle-instructions');
