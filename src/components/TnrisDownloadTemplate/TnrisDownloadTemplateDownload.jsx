@@ -47,12 +47,12 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
+        // if not mobile device, add .close class after data loads, then setTimeout function to close automatically after 8 secs
+        document.querySelector('#toggle-instructions').classList.add('close');
+        this.timer = setTimeout(() => {
+          document.querySelector('#toggle-instructions').classList.remove('close');
+        }, 8000);
       }
-      // add .close class after data loads, then setTimeout function to close automatically after 8 secs
-      document.querySelector('#toggle-instructions').classList.add('close');
-      this.timer = setTimeout(() => {
-        document.querySelector('#toggle-instructions').classList.remove('close');
-      }, 8000);
     }
 
     if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
