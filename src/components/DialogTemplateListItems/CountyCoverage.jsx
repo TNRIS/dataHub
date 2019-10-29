@@ -17,13 +17,17 @@ export default class CountyCoverage extends React.Component {
     this.createMap();
     // add .close class after mount, then setTimeout function to close automatically after 8 secs
     document.querySelector('#county-coverage').classList.add('close');
-    setTimeout(() => {
+    this.timer = setTimeout(() => {
       document.querySelector('#county-coverage').classList.remove('close');
     }, 8000);
   }
 
   componentWillUnmount() {
     this.map.remove();
+    // clear setTimeout
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   createMap() {

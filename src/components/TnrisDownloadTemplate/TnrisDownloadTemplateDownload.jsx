@@ -50,7 +50,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       }
       // add .close class after data loads, then setTimeout function to close automatically after 8 secs
       document.querySelector('#toggle-instructions').classList.add('close');
-      setTimeout(() => {
+      this.timer = setTimeout(() => {
         document.querySelector('#toggle-instructions').classList.remove('close');
       }, 8000);
     }
@@ -64,6 +64,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   componentWillUnmount() {
     if (this.map) {
       this.map.remove();
+    }
+    // clear setTimeout
+    if (this.timer) {
+      clearTimeout(this.timer);
     }
   }
 
