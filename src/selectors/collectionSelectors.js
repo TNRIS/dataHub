@@ -121,7 +121,8 @@ export const getCollectionFilterChoices = createSelector(
     // The key must match a property of the collections object and
     // the value is an empty array.
     const collectionFilterChoices = {
-      availability: [],
+      // hard code in new filter by wms service option
+      availability: ['WMS_Service'],
       category: []
     };
     // If collections are in ready the state, continue setting the value arrays in the
@@ -203,12 +204,13 @@ export const getFilteredCollections = createSelector(
 
       let filteredCollectionIds = [];
       let multiFilteredCollectionIds = [];
+
       collectionIds.map(collectionId => {
         for (let key in filters) {
           if (filters.hasOwnProperty(key)) {
-            // need to check if collection has a
-            // value for the key so it can be split
             if (collections[collectionId][key]) {
+              // need to check if collection has a
+              // value for the key so it can be split
               let collectionPropertyValues = collections[collectionId][key].split(',');
               collectionPropertyValues.map(propertyValue => {
                 if (filters[key].indexOf(propertyValue) >= 0) {
@@ -223,6 +225,11 @@ export const getFilteredCollections = createSelector(
                       multiFilteredCollectionIds.push(collectionId);
                     }
                   }
+                }
+                // special handling for fudged WMS_Service filtering
+                else if (collections[collectionId][key] === 'Download' && collections[collectionId].wms_link !== null) {
+                  console.log(filters[key])
+                  filteredCollectionIds.push(collectionId)
                 }
                 return propertyValue;
               })
