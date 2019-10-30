@@ -1,7 +1,7 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
-import CountyCoverageNote from './CountyCoverageNote'
+
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -15,10 +15,19 @@ export default class CountyCoverage extends React.Component {
 
   componentDidMount() {
     this.createMap();
+    // add .close class after mount, then setTimeout function to close automatically after 8 secs
+    document.querySelector('#county-coverage').classList.add('close');
+    this.timer = setTimeout(() => {
+      document.querySelector('#county-coverage').classList.remove('close');
+    }, 8000);
   }
 
   componentWillUnmount() {
     this.map.remove();
+    // clear setTimeout
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   createMap() {
@@ -31,8 +40,59 @@ export default class CountyCoverage extends React.Component {
         zoom: 4
     });
     this.map = map;
-    // add those controls!
+    // add regular out of the box controls
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    // add tooltips for map controls
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
+    // class for custom map control buttons used below
+    class ButtonControl {
+      constructor({
+        id = "",
+        className = "",
+        title = "",
+        eventHandler = ""
+      }) {
+        this._id = id;
+        this._className = className;
+        this._title = title;
+        this._eventHandler = eventHandler;
+      }
+      onAdd(map){
+        this._btn = document.createElement("button");
+        this._btn.id = this._id;
+        this._btn.className = this._className;
+        this._btn.type = "button";
+        this._btn.title = this._title;
+        this._btn.onclick = this._eventHandler;
+
+        this._container = document.createElement("div");
+        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+        this._container.appendChild(this._btn);
+
+        return this._container;
+      }
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    // event handlers for custom controls
+    const notice = () => {
+      const noticeBtn = document.querySelector('#county-coverage');
+      noticeBtn.classList.contains('close') ? noticeBtn.classList.remove('close') : noticeBtn.classList.add('close');
+    }
+    // custom control variables
+    const ctrlNotice = new ButtonControl({
+      id: 'county-coverage',
+      className: 'coverage-notice',
+      title: 'County Coverage Notice',
+      eventHandler: notice
+    });
+    // add custom controls to map
+    map.addControl(ctrlNotice, 'top-left');
 
     const re = new RegExp(", ", 'g');
     const quotedCounties = this.props.counties.replace(re, "','");
@@ -150,7 +210,6 @@ export default class CountyCoverage extends React.Component {
           Coverage Area
         </div>
         <div id='county-coverage-map'></div>
-        <CountyCoverageNote />
       </div>
     )
   }
