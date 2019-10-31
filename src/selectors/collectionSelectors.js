@@ -121,7 +121,6 @@ export const getCollectionFilterChoices = createSelector(
     // The key must match a property of the collections object and
     // the value is an empty array.
     const collectionFilterChoices = {
-      // hard code in new filter by wms service option
       availability: [],
       category: []
     };
