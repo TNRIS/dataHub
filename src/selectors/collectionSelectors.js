@@ -122,7 +122,7 @@ export const getCollectionFilterChoices = createSelector(
     // the value is an empty array.
     const collectionFilterChoices = {
       // hard code in new filter by wms service option
-      availability: ['WMS_Service'],
+      availability: [],
       category: []
     };
     // If collections are in ready the state, continue setting the value arrays in the
@@ -209,6 +209,23 @@ export const getFilteredCollections = createSelector(
         for (let key in filters) {
           if (filters.hasOwnProperty(key)) {
             if (collections[collectionId][key]) {
+              // fudge factory ---> fudges in a wms service filter
+              // check if availability-WMS_Service filter is present, then check if collection has a valid wms link
+              if (filters['availability'].includes('WMS_Service') && collections[collectionId].wms_link) {
+                if (filteredCollectionIds.indexOf(collectionId) < 0) {
+                  // set collection_ids that pass the filter conditions
+                  // into this array
+                  filteredCollectionIds.push(collectionId);
+                } else {
+                  // set any duplicate collection_ids from the conditional
+                  // above into this array to account for cross filtering
+                  if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
+                    multiFilteredCollectionIds.push(collectionId);
+                  }
+                }
+              }
+              // end fudge factory; now proceed to normal operations
+
               // need to check if collection has a
               // value for the key so it can be split
               let collectionPropertyValues = collections[collectionId][key].split(',');
@@ -225,11 +242,6 @@ export const getFilteredCollections = createSelector(
                       multiFilteredCollectionIds.push(collectionId);
                     }
                   }
-                }
-                // special handling for fudged WMS_Service filtering
-                else if (collections[collectionId][key] === 'Download' && collections[collectionId].wms_link !== null) {
-                  console.log(filters[key])
-                  filteredCollectionIds.push(collectionId)
                 }
                 return propertyValue;
               })
