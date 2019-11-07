@@ -35,7 +35,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (this.props.loadingResources === false && this.props.resourceAreaTypes) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
-        this.createMap();
+        if (!this.map) {
+          this.createMap();
+        }
       }
     }
   }
@@ -46,19 +48,23 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
-        this.createMap();
+        if (!this.map) {
+          this.createMap();
+          // add .open class, then setTimeout function to close automatically after 8 secs
+          const instructionBtn = document.querySelector('#toggle-instructions');
+          if (instructionBtn) {
+            this.timer = setTimeout(() => {
+              instructionBtn.classList.remove('open');
+              instructionBtn.classList.add('instruction-icon');
+            }, 8000);
+          }
+        }
       }
-      // add .close class after data loads, then setTimeout function to close automatically after 8 secs
-      document.querySelector('#toggle-instructions').classList.add('close');
-      this.timer = setTimeout(() => {
-        document.querySelector('#toggle-instructions').classList.remove('close');
-      }, 8000);
     }
 
     if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
       this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
-
   }
 
   componentWillUnmount() {
@@ -122,11 +128,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // add regular out-of-the-box controls
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
     map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-    // add tooltips for map controls
-    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
-    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
-    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
-    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
     // class for custom map control buttons used below
     class ButtonControl {
       constructor({
@@ -158,31 +159,43 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._container.parentNode.removeChild(this._container);
       }
     }
-    // event handlers for custom controls
+    // custom control event handlers
     const info = () => {
       const instructionBtn = document.querySelector('#toggle-instructions');
-      instructionBtn.classList.contains('close') ? instructionBtn.classList.remove('close') : instructionBtn.classList.add('close');
+      if (instructionBtn.classList.contains('open')) {
+        instructionBtn.classList.remove('open');
+        instructionBtn.classList.add('instruction-icon');
+      } else {
+        instructionBtn.classList.remove('instruction-icon');
+        instructionBtn.classList.add('open');
+      }
     }
-    const note = () => {
-      const noteBtn = document.querySelector('#download-note');
-      noteBtn.classList.contains('close') ? noteBtn.classList.remove('close') : noteBtn.classList.add('close');
-    }
+    // const note = () => {
+    //   const noteBtn = document.querySelector('#download-note');
+    //   noteBtn.classList.contains('open') ? noteBtn.classList.toggle('open') : noteBtn.classList.toggle('open');
+    // }
     // custom control variables
     const ctrlInfo = new ButtonControl({
       id: 'toggle-instructions',
-      className: 'tnris-download-instructions',
+      className: 'open',
       title: 'Download Information',
       eventHandler: info
     });
-    const ctrlNote = new ButtonControl({
-      id: 'download-note',
-      className: 'tnris-download-note',
-      title: 'Download Note',
-      eventHandler: note
+    const ctrlMenu = new ButtonControl({
+      id: 'download-menu',
+      className: 'tnris-download-menu',
+      title: 'Download Area Selector',
+      eventHandler: ''
     });
+    // const ctrlNote = new ButtonControl({
+    //   id: 'download-note',
+    //   className: 'tnris-download-note',
+    //   title: 'Download Note',
+    //   eventHandler: note
+    // });
     // add custom controls to map
-    map.addControl(ctrlInfo, 'top-left');
-    map.addControl(ctrlNote, 'bottom-left');
+    map.addControl(ctrlMenu, 'top-right');
+    map.addControl(ctrlInfo, 'bottom-left');
 
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
@@ -199,10 +212,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     } else if (areaTypesAry.includes('quad')) {
       startLayer = 'quad';
     }
+
     // areaTypes length in state turns on display of layer menu if more than 1 layer
     if (areaTypesAry.length !== this.state.areaTypesLength) {
       this.setState({
-        areaTypesLength:areaTypesAry.length
+        areaTypesLength: areaTypesAry.length
       });
     }
 
@@ -219,10 +233,25 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     }
 
     // reset layer menu in case of component update
-    var menuItems = document.getElementById('tnris-download-menu');
-    while (menuItems.firstChild) {
-      menuItems.removeChild(menuItems.firstChild);
-    }
+    // while (menuItems.firstChild) {
+    //   menuItems.removeChild(menuItems.firstChild);
+    // }
+    // add tooltips for map controls
+    // console.log(document.querySelector('.mapboxgl-ctrl-fullscreen'));
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector('.mapboxgl-ctrl-fullscreen').setAttribute('title', 'Fullscreen Map');
+
+    // prevent mapbox controls from being added multiple times on update
+    // add custom controls to map
+    const menuItems = document.querySelector('#download-menu');
+    const instructions = document.querySelector('#toggle-instructions');
+    const fullscreen = document.querySelector('.mapboxgl-ctrl-fullscreen');
+    const navigation = [document.querySelector('.mapboxgl-ctrl-zoom-in'), document.querySelector('.mapboxgl-ctrl-zoom-out')];
+    console.log(areaTypesAry)
+    console.log(!menuItems)
+    console.log(!fullscreen)
 
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
@@ -266,7 +295,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             this.toggleLayers(e, map, areaType);
         };
         // add areaType layer to layer menu
-        menuItems.appendChild(link);
+        if (menuItems) {menuItems.appendChild(link)};
 
         // get total number of resources available for download
         const total = areasList.length;
@@ -480,11 +509,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       )
     }
 
-    const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
-
     return (
       <div className='template-content-div tnris-download-template-download'>
-        <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
           <div className='template-content-div-header mdc-typography--headline5'>
             Download
           </div>
