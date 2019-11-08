@@ -128,8 +128,8 @@ export default class CollectionFilterMap extends React.Component {
         const el = window.document.createElement('button')
         el.className = 'mapboxgl-ctrl-icon material-icons navigate-to-extent';
         el.type = 'button';
-        el.title = 'Reset to initial extent';
-        el.setAttribute('aria-label', 'Reset to initial extent');
+        el.title = 'Reset extent to statewide';
+        el.setAttribute('aria-label', 'Reset extent to statewide');
         el.textContent = 'home';
         el.addEventListener('click',
           (e) => {
@@ -651,7 +651,7 @@ export default class CollectionFilterMap extends React.Component {
             onClick={this.handleFilterButtonClick}>
             {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
           </button>
-          {/*<CollectionFilterMapInstructions />*/}
+          <CollectionFilterMapInstructions />
         </div>
       );
     }
