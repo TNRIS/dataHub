@@ -35,9 +35,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (this.props.loadingResources === false && this.props.resourceAreaTypes) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
-        if (!this.map) {
-          this.createMap();
-        }
+        console.log('inside componenet did mount ---> this.createMap()')
+        this.createMap();
+        // add .open class, then setTimeout function to close automatically after 8 secs
+        const instructionBtn = document.querySelector('#toggle-instructions');
+        this.timer = setTimeout(() => {
+          instructionBtn.classList.remove('open');
+          instructionBtn.classList.add('instruction-icon');
+        }, 8000);
       }
     }
   }
@@ -48,17 +53,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
-        if (!this.map) {
-          this.createMap();
-          // add .open class, then setTimeout function to close automatically after 8 secs
-          const instructionBtn = document.querySelector('#toggle-instructions');
-          if (instructionBtn) {
-            this.timer = setTimeout(() => {
-              instructionBtn.classList.remove('open');
-              instructionBtn.classList.add('instruction-icon');
-            }, 8000);
-          }
-        }
+        console.log('inside componenet did update ---> this.createMap()')
+        this.createMap();
+        // add .open class, then setTimeout function to close automatically after 8 secs
+        const instructionBtn = document.querySelector('#toggle-instructions');
+        this.timer = setTimeout(() => {
+          instructionBtn.classList.remove('open');
+          instructionBtn.classList.add('instruction-icon');
+        }, 8000);
       }
     }
 
@@ -72,9 +74,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.map.remove();
     }
     // clear setTimeout
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
+    // if (this.timer) {
+    //   clearTimeout(this.timer);
+    // }
   }
 
   toggleLayers (e, map, areaType) {
@@ -193,9 +195,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     //   title: 'Download Note',
     //   eventHandler: note
     // });
-    // add custom controls to map
-    map.addControl(ctrlMenu, 'top-right');
-    map.addControl(ctrlInfo, 'bottom-left');
 
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
@@ -236,22 +235,22 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // while (menuItems.firstChild) {
     //   menuItems.removeChild(menuItems.firstChild);
     // }
-    // add tooltips for map controls
-    // console.log(document.querySelector('.mapboxgl-ctrl-fullscreen'));
+
+    // add custom controls to map
+    // only add download area menu control if areaTypesAry.length is greater than one
+    if (areaTypesAry.length > 1) {
+      map.addControl(ctrlMenu, 'top-right')
+    }
+    // always add custom instructions control to map
+    map.addControl(ctrlInfo, 'bottom-left');
+    // add tooltips for all map controls
     document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
     document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
     document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
     document.querySelector('.mapboxgl-ctrl-fullscreen').setAttribute('title', 'Fullscreen Map');
 
-    // prevent mapbox controls from being added multiple times on update
     // add custom controls to map
     const menuItems = document.querySelector('#download-menu');
-    const instructions = document.querySelector('#toggle-instructions');
-    const fullscreen = document.querySelector('.mapboxgl-ctrl-fullscreen');
-    const navigation = [document.querySelector('.mapboxgl-ctrl-zoom-in'), document.querySelector('.mapboxgl-ctrl-zoom-out')];
-    console.log(areaTypesAry)
-    console.log(!menuItems)
-    console.log(!fullscreen)
 
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
@@ -413,8 +412,13 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
     const areaLookup = this.areaLookup;
+    // instruction popup for on hover instructions
+    const instructions = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
     map.on('click', layerBaseName, function (e) {
-      // console.log(e.lngLat);
+      instructions.remove();
       const clickedAreaId = e.features[0].properties.area_type_id;
       const clickedAreaName = e.features[0].properties.area_type_name;
       const downloads = areaLookup[clickedAreaId];
@@ -445,12 +449,18 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     map.on('mousemove', layerBaseName, function (e) {
       map.getCanvas().style.cursor = 'pointer';
       map.setFilter(layerHoverName, ['==', 'area_type_name', e.features[0].properties.area_type_name]);
+      // add hover instructions
+      instructions.setLngLat(e.lngLat)
+                  .setHTML(`<p style='text-align:center;'>Click this polygon to download <br> <strong>${e.features[0].properties.area_type_name}</strong> data.`)
+                  .addTo(map);
     });
     // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
     // Also, untoggle the hover layer with a filter
     map.on('mouseleave', layerBaseName, function () {
       map.getCanvas().style.cursor = '';
       map.setFilter(layerHoverName, ['==', 'area_type_name', '']);
+      // remove hover instructions
+      instructions.remove();
     });
   }
 
