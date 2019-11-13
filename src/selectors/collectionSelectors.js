@@ -38,6 +38,24 @@ export const getAllCollectionIds = createSelector(
   }
 );
 
+export const getServiceIds = createSelector(
+  [ getCollections ],
+  (collections) => {
+    let serviceIds = [];
+    if (collections.result) {
+      collections.result.map(collectionId => {
+        if (serviceIds.indexOf(collectionId) < 0) {
+          if (collections.entities.collectionsById[collectionId].wms_link) {
+            serviceIds.push(collectionId);
+          }
+        }
+        return collectionId;
+      })
+    }
+    return serviceIds;
+  }
+);
+
 export const getSearchIndex = createSelector(
   [ getCollections ],
   (collections) => {
@@ -121,7 +139,7 @@ export const getCollectionFilterChoices = createSelector(
     // The key must match a property of the collections object and
     // the value is an empty array.
     const collectionFilterChoices = {
-      availability: [],
+      availability: ['WMS_Service'],
       category: []
     };
     // If collections are in ready the state, continue setting the value arrays in the
@@ -191,8 +209,8 @@ export const getCollectionTimesliderRange = createSelector(
 // through the filters. If no filters are set, or on initial page load,
 // returns an array of all collection_ids available in the catalog.
 export const getFilteredCollections = createSelector(
-  [ getAllCollections, getAllCollectionIds, getFilters ],
-  (collections, collectionIds, filters) => {
+  [ getAllCollections, getAllCollectionIds, getFilters, getServiceIds ],
+  (collections, collectionIds, filters, serviceIds) => {
     // Check if collections are ready in the state
     if (collections) {
       // when no filters are set, return all collection_ids to make all
@@ -204,27 +222,16 @@ export const getFilteredCollections = createSelector(
       let filteredCollectionIds = [];
       let multiFilteredCollectionIds = [];
 
+      // check if wms service filter is checked first then set
+      // filteredCollectionIds equal to serviceIds array (from getServiceIds above)
+      if (filters['availability'] && filters['availability'].includes('WMS_Service')) {
+        filteredCollectionIds = [...serviceIds];
+      }
+
       collectionIds.map(collectionId => {
         for (let key in filters) {
           if (filters.hasOwnProperty(key)) {
             if (collections[collectionId][key]) {
-              // fudge factory ---> fudges in a wms service filter
-              // check if availability-WMS_Service filter is present, then check if collection has a valid wms link
-              if (filters['availability'].includes('WMS_Service') && collections[collectionId].wms_link) {
-                if (filteredCollectionIds.indexOf(collectionId) < 0) {
-                  // set collection_ids that pass the filter conditions
-                  // into this array
-                  filteredCollectionIds.push(collectionId);
-                } else {
-                  // set any duplicate collection_ids from the conditional
-                  // above into this array to account for cross filtering
-                  if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
-                    multiFilteredCollectionIds.push(collectionId);
-                  }
-                }
-              }
-              // end fudge factory; now proceed to normal operations
-
               // need to check if collection has a
               // value for the key so it can be split
               let collectionPropertyValues = collections[collectionId][key].split(',');
@@ -234,7 +241,8 @@ export const getFilteredCollections = createSelector(
                     // set collection_ids that pass the filter conditions
                     // into this array
                     filteredCollectionIds.push(collectionId);
-                  } else {
+                  }
+                  else {
                     // set any duplicate collection_ids from the conditional
                     // above into this array to account for cross filtering
                     if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
@@ -251,7 +259,8 @@ export const getFilteredCollections = createSelector(
       })
       // when 1 or more filters are set, return the collection_ids that
       // pass through those filters. The multiFilteredCollectionIds account
-      // for cross filtering scenarios.
+      // for cross filtering scenarios. The exception to this rule is the fudged
+      // WMS_Service filter which is handled specifically.
       return Object.keys(filters).length > 1 ? multiFilteredCollectionIds : filteredCollectionIds;
     }
   }
