@@ -253,9 +253,10 @@ export const getFilteredCollections = createSelector(
       // pass through those filters. The multiFilteredCollectionIds account
       // for cross filtering scenarios. The exception to this rule is the fudged
       // WMS_Service filter which is handled specifically.
-      // console.log('multiFilteredCollectionIds:', multiFilteredCollectionIds)
-      // console.log('filteredCollectionIds:', filteredCollectionIds)
-      // console.log(filteredCollectionIds.includes('0b6b75dc-c163-4199-a045-b2e5350c75df'));
+      console.log('multiFilteredCollectionIds:', multiFilteredCollectionIds)
+      console.log('filteredCollectionIds:', filteredCollectionIds)
+      console.log(filteredCollectionIds.includes('0b6b75dc-c163-4199-a045-b2e5350c75df'));
+      
       return Object.keys(filters).length > 1 ?
         filters['availability'].includes('WMS_Service') ? filteredCollectionIds : multiFilteredCollectionIds
         : filteredCollectionIds;
