@@ -210,17 +210,16 @@ export const getFilteredCollections = createSelector(
             if (collections[collectionId][key]) {
               // fudge factory ---> fudges in a wms service filter
               // check if availability-WMS_Service filter is present, then check if collection has a valid wms link
-              if (filters['availability'].includes('WMS_Service') && collections[collectionId].wms_link) {
+              if (filters['availability'] && filters['availability'].includes('WMS_Service') && collections[collectionId].wms_link) {
                 if (filteredCollectionIds.indexOf(collectionId) < 0) {
                   // set collection_ids that pass the filter conditions
                   // into this array
                   filteredCollectionIds.push(collectionId);
-                } else {
-                  // set any duplicate collection_ids from the conditional
-                  // above into this array to account for cross filtering
-                  if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
-                    multiFilteredCollectionIds.push(collectionId);
-                  }
+                }
+                // set any duplicate collection_ids from the conditional
+                // above into this array to account for cross filtering
+                else if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
+                  multiFilteredCollectionIds.push(collectionId);
                 }
               }
               // end fudge factory; now proceed to normal operations
@@ -234,7 +233,8 @@ export const getFilteredCollections = createSelector(
                     // set collection_ids that pass the filter conditions
                     // into this array
                     filteredCollectionIds.push(collectionId);
-                  } else {
+                  }
+                  else {
                     // set any duplicate collection_ids from the conditional
                     // above into this array to account for cross filtering
                     if (multiFilteredCollectionIds.indexOf(collectionId) < 0) {
@@ -251,8 +251,14 @@ export const getFilteredCollections = createSelector(
       })
       // when 1 or more filters are set, return the collection_ids that
       // pass through those filters. The multiFilteredCollectionIds account
-      // for cross filtering scenarios.
-      return Object.keys(filters).length > 1 ? multiFilteredCollectionIds : filteredCollectionIds;
+      // for cross filtering scenarios. The exception to this rule is the fudged
+      // WMS_Service filter which is handled specifically.
+      // console.log('multiFilteredCollectionIds:', multiFilteredCollectionIds)
+      // console.log('filteredCollectionIds:', filteredCollectionIds)
+      // console.log(filteredCollectionIds.includes('0b6b75dc-c163-4199-a045-b2e5350c75df'));
+      return Object.keys(filters).length > 1 ?
+        filters['availability'].includes('WMS_Service') ? filteredCollectionIds : multiFilteredCollectionIds
+        : filteredCollectionIds;
     }
   }
 );
