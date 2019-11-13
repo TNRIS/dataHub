@@ -215,7 +215,8 @@ export default class CollectionFilter extends React.Component {
                     {
                       this.props.collectionFilterChoices[choice].map((choiceValue, i) =>{
                         const labelValue = choiceValue.replace(/_/g, ' ');
-                        return (<li className='mdc-list-item'
+                        return (
+                          <li className='mdc-list-item'
                                     key={choiceValue}>
                           <div className='mdc-form-field'>
                             <div className='mdc-checkbox'>
@@ -242,7 +243,8 @@ export default class CollectionFilter extends React.Component {
                            </label>
                           </div>
                         </li>);
-                    })}
+                      })
+                    }
                   </ul>
               </li>
             )
