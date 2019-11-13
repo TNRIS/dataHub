@@ -212,39 +212,6 @@ export default class CollectionFilter extends React.Component {
                      id={`${choice}-expansion-icon`}>expand_more</i>
                 </div>
                   <ul className='mdc-list hide-filter-list' id={`${choice}-list`}>
-                    {/* begin fudge factory; here is where we fudge in the new wms service filter */}
-                    {
-                      `${choice}` === 'availability' ? (
-                        <li className='mdc-list-item'>
-                          <div className='mdc-form-field'>
-                            <div className='mdc-checkbox'>
-                              <input type='checkbox'
-                                     className='mdc-checkbox__native-control'
-                                     id='WMS_Service'
-                                     name='availability'
-                                     value='WMS_Service'
-                                     onChange={e => this.handleSetFilter(e.target)}
-                                     onKeyDown={(e) => this.handleKeySetFilter(e)}/>
-                              <div className='mdc-checkbox__background'>
-                                <svg className='mdc-checkbox__checkmark'
-                                     viewBox='0 0 24 24'>
-                                  <path className='mdc-checkbox__checkmark-path'
-                                        fill='none'
-                                        d='M1.73,12.91 8.1,19.28 22.79,4.59'/>
-                                </svg>
-                                <div className='mdc-checkbox__mixedmark'></div>
-                              </div>
-                            </div>
-                            <label id='WMS_Service-label'
-                                   htmlFor='WMS_Service'>
-                                   WMS Service
-                           </label>
-                          </div>
-                        </li>
-                      ) : ""
-                    }
-                    {/* end fudge factory */}
-
                     {
                       this.props.collectionFilterChoices[choice].map((choiceValue, i) =>{
                         const labelValue = choiceValue.replace(/_/g, ' ');
