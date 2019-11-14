@@ -36,7 +36,7 @@ export default class CollectionFilterMapInstructions extends React.Component {
           To use the draw tool, single click to begin, move cursor to increase the extent/size, single click to finish the drawing.
         </div>
         <div className="mdc-typography--body1 instruction-paragraph">
-          Click the "Set Map Filter" button to apply a filter once an area has been identified.
+          Click the "Set Map Filter" button to apply a filter once an area has been identified. To set a new map filter, clear the currently applied filter.
         </div>
       </div>
     ) : (
