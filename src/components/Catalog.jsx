@@ -313,7 +313,6 @@ export default class Catalog extends React.Component {
       return this.loadingMessage;
     }
 
-    console.log(this.props.view)
     const viewClass = this.props.view === 'catalog' ? 'catalog-view-container' : 'other-view-container';
 
     return (
