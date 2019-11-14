@@ -6,8 +6,12 @@ styles for component: Catalog
 .catalog-component {
   margin-bottom: 75px;
 
-  .view-container {
+  .catalog-view-container {
     padding-top: 106px;
+  }
+
+  .other-view-container {
+    padding-top: 40px;
   }
 
   .mdc-dialog {
