@@ -85,7 +85,6 @@ export default class Header extends React.Component {
   }
 
   render() {
-
     const tablet = parseInt(breakpoints.tablet, 10);
 
     let drawerStatusClass = 'closed-drawer';
@@ -157,7 +156,7 @@ export default class Header extends React.Component {
             </section>
             <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
               <CollectionSearcherContainer />
-              {this.props.orders && Object.keys(this.props.orders).length !== 0 ?
+              {this.props.orders && Object.keys(this.props.orders).length !== 0 && this.props.view !== 'geoFilter' ?
                  <div className="shopping-cart-icon nav-button">
                    {shoppingCartCountBadge}
                   <button

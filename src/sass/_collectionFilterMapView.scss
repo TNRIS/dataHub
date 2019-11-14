@@ -9,10 +9,24 @@ styles for component: CollectionFilterMapView
     font-size: 1.7rem;
     font-family: 'Roboto Condensed', sans-serif;
     color: $nest-text;
+    padding-bottom: 1px;
   }
 
   .close-shopping-cart {
     background-color: #e6e6e6;
     border-radius: 50%;
+  }
+
+  .county-select__wrapper {
+    padding-right: 50px;
+    margin-top: 4px;
+
+    .mdc-notched-outline {
+      padding: 1px 0px 1px 0px;
+      
+      .mdc-notched-outline__leading, .mdc-notched-outline__trailing {
+        border-radius: unset;
+      }
+    }
   }
 }
