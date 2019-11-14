@@ -28,12 +28,12 @@ export default class CollectionFilterMapInstructions extends React.Component {
       <div>
         <i className="material-icons close-icon" onClick={() => {this.setState({noteHover:false})}}>close</i>
         <div className="mdc-typography--body1 instruction-paragraph">
-          Select a county from the dropdown or use the polygon tool (
+          Select a county from the dropdown or use the draw tool (
           <div id="instruction-polygon-icon" className="mapbox-gl-draw_polygon"></div>)&nbsp;
           to identify a geographic area.
         </div>
         <div className="mdc-typography--body1 instruction-paragraph">
-          To use the draw tool, single click to begin drawing, move cursor to draw a filter extent, single click to finish drawing.
+          To use the draw tool, single click to begin, move cursor to increase the extent/size, single click to finish the drawing.
         </div>
         <div className="mdc-typography--body1 instruction-paragraph">
           Click the "Set Map Filter" button to apply a filter once an area has been identified.
