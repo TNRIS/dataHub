@@ -47,27 +47,17 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
-        // if not mobile device, add .close class after data loads, then setTimeout function to close automatically after 8 secs
-        document.querySelector('#toggle-instructions').classList.add('close');
-        this.timer = setTimeout(() => {
-          document.querySelector('#toggle-instructions').classList.remove('close');
-        }, 8000);
       }
     }
 
     if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
       this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
-
   }
 
   componentWillUnmount() {
     if (this.map) {
       this.map.remove();
-    }
-    // clear setTimeout
-    if (this.timer) {
-      clearTimeout(this.timer);
     }
   }
 
@@ -119,26 +109,27 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         zoom: 6.1
     });
     this.map = map;
-    // add regular out-of-the-box controls
-    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-    // add tooltips for map controls
-    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
-    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
-    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
-    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
-    // class for custom map control buttons used below
+    // add regular out-of-the-box controls if they dont already exist
+    // prevents stacking/duplicating controls on component update
+    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
+      map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    }
+    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
+      map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    }
+    // class for custom map controls used below
+    // *** event handler is commented out but might be useful for future new controls ***
     class ButtonControl {
       constructor({
         id = "",
         className = "",
-        title = "",
-        eventHandler = ""
+        title = ""
+        // eventHandler = ""
       }) {
         this._id = id;
         this._className = className;
         this._title = title;
-        this._eventHandler = eventHandler;
+        // this._eventHandler = eventHandler;
       }
       onAdd(map){
         this._btn = document.createElement("button");
@@ -146,7 +137,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._btn.className = this._className;
         this._btn.type = "button";
         this._btn.title = this._title;
-        this._btn.onclick = this._eventHandler;
+        // this._btn.onclick = this._eventHandler;
 
         this._container = document.createElement("div");
         this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
@@ -158,31 +149,13 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this._container.parentNode.removeChild(this._container);
       }
     }
-    // event handlers for custom controls
-    const info = () => {
-      const instructionBtn = document.querySelector('#toggle-instructions');
-      instructionBtn.classList.contains('close') ? instructionBtn.classList.remove('close') : instructionBtn.classList.add('close');
-    }
-    const note = () => {
-      const noteBtn = document.querySelector('#download-note');
-      noteBtn.classList.contains('close') ? noteBtn.classList.remove('close') : noteBtn.classList.add('close');
-    }
-    // custom control variables
-    const ctrlInfo = new ButtonControl({
-      id: 'toggle-instructions',
-      className: 'tnris-download-instructions',
-      title: 'Download Information',
-      eventHandler: info
+    // custom control variable
+    const ctrlMenu = new ButtonControl({
+      id: 'download-menu',
+      className: 'tnris-download-menu',
+      title: 'Download Area Selector'
+      // eventHandler: ''
     });
-    const ctrlNote = new ButtonControl({
-      id: 'download-note',
-      className: 'tnris-download-note',
-      title: 'Download Note',
-      eventHandler: note
-    });
-    // add custom controls to map
-    map.addControl(ctrlInfo, 'top-left');
-    map.addControl(ctrlNote, 'bottom-left');
 
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
@@ -199,10 +172,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     } else if (areaTypesAry.includes('quad')) {
       startLayer = 'quad';
     }
+
     // areaTypes length in state turns on display of layer menu if more than 1 layer
     if (areaTypesAry.length !== this.state.areaTypesLength) {
       this.setState({
-        areaTypesLength:areaTypesAry.length
+        areaTypesLength: areaTypesAry.length
       });
     }
 
@@ -218,10 +192,29 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
 
+    // add custom control to map; only add download area
+    // menu control if areaTypesAry.length is greater than
+    // one and the control doesn't already exist in the Dom
+    if (areaTypesAry.length > 1) {
+      if (!document.querySelector('.tnris-download-menu')) {
+        map.addControl(ctrlMenu, 'top-right')
+      }
+    }
+
+    // add tooltips for all map controls
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector('.mapboxgl-ctrl-fullscreen').setAttribute('title', 'Fullscreen Map');
+
+    // add custom controls to map
+    const menuItems = document.querySelector('#download-menu');
+
     // reset layer menu in case of component update
-    var menuItems = document.getElementById('tnris-download-menu');
-    while (menuItems.firstChild) {
-      menuItems.removeChild(menuItems.firstChild);
+    if (menuItems) {
+      while (menuItems.firstChild) {
+        menuItems.removeChild(menuItems.firstChild);
+      }
     }
 
     // iterate our area_types so we can add them to different layers for
@@ -265,8 +258,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             e.stopPropagation();
             this.toggleLayers(e, map, areaType);
         };
+
         // add areaType layer to layer menu
-        menuItems.appendChild(link);
+        if (menuItems) {menuItems.appendChild(link)};
 
         // get total number of resources available for download
         const total = areasList.length;
@@ -384,8 +378,13 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
     const areaLookup = this.areaLookup;
+    // instruction popup for on hover instructions
+    // const instructions = new mapboxgl.Popup({
+    //   closeButton: false,
+    //   closeOnClick: false
+    // });
     map.on('click', layerBaseName, function (e) {
-      // console.log(e.lngLat);
+      // instructions.remove();
       const clickedAreaId = e.features[0].properties.area_type_id;
       const clickedAreaName = e.features[0].properties.area_type_name;
       const downloads = areaLookup[clickedAreaId];
@@ -416,12 +415,18 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     map.on('mousemove', layerBaseName, function (e) {
       map.getCanvas().style.cursor = 'pointer';
       map.setFilter(layerHoverName, ['==', 'area_type_name', e.features[0].properties.area_type_name]);
+      // add hover instructions
+      // instructions.setLngLat(e.lngLat)
+      //             .setHTML(`<p style='text-align:center;'>Click this polygon to download <br> <strong>${e.features[0].properties.area_type_name}</strong> data.`)
+      //             .addTo(map);
     });
     // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
     // Also, untoggle the hover layer with a filter
     map.on('mouseleave', layerBaseName, function () {
       map.getCanvas().style.cursor = '';
       map.setFilter(layerHoverName, ['==', 'area_type_name', '']);
+      // remove hover instructions
+      // instructions.remove();
     });
   }
 
@@ -480,14 +485,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       )
     }
 
-    const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
-
     return (
       <div className='template-content-div tnris-download-template-download'>
-        <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
-          <div className='template-content-div-header mdc-typography--headline5'>
-            Download
-          </div>
+        <div className='template-content-div-header mdc-typography--headline5'>
+          Download
+        </div>
+        <div className='template-content-div-subheader mdc-typography--headline7'>
+          Click a polygon in the map to download available data.
+        </div>
         <div id='tnris-download-map'></div>
       </div>
     );

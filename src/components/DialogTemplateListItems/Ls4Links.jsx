@@ -36,6 +36,9 @@ export default class Ls4Links extends React.Component {
           <p>
             This Historic Imagery dataset has scanned indexes (.tif format) available for download. Use the scanned indexes to view this collection's spatial extent and the identification numbers of the individual frames which comprise it.
           </p>
+          <p>
+            <strong>Note:</strong> Frames shown within each index sheet may or may not be availabile due to incomplete collections within the archive.
+          </p>
           <ul className="mdc-list">
             {scans.map((scan, index) => {
               const odd = index % 2 === 1 ? "mdc-list-item odd" : "mdc-list-item even";
