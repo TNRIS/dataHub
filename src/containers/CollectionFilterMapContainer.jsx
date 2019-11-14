@@ -6,11 +6,9 @@ import {
   collectionFilterMapActions,
   urlTrackerActions
 } from '../actions';
-import CollectionFilterMap from '../components/CollectionFilterMap';
 import { getAllResources
        } from '../selectors/resourceSelectors';
-
-import CollectionFilterMap from '../components/CollectionFilterMap'
+import CollectionFilterMap from '../components/CollectionFilterMap';
 
 const mapStateToProps = state => ({
   collectionFilterMapAoi:
