@@ -6,7 +6,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import turfExtent from 'turf-extent';
-import styles from '../sass/index.scss';
+// import styles from '../sass/index.scss';
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss';
@@ -25,8 +25,6 @@ export default class CollectionFilterMap extends React.Component {
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
     this.resetTheMap = this.resetTheMap.bind(this);
-    this.enableUserInteraction = this.enableUserInteraction.bind(this);
-    this.disableUserInteraction = this.disableUserInteraction.bind(this);
     this.handleFilterButtonClick = this.handleFilterButtonClick.bind(this);
     this.getExtentIntersectedCollectionIds =
       this.getExtentIntersectedCollectionIds.bind(this);
@@ -45,6 +43,7 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
+    // Disable user interaction if a filter has been set
     const mapElement = document.querySelector('.mapboxgl-canvas');
     const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
     const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
@@ -155,20 +154,7 @@ export default class CollectionFilterMap extends React.Component {
     const selectedAreaColor = '#1E8DC1';
 
     map.on('load', () => {
-      // Need to find out which is the first symbol layer
-      // in the map so our feature layers can be placed
-      // below the map labels.
-      const layers = map.getStyle().layers;
-      // Find the index of the first symbol layer in the map style
-      let firstSymbolId;
-      for (let i = 0; i < layers.length; i++) {
-        if (layers[i].type === 'symbol') {
-          firstSymbolId = layers[i].id;
-          break;
-        }
-      }
-
-      // define county and quad layers and add to the map
+      // define area type layers and add to the map
       const layerData = {
           user_name: 'tnris-flood',
           sublayers: [{
@@ -198,6 +184,9 @@ export default class CollectionFilterMap extends React.Component {
           { type: 'vector', tiles: areaTypeTiles }
         );
 
+        // Add the area type selected outline layer to the map.
+        // This layer is used to highlight te outline of the user
+        // selected area type.
         map.addLayer({
             id: 'area-type-outline-selected',
             'type': 'line',
@@ -217,6 +206,7 @@ export default class CollectionFilterMap extends React.Component {
             ]
         }, 'boundary_country_inner');
 
+        // Add the county outlines to the map
         map.addLayer({
             id: 'county-outline',
             'type': 'line',
@@ -232,12 +222,13 @@ export default class CollectionFilterMap extends React.Component {
             'filter': ["==", ["get", "area_type"], "county"]
         }, 'area-type-outline-selected');
 
+        // Add the quad outlines to the map
         map.addLayer({
             id: 'quad-outline',
             'type': 'line',
             'source': 'area-type-source',
             'source-layer': 'layer0',
-            'minzoom': 9,
+            'minzoom': 7.5,
             'maxzoom': 24,
             'paint': {
               'line-color': 'rgba(100,0,100,1)',
@@ -245,37 +236,7 @@ export default class CollectionFilterMap extends React.Component {
               'line-opacity': .05
             },
             'filter': ["==", ["get", "area_type"], "quad"]
-          });
-
-        map.addLayer({
-            id: 'county',
-            'type': 'fill',
-            'source': 'area-type-source',
-            'source-layer': 'layer0',
-            'minzoom': 2,
-            'maxzoom': 24,
-            'paint': {
-              'fill-color': 'rgba(100,100,100,0)',
-              // 'fill-color': styles[filler],
-              // 'fill-opacity': .05,
-              // 'fill-outline-color': styles[filler]
-            }
-        }, 'county-outline');
-
-        // map.addLayer({
-        //     id: 'county-selected',
-        //     'type': 'fill',
-        //     'source': 'county-source',
-        //     'source-layer': 'layer0',
-        //     'minzoom': 2,
-        //     'maxzoom': 24,
-        //     'paint': {
-        //       'fill-color': styles[filler],
-        //       'fill-opacity': .7,
-        //       'fill-outline-color': styles[texter]
-        //     },
-        //     'filter': ["==", "area_type_name", ""]
-        // }, 'county-outline');
+          }, 'county-outline');
       });
     })
 
@@ -424,38 +385,8 @@ export default class CollectionFilterMap extends React.Component {
         document.getElementById(
           'map-filter-button'
         ).classList.remove('mdc-fab--exited');
-        // this.disableUserInteraction();
       }
     })
-  }
-
-  enableUserInteraction() {
-    // enables panning, rotating, and zooming of the map
-    this._map.boxZoom.enable();
-    this._map.doubleClickZoom.enable();
-    this._map.dragPan.enable();
-    this._map.dragRotate.enable();
-    this._map.keyboard.enable();
-    this._map.scrollZoom.enable();
-    this._map.touchZoomRotate.enable();
-    this._navControl._compass.disabled = false;
-    this._navControl._zoomInButton.disabled = false;
-    this._navControl._zoomOutButton.disabled = false;
-
-  }
-
-  disableUserInteraction() {
-    // disables panning, rotating, and zooming of the map
-    this._map.boxZoom.disable();
-    this._map.doubleClickZoom.disable();
-    this._map.dragPan.disable();
-    this._map.dragRotate.disable();
-    this._map.keyboard.disable();
-    this._map.scrollZoom.disable();
-    this._map.touchZoomRotate.disable();
-    this._navControl._compass.disabled = true;
-    this._navControl._zoomInButton.disabled = true;
-    this._navControl._zoomOutButton.disabled = true;
   }
 
   resetTheMap() {
@@ -479,6 +410,7 @@ export default class CollectionFilterMap extends React.Component {
         ]
       );
     }
+    // Enable user interaction once the filter has been cleared
     const mapElement = document.querySelector('.mapboxgl-canvas');
     const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
     const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
@@ -616,7 +548,7 @@ export default class CollectionFilterMap extends React.Component {
       _this.setState({
         mapFilteredCollectionIds: uniqueCollectionIds
       });
-      _this._map.fitBounds(bounds, {padding: 100});
+      _this._map.fitBounds(bounds, {padding: 80});
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
     }).error(function(errors) {
       // errors contains a list of errors

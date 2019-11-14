@@ -64,13 +64,11 @@ export default class CollectionFilterMapView extends React.Component {
 
     sql.execute(query).done( (data) => {
       let counties = [];
-      let quads = [];
       data.rows.map(row => {
         if (row["area_type"] === "county") {
           counties.push(row["area_type_name"]);
-        } else {
-          quads.push(row["area_type_name"]);
         }
+        return row
       });
       this.setState({countyNames: counties})
       return counties

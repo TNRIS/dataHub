@@ -33,7 +33,7 @@ export default class CollectionFilterMapInstructions extends React.Component {
           to identify a geographic area.
         </div>
         <div className="mdc-typography--body1 instruction-paragraph">
-          To use the draw tool: single click to begin drawing, move cursor to draw a filter extent, single click to finish drawing.
+          To use the draw tool, single click to begin drawing, move cursor to draw a filter extent, single click to finish drawing.
         </div>
         <div className="mdc-typography--body1 instruction-paragraph">
           Click the "Set Map Filter" button to apply a filter once an area has been identified.
