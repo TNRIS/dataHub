@@ -39,52 +39,6 @@ export default class CountyCoverage extends React.Component {
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
       map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     }
-    // class for custom map controls; not currently being used but might be useful in future
-    // *** event handler is commented out but might be useful for future new controls ***
-    // class ButtonControl {
-    //   constructor({
-    //     id = "",
-    //     className = "",
-    //     title = ""
-    //     // eventHandler = ""
-    //   }) {
-    //     this._id = id;
-    //     this._className = className;
-    //     this._title = title;
-    //     // this._eventHandler = eventHandler;
-    //   }
-    //   onAdd(map){
-    //     this._btn = document.createElement("button");
-    //     this._btn.id = this._id;
-    //     this._btn.className = this._className;
-    //     this._btn.type = "button";
-    //     this._btn.title = this._title;
-    //     // this._btn.onclick = this._eventHandler;
-    //
-    //     this._container = document.createElement("div");
-    //     this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
-    //     this._container.appendChild(this._btn);
-    //
-    //     return this._container;
-    //   }
-    //   onRemove() {
-    //     this._container.parentNode.removeChild(this._container);
-    //   }
-    // }
-    // event handlers for custom controls
-    // const notice = () => {
-    //   const noticeBtn = document.querySelector('#county-coverage');
-    //   noticeBtn.classList.contains('close') ? noticeBtn.classList.remove('close') : noticeBtn.classList.add('close');
-    // }
-    // custom control variables
-    // const ctrlNotice = new ButtonControl({
-    //   id: 'county-coverage',
-    //   className: 'coverage-notice',
-    //   title: 'County Coverage Notice',
-    //   eventHandler: notice
-    // });
-    // add custom controls to map
-    // map.addControl(ctrlNotice, 'top-left');
 
     // add tooltips for map controls
     document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');

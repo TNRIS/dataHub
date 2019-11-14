@@ -154,7 +154,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       id: 'download-menu',
       className: 'tnris-download-menu',
       title: 'Download Area Selector'
-      // eventHandler: ''
     });
 
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
@@ -378,13 +377,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
     const areaLookup = this.areaLookup;
-    // instruction popup for on hover instructions
-    // const instructions = new mapboxgl.Popup({
-    //   closeButton: false,
-    //   closeOnClick: false
-    // });
+
     map.on('click', layerBaseName, function (e) {
-      // instructions.remove();
       const clickedAreaId = e.features[0].properties.area_type_id;
       const clickedAreaName = e.features[0].properties.area_type_name;
       const downloads = areaLookup[clickedAreaId];
@@ -415,18 +409,12 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     map.on('mousemove', layerBaseName, function (e) {
       map.getCanvas().style.cursor = 'pointer';
       map.setFilter(layerHoverName, ['==', 'area_type_name', e.features[0].properties.area_type_name]);
-      // add hover instructions
-      // instructions.setLngLat(e.lngLat)
-      //             .setHTML(`<p style='text-align:center;'>Click this polygon to download <br> <strong>${e.features[0].properties.area_type_name}</strong> data.`)
-      //             .addTo(map);
     });
     // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
     // Also, untoggle the hover layer with a filter
     map.on('mouseleave', layerBaseName, function () {
       map.getCanvas().style.cursor = '';
       map.setFilter(layerHoverName, ['==', 'area_type_name', '']);
-      // remove hover instructions
-      // instructions.remove();
     });
   }
 

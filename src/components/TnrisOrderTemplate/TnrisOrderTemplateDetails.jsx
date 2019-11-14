@@ -84,7 +84,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                               <ShareButtons />
                             </div>
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                              {/*{imageCarousel}*/}
                               {countyCoverage}
                               <div className="mdc-layout-grid__inner">
                                 <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
@@ -98,7 +97,6 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                           </div>) : (
                           <div className="mdc-layout-grid__inner">
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                              {/*{imageCarousel}*/}
                               {countyCoverage}
                               <Metadata collection={this.props.collection} />
                               {description}
