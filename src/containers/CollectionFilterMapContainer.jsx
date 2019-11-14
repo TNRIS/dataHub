@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import {
   catalogActions,
@@ -9,6 +9,8 @@ import {
 import CollectionFilterMap from '../components/CollectionFilterMap';
 import { getAllResources
        } from '../selectors/resourceSelectors';
+
+import CollectionFilterMap from '../components/CollectionFilterMap'
 
 const mapStateToProps = state => ({
   collectionFilterMapAoi:

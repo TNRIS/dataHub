@@ -1,6 +1,6 @@
-import React from 'react';
-import { matchPath } from 'react-router-dom';
-import turfExtent from 'turf-extent';
+import React from 'react'
+import { matchPath } from 'react-router-dom'
+import turfExtent from 'turf-extent'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -86,6 +86,15 @@ export default class CollectionFilter extends React.Component {
         return key;
       });
     }
+
+    // expand filter titles in tool drawer if filter is applied
+    const filterTitleList = document.querySelectorAll("#availability-title, #category-title");
+    filterTitleList.forEach(function(item) {
+      if (item.classList.contains('mdc-list-item--activated')) {
+        item.children[0].innerHTML = 'expand_less';
+        item.nextSibling.classList.remove('hide-filter-list');
+      }
+    })
   }
 
   // Gets the selected area_type geometry as geojson from
@@ -258,7 +267,8 @@ export default class CollectionFilter extends React.Component {
                     {
                       this.props.collectionFilterChoices[choice].map((choiceValue, i) =>{
                         const labelValue = choiceValue.replace(/_/g, ' ');
-                        return (<li className='mdc-list-item'
+                        return (
+                          <li className='mdc-list-item'
                                     key={choiceValue}>
                           <div className='mdc-form-field'>
                             <div className='mdc-checkbox'>
@@ -285,7 +295,8 @@ export default class CollectionFilter extends React.Component {
                            </label>
                           </div>
                         </li>);
-                    })}
+                      })
+                    }
                   </ul>
               </li>
             )

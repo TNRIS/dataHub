@@ -1,13 +1,13 @@
-import React from 'react';
-import { MDCDrawer } from "@material/drawer";
+import React from 'react'
+import { MDCDrawer } from "@material/drawer"
 
-import CollectionFilterContainer from '../containers/CollectionFilterContainer';
-import CollectionSorterContainer from '../containers/CollectionSorterContainer';
-import CollectionTimesliderContainer from '../containers/CollectionTimesliderContainer';
+import CollectionFilterContainer from '../containers/CollectionFilterContainer'
+import CollectionSorterContainer from '../containers/CollectionSorterContainer'
+import CollectionTimesliderContainer from '../containers/CollectionTimesliderContainer'
 
-import ShareButtons from './DialogTemplateListItems/ShareButtons';
+import ShareButtons from './DialogTemplateListItems/ShareButtons'
 
-import ThemeChooserContainer from '../containers/ThemeChooserContainer';
+import ThemeChooserContainer from '../containers/ThemeChooserContainer'
 
 export default class ToolDrawer extends React.Component {
 

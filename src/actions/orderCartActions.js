@@ -162,14 +162,15 @@ function getPolicy(policyUrl, dispatch) {
 
 export function uploadOrderFile(collectionId, cartInfo) {
   const bucket = 'https://contact-uploads.s3.amazonaws.com/';
-  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8001/' : 'https://contact.tnris.org/';
+  // if in development mode, use local api build for forms; otherwise, use prod deployed api
+  const contactUrl = process.env.REACT_APP_API_URL + '/api/v1/contact/policy/';
   let policyUrl;
   // different policy permissions based on file type (zip vs image)
   if (cartInfo.type === 'AOI') {
-    policyUrl = contactUrl + 'policy/zip-upload';
+    policyUrl = contactUrl + 'zip-upload';
   }
   else if (cartInfo.type === 'Screenshot') {
-    policyUrl = contactUrl + 'policy/image-upload';
+    policyUrl = contactUrl + 'image-upload';
   }
   return (dispatch, getState) => {
     dispatch(uploadOrderBegin());
@@ -180,7 +181,7 @@ export function uploadOrderFile(collectionId, cartInfo) {
              // iterate all cart files since mulitple screenshot images permitted
              cartFiles.forEach((file, index) => {
                // build fake form to do the upload. required to use the s3 rest api
-               const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name;
+               const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name.split(' ').join('_');
                let formData = new FormData();
                formData.append('key', fileKey);
                formData.append('acl', 'private');
@@ -254,7 +255,8 @@ export function uploadOrderFile(collectionId, cartInfo) {
 
 // --- submit order form actions ---
 export function submitOrderCartForm(formInfo) {
-  const contactUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8001/' : 'https://contact.tnris.org/';
+  // if in development mode, use local api build for forms; otherwise, use prod deployed api
+  const contactUrl = process.env.REACT_APP_API_URL + '/api/v1/contact/submit/';
   return (dispatch, getState) => {
     dispatch(submitOrderBegin());
     const payload = {

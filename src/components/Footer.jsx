@@ -1,5 +1,5 @@
-import React from 'react';
-import { MDCMenu } from '@material/menu';
+import React from 'react'
+import { MDCMenu } from '@material/menu'
 
 export default class Footer extends React.Component {
   constructor(props) {
@@ -137,24 +137,27 @@ export default class Footer extends React.Component {
                 </div>
                 <div ref="tnris_link_menu" className="mdc-menu mdc-menu-surface">
                   <ul className="mdc-list inner-menu-link-list" role="listbox" aria-hidden="true">
-                      <a className="mdc-list-item" href="https://tnris.org/maps-and-data/applications-and-utilities" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        Applications and Utilities
-                      </a>
-                      <a className="mdc-list-item" href="https://tnris.org/research-distribution-center" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        Research &amp; Distribution
-                      </a>
-                      <a className="mdc-list-item" href="https://tnris.org/stratmap" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        StratMap Program
-                      </a>
-                      <a className="mdc-list-item" href="https://tnris.org/training" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        Education &amp; Training
-                      </a>
-                      <a className="mdc-list-item" href="https://tnris.org/about" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        About Us
-                      </a>
-                      <a className="mdc-list-item" href="https://tnris.org/contact" target="_blank" rel="noopener noreferrer" tabIndex="0">
-                        General Contact
-                      </a>
+                    <a className="mdc-list-item" href="https://tnris.org/applications-and-utilities/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      Applications &amp; Utilities
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/geographic-information-office/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      Texas GIO
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/research-distribution-center" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      Research &amp; Distribution
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/stratmap/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      StratMap Program
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/education/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      Education &amp; Training
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/events/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      Events
+                    </a>
+                    <a className="mdc-list-item" href="https://tnris.org/about/" target="_blank" rel="noopener noreferrer" tabIndex="0">
+                      About Us
+                    </a>
                   </ul>
                 </div>
               </div>

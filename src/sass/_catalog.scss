@@ -55,6 +55,19 @@ styles for component: Catalog
       .mdc-layout-grid__inner {
         padding-inline-start: unset;
       }
+
+      .scrolltop-container {
+
+        .scrolltop {
+          z-index: 5000;
+          text-align: center;
+          position: fixed;
+          bottom: 30px;
+          left: 30px;
+          background-color: $primary-color;
+          color: white;
+        }
+      }
     }
 
     ul {

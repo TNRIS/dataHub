@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export default class Supplementals extends React.Component {
 
@@ -42,6 +42,19 @@ export default class Supplementals extends React.Component {
       </li>
     ) : "";
 
+    const lidarBuildings = this.props.collection.lidar_buildings_url ? (
+      <li className="mdc-list-item">
+        <span className="mdc-list-item__text">
+          <strong>Lidar Buildings:</strong>
+        </span>
+        <span className="mdc-list-item__meta">
+          <a href={this.props.collection.lidar_buildings_url}>
+            <i className="material-icons">description</i>Download
+          </a>
+        </span>
+      </li>
+    ) : "";
+
     return (
       <div className="template-content-div">
         <div className='mdc-typography--headline5 template-content-div-header'>
@@ -51,6 +64,7 @@ export default class Supplementals extends React.Component {
           {tileIndex}
           {supplementalReport}
           {lidarBreaklines}
+          {lidarBuildings}
         </ul>
       </div>
     )

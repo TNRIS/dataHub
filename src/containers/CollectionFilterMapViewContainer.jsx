@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
-import CollectionFilterMapView from '../components/CollectionFilterMapView';
+import CollectionFilterMapView from '../components/CollectionFilterMapView'
 
 import { catalogActions,
          collectionFilterMapActions,

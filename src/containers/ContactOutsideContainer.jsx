@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
-import { contactActions } from '../actions';
-import ContactOutsideForm from '../components/ContactOutsideForm';
+import {contactActions} from '../actions'
+import ContactOutsideForm from '../components/ContactOutsideForm'
 
 const mapStateToProps = state => ({
   submitStatus: state.contact.submitting,

@@ -1,13 +1,11 @@
-import React from 'react';
-import { GridLoader } from 'react-spinners';
-import TnrisDownloadMapNote from './TnrisDownloadMapNote';
+import React from 'react'
+import { GridLoader } from 'react-spinners'
 
-import mapboxgl from 'mapbox-gl';
-import styles from '../../sass/index.scss';
-// import loadingImage from '../../images/loading.gif';
+import mapboxgl from 'mapbox-gl'
+import styles from '../../sass/index.scss'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss';
+import breakpoints from '../../sass/_breakpoints.scss'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
@@ -20,6 +18,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         resourceLength: null,
         areaTypesLength: 1
       };
+
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
       this.createLayers = this.createLayers.bind(this);
@@ -33,14 +32,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   componentDidMount() {
     // on mount/load, try and launch the map. if the api response with the list
     // of downloadable resources hasn't returned we won't launch it
-    if (this.props.loadingResources === false && this.props.selectedCollectionResources.result.length > 0) {
+    if (this.props.loadingResources === false && this.props.resourceAreaTypes) {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
       }
-    }
-    if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
-      this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
   }
 
@@ -51,17 +47,27 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.areaLookup = this.props.resourceAreas;
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
+        // if not mobile device, add .close class after data loads, then setTimeout function to close automatically after 8 secs
+        document.querySelector('#toggle-instructions').classList.add('close');
+        this.timer = setTimeout(() => {
+          document.querySelector('#toggle-instructions').classList.remove('close');
+        }, 8000);
       }
     }
 
     if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
       this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
+
   }
 
   componentWillUnmount() {
     if (this.map) {
       this.map.remove();
+    }
+    // clear setTimeout
+    if (this.timer) {
+      clearTimeout(this.timer);
     }
   }
 
@@ -113,8 +119,71 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         zoom: 6.1
     });
     this.map = map;
-    // add those controls!
+    // add regular out-of-the-box controls
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    // add tooltips for map controls
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
+    // class for custom map control buttons used below
+    class ButtonControl {
+      constructor({
+        id = "",
+        className = "",
+        title = "",
+        eventHandler = ""
+      }) {
+        this._id = id;
+        this._className = className;
+        this._title = title;
+        this._eventHandler = eventHandler;
+      }
+      onAdd(map){
+        this._btn = document.createElement("button");
+        this._btn.id = this._id;
+        this._btn.className = this._className;
+        this._btn.type = "button";
+        this._btn.title = this._title;
+        this._btn.onclick = this._eventHandler;
+
+        this._container = document.createElement("div");
+        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+        this._container.appendChild(this._btn);
+
+        return this._container;
+      }
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    // event handlers for custom controls
+    const info = () => {
+      const instructionBtn = document.querySelector('#toggle-instructions');
+      instructionBtn.classList.contains('close') ? instructionBtn.classList.remove('close') : instructionBtn.classList.add('close');
+    }
+    const note = () => {
+      const noteBtn = document.querySelector('#download-note');
+      noteBtn.classList.contains('close') ? noteBtn.classList.remove('close') : noteBtn.classList.add('close');
+    }
+    // custom control variables
+    const ctrlInfo = new ButtonControl({
+      id: 'toggle-instructions',
+      className: 'tnris-download-instructions',
+      title: 'Download Information',
+      eventHandler: info
+    });
+    const ctrlNote = new ButtonControl({
+      id: 'download-note',
+      className: 'tnris-download-note',
+      title: 'Download Note',
+      eventHandler: note
+    });
+    // add custom controls to map
+    map.addControl(ctrlInfo, 'top-left');
+    map.addControl(ctrlNote, 'bottom-left');
+
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
     // for faster initial load
@@ -362,6 +431,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       return (
         <div className='tnris-download-template-download'>
           <div className="tnris-download-template-download__mobile">
+            <h3>Download Map Disabled for Mobile Devices</h3>
             <p>
               Due to the average size of data downloads and in consideration of user experience,
               data downloads have been <strong>disabled</strong> for small browser windows and mobile devices.
@@ -413,10 +483,12 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
 
     return (
-      <div className='tnris-download-template-download'>
+      <div className='template-content-div tnris-download-template-download'>
         <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
+          <div className='template-content-div-header mdc-typography--headline5'>
+            Download
+          </div>
         <div id='tnris-download-map'></div>
-        <TnrisDownloadMapNote />
       </div>
     );
   }

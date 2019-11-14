@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import {MDCTextField} from '@material/textfield';
-import {MDCFloatingLabel} from '@material/floating-label';
-import {MDCLineRipple} from '@material/line-ripple';
-import {MDCRipple} from '@material/ripple';
-import {MDCSelect} from '@material/select';
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { Component } from 'react'
+import {MDCTextField} from '@material/textfield'
+import {MDCFloatingLabel} from '@material/floating-label'
+import {MDCLineRipple} from '@material/line-ripple'
+import {MDCRipple} from '@material/ripple'
+import {MDCSelect} from '@material/select'
+import ReCAPTCHA from "react-google-recaptcha"
 
 class ContactTnrisForm extends Component {
 
@@ -93,6 +93,7 @@ class ContactTnrisForm extends Component {
         'Email': this.state.email,
         'Collection': this.compiledDisplayName,
         'UUID': this.props.collection.collection_id,
+        'Acquisition_Date': this.props.collection.acquisition_date,
         'Category': this.props.collection.category,
         'Software': this.state.software,
         'Message': this.state.question,
