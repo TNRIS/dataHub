@@ -16,7 +16,6 @@ export default class CollectionFilterMapView extends React.Component {
     this.state = {
       countyNames: []
     }
-    this.handleBack = this.handleBack.bind(this);
     this.getAreaTypeNames = this.getAreaTypeNames.bind(this);
     this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
   }
@@ -46,11 +45,6 @@ export default class CollectionFilterMapView extends React.Component {
     } else {
       countySelect.disabled = false;
     }
-  }
-
-  handleBack() {
-    this.props.setViewCatalog();
-    this.props.setUrl(this.props.catalogFilterUrl);
   }
 
   getAreaTypeNames() {

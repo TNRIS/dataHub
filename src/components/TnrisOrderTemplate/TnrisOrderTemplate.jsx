@@ -177,8 +177,6 @@ export default class TnrisOrderTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      <BackButtonContainer />
-
                     </div>
                   </div>
                 </div>
@@ -216,10 +214,9 @@ export default class TnrisOrderTemplate extends React.Component {
                     </div>
                   </nav>
                 </div>
-
-                <BackButtonContainer />
-                
               </div>
+
+              <BackButtonContainer />
 
             </section>
           </div>

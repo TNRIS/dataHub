@@ -7,7 +7,9 @@ import {catalogActions,
         urlTrackerActions} from '../actions'
 
 const mapStateToProps = state => ({
-  previousUrl: state.urlTracker.previousUrl
+  previousUrl: state.urlTracker.previousUrl,
+  catalogFilterUrl: state.urlTracker.catalogFilterUrl,
+  view: state.catalog.view
 });
 
 const mapDispatchToProps = (dispatch) => ({
