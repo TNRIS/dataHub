@@ -4,6 +4,8 @@ import {MDCSelect} from '@material/select';
 
 import CollectionFilterMapContainer from '../containers/CollectionFilterMapContainer';
 
+import BackButtonContainer from '../containers/BackButtonContainer'
+
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -123,12 +125,9 @@ export default class CollectionFilterMapView extends React.Component {
                 </div>
               </div>
             </div>
-            <button
-              className="close-shopping-cart mdc-icon-button material-icons"
-              onClick={this.handleBack}
-              title="Close geography filter">
-              close
-            </button>
+
+            <BackButtonContainer />
+
           </section>
         </div>
         <CollectionFilterMapContainer />

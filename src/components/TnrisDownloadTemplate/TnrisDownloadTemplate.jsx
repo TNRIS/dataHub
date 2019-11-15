@@ -9,6 +9,7 @@ import Images from '../Images'
 
 import ContactContainer from '../../containers/ContactContainer'
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
+import BackButtonContainer from '../../containers/BackButtonContainer'
 
 export default class TnrisDownloadTemplate extends React.Component {
   constructor(props) {
@@ -18,7 +19,6 @@ export default class TnrisDownloadTemplate extends React.Component {
       };
       this.setTemplateView = this.setTemplateView.bind(this);
       this.showTabMenu = this.showTabMenu.bind(this);
-      this.handleBack = this.handleBack.bind(this);
   }
 
   componentDidMount() {
@@ -64,22 +64,6 @@ export default class TnrisDownloadTemplate extends React.Component {
   showTabMenu() {
     this.menu = new MDCMenu(this.refs.tab_menu);
     this.menu.open = true;
-  }
-
-  handleBack() {
-    console.log('handleBack')
-    if (this.props.previousUrl.includes('/catalog/') || this.props.previousUrl.includes('/')) {
-      this.props.setViewCatalog();
-      this.props.setUrl(this.props.previousUrl);
-    } else if (this.props.previousUrl.includes('/collection/')) {
-        const collectionUuid = this.props.previousUrl.replace('/collection/', '');
-        this.props.setViewCollection();
-        this.props.selectCollection(collectionUuid);
-        this.props.setUrl(this.props.previousUrl);
-    } else {
-        this.props.setViewCatalog();
-        this.props.setUrl(this.props.previousUrl);
-    }
   }
 
   render() {
@@ -211,12 +195,7 @@ export default class TnrisDownloadTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
-                      <button
-                        className="mdc-icon-button material-icons close-collection"
-                        onClick={this.handleBack}
-                        title="Close collection view">
-                          close
-                      </button>
+                      <BackButtonContainer />
 
                     </div>
                   </div>
@@ -246,12 +225,11 @@ export default class TnrisDownloadTemplate extends React.Component {
                        onClick={() => this.setTemplateView("contact")}>Contact
                        {/*<i className="mdc-tab__icon material-icons">contact_support</i>*/}
                     </div>
-                    <div className='mdc-list-item'
-                       onClick={this.handleBack}
-                       title="Close collection view">Close
-                    </div>
                   </nav>
                 </div>
+
+                <BackButtonContainer />
+
               </div>
 
             </section>

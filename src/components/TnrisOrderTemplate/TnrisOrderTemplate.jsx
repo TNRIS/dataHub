@@ -9,6 +9,7 @@ import Images from '../Images'
 
 import ContactContainer from '../../containers/ContactContainer'
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
+import BackButtonContainer from '../../containers/BackButtonContainer'
 
 export default class TnrisOrderTemplate extends React.Component {
   constructor(props) {
@@ -176,6 +177,8 @@ export default class TnrisOrderTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
+                      <BackButtonContainer />
+
                     </div>
                   </div>
                 </div>
@@ -213,6 +216,9 @@ export default class TnrisOrderTemplate extends React.Component {
                     </div>
                   </nav>
                 </div>
+
+                <BackButtonContainer />
+                
               </div>
 
             </section>

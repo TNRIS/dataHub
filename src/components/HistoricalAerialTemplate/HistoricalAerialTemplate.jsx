@@ -9,6 +9,7 @@ import Images from '../Images'
 
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 import ContactContainer from '../../containers/ContactContainer'
+import BackButtonContainer from '../../containers/BackButtonContainer'
 
 export default class HistoricalAerialTemplate extends React.Component {
   constructor(props) {
@@ -172,6 +173,8 @@ export default class HistoricalAerialTemplate extends React.Component {
                         <span className="mdc-tab__ripple"></span>
                       </button>
 
+                      <BackButtonContainer />
+
                     </div>
                   </div>
                 </div>
@@ -207,6 +210,9 @@ export default class HistoricalAerialTemplate extends React.Component {
                     </div>
                   </nav>
                 </div>
+
+                <BackButtonContainer />
+                
               </div>
             </section>
           </div>

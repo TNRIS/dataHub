@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 
-import OrderCartView from '../components/OrderCartView'
+import BackButton from '../components/DialogTemplateListItems/BackButton'
 
 import {catalogActions,
         collectionActions,
@@ -25,9 +25,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
 })
 
-const OrderCartViewContainer = connect(
+const BackButtonContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(OrderCartView);
+)(BackButton);
 
-export default OrderCartViewContainer;
+export default BackButtonContainer;
