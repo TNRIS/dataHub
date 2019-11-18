@@ -13,8 +13,8 @@ export default class BackButton extends React.Component {
     if (this.props.view === 'geoFilter') {
       this.props.setViewCatalog();
       this.props.setUrl(this.props.catalogFilterUrl);
-      // this next condition is for when deving locally
-      // if update to code, app refreshes and previousUrl becomes current url;
+      // this next condition is for when developing locally.
+      // on update to code, app refreshes and previousUrl becomes current url;
       // override this by hard setting the url to root
     } else if (this.props.previousUrl === window.location.pathname) {
       this.props.setViewCatalog();
