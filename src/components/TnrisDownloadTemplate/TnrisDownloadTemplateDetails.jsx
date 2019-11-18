@@ -81,16 +81,14 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                             {lidarCard}
                             {servicesCard}
                             {supplementalDownloadsCard}
+                            {sourceCitation}
                             <ShareButtons />
                           </div>
                           <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
                             {downloadMap}
                             <div className="mdc-layout-grid__inner">
-                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
+                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
                                 {description}
-                              </div>
-                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-4'>
-                                {sourceCitation}
                               </div>
                             </div>
                           </div>

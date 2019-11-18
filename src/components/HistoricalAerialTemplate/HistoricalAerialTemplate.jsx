@@ -66,7 +66,8 @@ export default class HistoricalAerialTemplate extends React.Component {
         showComponent = (
           <Images
             thumbnail={this.props.collection.thumbnail_image}
-            images={this.props.collection.images} />
+            images={this.props.collection.images}
+            template={this.props.collection.template} />
         )
         break;
       case 'order':
