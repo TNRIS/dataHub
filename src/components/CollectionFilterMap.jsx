@@ -18,9 +18,21 @@ import breakpoints from '../sass/_breakpoints.scss'
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
 
-const nbhdCentroid = {};
-nbhdCentroid.type = "FeatureCollection";
-nbhdCentroid.features = [];
+const countyCentroid = {};
+countyCentroid.type = "FeatureCollection";
+countyCentroid.features = [];
+
+// add a clean method to array to
+// remove undefined from the array
+Array.prototype.clean = function() {
+  for (var i = 0; i < this.length; i++) {
+    if (!this[i]) {
+      this.splice(i, 1);
+      i--;
+    }
+  }
+  return this;
+};
 
 export default class CollectionFilterMap extends React.Component {
   constructor(props) {
@@ -174,9 +186,9 @@ export default class CollectionFilterMap extends React.Component {
           user_name: 'tnris-flood',
           sublayers: [{
                   sql: `SELECT
-                          * FROM area_type_copy
+                          *, ST_AsText(ST_Centroid(the_geom)) as centroid FROM area_type
                         WHERE
-                          area_type_copy.area_type IN ('county', 'quad');`,
+                          area_type.area_type IN ('county', 'quad');`,
                   cartocss: '{}'
               }],
           maps_api_template: 'https://tnris-flood.carto.com'
@@ -311,18 +323,17 @@ export default class CollectionFilterMap extends React.Component {
           'filter': ["==", ["get", "area_type"], "county"]
         }, 'quad-outline');
 
-        map.addSource('nbhdCentroid', {
+        map.addSource('countyCentroid', {
           type: 'geojson',
-          data: nbhdCentroid
+          data: countyCentroid
         });
 
         map.addLayer({
-          "id": "nbhd_centroids",
+          "id": "county-centroids",
           "type": "symbol",
-          "source": "nbhdCentroid",
+          "source": "countyCentroid",
           "layout": {
-              'text-field': '{small_neighborhood}',
-              'text-font': ["Lato Bold"],
+              'text-field': ["get", "area_type_name"],
               'text-size': {
                   "base": 1,
                   "stops": [
@@ -337,7 +348,8 @@ export default class CollectionFilterMap extends React.Component {
               "text-allow-overlap": true
           },
           "paint": {
-              "text-color": "#333",
+              "text-color": "#ff0000",
+              // "text-color": "#333",
               "text-halo-color": "hsl(0, 0%, 100%)",
               "text-halo-width": 1.5,
               "text-halo-blur": 1
@@ -449,17 +461,18 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('moveend', () => {
-      let countyFeatures = map.queryRenderedFeatures({
+      let countyFeatures = this._map.queryRenderedFeatures({
         layers: ['county']
       });
       console.log(countyFeatures);
-      this.dynamicLabels(this._map);
-      // var tileLoad = setInterval(function() {
-      //     if (map.loaded()) {
-      //         this.dynamicLabels(this._map);
-      //         clearInterval(tileLoad);
-      //     }
-      // }, 300);
+      // this.dynamicLabels(this._map);
+      let tileLoad = setInterval( () => {
+          if (this._map.loaded()) {
+              this.dynamicLabels(this._map);
+              clearInterval(tileLoad);
+          }
+      }, 300);
+      console.log(this._map.getLayer("county-centroids"));
       this.props.setCollectionFilterMapCenter(this._map.getCenter());
       this.props.setCollectionFilterMapZoom(this._map.getZoom());
     })
@@ -508,15 +521,15 @@ export default class CollectionFilterMap extends React.Component {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   dynamicLabels(map) {
-    nbhdCentroid.features = [];
-    var nbhdFeatures = map.queryRenderedFeatures({
+    countyCentroid.features = [];
+    const countyFeatures = map.queryRenderedFeatures({
         layers: ['county']
     });
 
-    var mapSW = map.getBounds()._sw;
-    var mapNE = map.getBounds()._ne;
+    const mapSW = map.getBounds()._sw;
+    const mapNE = map.getBounds()._ne;
 
-    var mapViewBound = {
+    const mapViewBound = {
         type: "Feature",
         geometry: {
             type: "Polygon",
@@ -532,53 +545,64 @@ export default class CollectionFilterMap extends React.Component {
         }
     };
 
-    var visualCenterList = [];
+    const visualCenterList = [];
 
-    var fixedLabelFilter = ["!in", "small_neighborhood"];
+    // var fixedLabelFilter = ["!in", "area_type_name"];
+    const fixedLabelFilter = ["!in", "area_type_name"];
 
-    var neighborhoods = this.groupBy(nbhdFeatures, nbhdFeature => nbhdFeature.properties.area_type_name);
-    console.log(neighborhoods);
-    neighborhoods.forEach(function(value, key) {
-      console.log(parse(value[0].properties.centroid).coordinates[0]);
-        // var lngOfCentroid = JSON.parse(value[0].properties.centroid).coordinates[0];
-        // var latOfCentroid = JSON.parse(value[0].properties.centroid).coordinates[1];
-        var lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
-        var latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
-        if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
-            fixedLabelFilter.push(key);
-            // console.log(key);
-            // console.log(key,value);
-            console.log(this);
-            var visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-            if (visualCenter.clean().length) {
-                visualCenterList.push(visualCenter.clean());
-            }
-        }
+    const counties = this.groupBy(countyFeatures, countyFeature => countyFeature.properties.area_type_name);
+    console.log(counties);
+    counties.forEach( (value, key) => {
+      let lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
+      let latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
+      // if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
+      //     fixedLabelFilter.push(key);
+      //     // console.log(key);
+      //     // console.log(key,value);
+      //     var visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
+      //     if (visualCenter.clean().length) {
+      //         visualCenterList.push(visualCenter.clean());
+      //     }
+      // }
+      let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
+      if (visualCenter.clean().length) {
+          visualCenterList.push(visualCenter.clean());
+      }
     });
     visualCenterList.map(obj => {
-        var coordinatesList = [];
-        obj.forEach(function(feature){
+        let coordinatesList = [];
+        obj.forEach( (feature) => {
             coordinatesList.push(feature.geometry.coordinates);
         });
-        var center = this.getCenter(coordinatesList);
-        var neighborhoodCenterFeature = {
+        let center = this.getCenter(coordinatesList);
+        let countyCenterFeature = {
             type: "Feature",
             geometry: {
                 type: "Point",
                 coordinates: center
             },
             properties: {
-                small_neighborhood: obj[0].properties.area_type_name,
+                area_type_name: obj[0].properties.area_type_name,
                 minlng: obj[0].properties.minlng,
                 minlat: obj[0].properties.minlat,
                 maxlng: obj[0].properties.maxlng,
-                maxlat: obj[0].propertiesmaxlat
+                maxlat: obj[0].properties.maxlat
             }
         };
-        nbhdCentroid.features.push(neighborhoodCenterFeature);
+        countyCentroid.features.push(countyCenterFeature);
     });
-    map.setFilter("county-label", fixedLabelFilter);
-    map.getSource('nbhdCentroid').setData(nbhdCentroid);
+    console.log(countyCentroid);
+    console.log(fixedLabelFilter);
+    this._map.setFilter(
+      "county-label",
+      [
+        "all",
+        ["==", "area_type", "county"],
+        fixedLabelFilter
+      ]
+    );
+    // map.setFilter("county-label", fixedLabelFilter);
+    map.getSource('countyCentroid').setData(countyCentroid);
   }
 
   // groupBy function
@@ -618,7 +642,7 @@ export default class CollectionFilterMap extends React.Component {
               } else {
                   visualCenter.geometry.coordinates = polylabel(intersection.geometry.coordinates);
               }
-              visualCenter.properties.small_neighborhood = feature.properties.small_neighborhood;
+              visualCenter.properties.area_type_name = feature.properties.area_type_name;
               visualCenter.properties.minlng = feature.properties.minlng;
               visualCenter.properties.minlat = feature.properties.minlat;
               visualCenter.properties.maxlng = feature.properties.maxlng;
