@@ -53,6 +53,7 @@ export default class CollectionFilterMap extends React.Component {
     this.dynamicLabels = this.dynamicLabels.bind(this);
     this.groupBy = this.groupBy.bind(this);
     this.getVisualCenter = this.getVisualCenter.bind(this);
+    this.getAreaTypeCentroids = this.getAreaTypeCentroids.bind(this);
 
   }
 
@@ -62,6 +63,7 @@ export default class CollectionFilterMap extends React.Component {
     }
     if (window.innerWidth > this.downloadBreakpoint) {
       this.createMap();
+      this.getAreaTypeCentroids();
     }
   }
 
@@ -104,6 +106,44 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setCollectionFilterMapSelectedAreaTypeName("");
     this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     this.props.setCollectionFilterMapZoom(5.3);
+  }
+
+  getAreaTypeCentroids() {
+    let sql = new cartodb.SQL({user: 'tnris-flood'});
+    let query = `SELECT
+                  *, ST_AsText(ST_Centroid(the_geom)) as centroid FROM area_type
+                WHERE
+                  area_type.area_type IN ('county', 'quad');`
+
+    sql.execute(query).done( (data) => {
+      console.log(data);
+      let countyCentroids = {
+        "type": "FeatureCollection",
+        "features": []
+      };
+      let quadCentroids = {
+        "type": "FeatureCollection",
+        "features": []
+      }
+      data.rows.map(row => {
+        if (row["area_type"] === "county") {
+          countyCentroids.features.push(
+            {
+              "type": "Feature",
+              "properties": {"area_type_name": row["area_type_name"]},
+              "geometry": parse(row["centroid"])
+            }
+          );
+        }
+        return row
+      });
+      // this.setState({countyNames: counties})
+      console.log(countyCentroids);
+      return countyCentroids
+    }).error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
   }
 
   createMap() {
@@ -182,7 +222,7 @@ export default class CollectionFilterMap extends React.Component {
     map.on('load', () => {
 
       // define area type layers and add to the map
-      const layerData = {
+      const areaTypeLayerData = {
           user_name: 'tnris-flood',
           sublayers: [{
                   sql: `SELECT
@@ -194,7 +234,7 @@ export default class CollectionFilterMap extends React.Component {
           maps_api_template: 'https://tnris-flood.carto.com'
       };
 
-      cartodb.Tiles.getTiles(layerData, function (result, error) {
+      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
         if (result == null) {
           console.log("error: ", error.errors.join('\n'));
           return;
@@ -461,10 +501,6 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('moveend', () => {
-      let countyFeatures = this._map.queryRenderedFeatures({
-        layers: ['county']
-      });
-      console.log(countyFeatures);
       // this.dynamicLabels(this._map);
       let tileLoad = setInterval( () => {
           if (this._map.loaded()) {
@@ -555,19 +591,19 @@ export default class CollectionFilterMap extends React.Component {
     counties.forEach( (value, key) => {
       let lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
       let latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
-      // if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
-      //     fixedLabelFilter.push(key);
-      //     // console.log(key);
-      //     // console.log(key,value);
-      //     var visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-      //     if (visualCenter.clean().length) {
-      //         visualCenterList.push(visualCenter.clean());
-      //     }
-      // }
-      let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-      if (visualCenter.clean().length) {
-          visualCenterList.push(visualCenter.clean());
+      if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
+          fixedLabelFilter.push(key);
+          // console.log(key);
+          // console.log(key,value);
+          let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
+          if (visualCenter.clean().length) {
+              visualCenterList.push(visualCenter.clean());
+          }
       }
+      // let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
+      // if (visualCenter.clean().length) {
+      //     visualCenterList.push(visualCenter.clean());
+      // }
     });
     visualCenterList.map(obj => {
         let coordinatesList = [];
