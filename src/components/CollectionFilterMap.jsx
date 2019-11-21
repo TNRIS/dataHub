@@ -17,6 +17,8 @@ import breakpoints from '../sass/_breakpoints.scss'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
+const countyCentroids = require('../constants/countyCentroids.geojson.json');
+const quadCentroids = require('../constants/quadCentroids.geojson.json');
 
 const countyCentroid = {};
 countyCentroid.type = "FeatureCollection";
@@ -39,7 +41,8 @@ export default class CollectionFilterMap extends React.Component {
     super(props);
     this.state = {
       mapFilteredCollectionIds: this.props.collectionFilterMapFilter,
-      countyNames: []
+      countyCentroids: {},
+      quadCentroids: {}
     }
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
@@ -63,7 +66,9 @@ export default class CollectionFilterMap extends React.Component {
     }
     if (window.innerWidth > this.downloadBreakpoint) {
       this.createMap();
-      this.getAreaTypeCentroids();
+      // uncomment this line if we need to update the quad
+      // centroid geojson because new quads have been added
+      // this.getAreaTypeCentroids();
     }
   }
 
@@ -130,16 +135,31 @@ export default class CollectionFilterMap extends React.Component {
           countyCentroids.features.push(
             {
               "type": "Feature",
-              "properties": {"area_type_name": row["area_type_name"]},
+              "properties": {
+                "area_type": row["area_type"],
+                "area_type_name": row["area_type_name"]
+              },
+              "geometry": parse(row["centroid"])
+            }
+          );
+        } else if (row["area_type"] === "quad") {
+          quadCentroids.features.push(
+            {
+              "type": "Feature",
+              "properties": {
+                "area_type": row["area_type"],
+                "area_type_name": row["area_type_name"]},
               "geometry": parse(row["centroid"])
             }
           );
         }
         return row
       });
-      // this.setState({countyNames: counties})
-      console.log(countyCentroids);
-      return countyCentroids
+      // uncomment these lines if we need to update the
+      // county or quad centroid geojson
+      // console.log(countyCentroids);
+      // console.log(quadCentroids);
+      return countyCentroids, quadCentroids
     }).error(function(errors) {
       // errors contains a list of errors
       console.log("errors:" + errors);
@@ -221,6 +241,18 @@ export default class CollectionFilterMap extends React.Component {
 
     map.on('load', () => {
 
+      map.addSource("county-centroid-source", {
+        "type": "geojson",
+        "data": countyCentroids
+      });
+
+      map.addSource("quad-centroid-source", {
+        "type": "geojson",
+        "data": quadCentroids
+      });
+
+
+
       // define area type layers and add to the map
       const areaTypeLayerData = {
           user_name: 'tnris-flood',
@@ -250,53 +282,6 @@ export default class CollectionFilterMap extends React.Component {
           'area-type-source',
           { type: 'vector', tiles: areaTypeTiles }
         );
-
-        map.addLayer({
-          "id": "county-label",
-          "type": "symbol",
-          "source": "area-type-source",
-          'source-layer': 'layer0',
-          "layout": {
-          "text-field": ["get", "area_type_name"],
-          // "text-variable-anchor": ["top", "bottom", "left", "right"],
-          // "text-radial-offset": 0.5,
-          // "text-justify": "auto",
-            'text-size': {
-                "base": 1,
-                "stops": [
-                    [12, 12],
-                    [16, 16]
-                ]
-            },
-            "text-padding": 3,
-            "text-letter-spacing": 0.1,
-            "text-max-width": 7,
-            // "text-transform": "uppercase",
-            "text-allow-overlap": true
-        },
-        "paint": {
-            "text-color": "#555",
-            "text-halo-color": "hsl(0, 0%, 100%)",
-            "text-halo-width": 1.5,
-            "text-halo-blur": 1
-        },
-        'filter': ["==", ["get", "area_type"], "county"]
-        });
-
-        // map.addLayer({
-        //   "id": "quad-labels",
-        //   "type": "symbol",
-        //   "source": "area-type-source",
-        //   'source-layer': 'layer0',
-        //   "layout": {
-        //   "text-field": ["get", "area_type_name"],
-        //   "text-variable-anchor": ["top", "bottom", "left", "right"],
-        //   "text-radial-offset": 0.5,
-        //   "text-justify": "auto",
-        //   // "icon-image": ["concat", ["get", "icon"], "-15"]
-        // },
-        // 'filter': ["==", ["get", "area_type"], "quad"]
-        // });
 
         // Add the area type selected outline layer to the map.
         // This layer is used to highlight te outline of the user
@@ -395,6 +380,68 @@ export default class CollectionFilterMap extends React.Component {
               "text-halo-blur": 1
           }
         });
+
+        map.addLayer({
+          "id": "county-label",
+          "type": "symbol",
+          "source": "county-centroid-source",
+          "layout": {
+            "text-field": ["get", "area_type_name"],
+          // "text-variable-anchor": ["top", "bottom", "left", "right"],
+          // "text-radial-offset": 0.5,
+          // "text-justify": "auto",
+            'text-size': {
+                "base": 1,
+                "stops": [
+                    [10, 10],
+                    [16, 16]
+                ]
+            },
+            "text-padding": 3,
+            "text-letter-spacing": 0.1,
+            "text-max-width": 7,
+            "text-transform": "uppercase",
+            "text-allow-overlap": true
+          },
+          "paint": {
+              "text-color": "#555",
+              "text-halo-color": "hsl(0, 0%, 100%)",
+              "text-halo-width": 1.5,
+              "text-halo-blur": 1
+          }
+        });
+
+        map.addLayer({
+          "id": "quad-label",
+          "type": "symbol",
+          "source": "quad-centroid-source",
+          'minzoom': 7.5,
+          'maxzoom': 24,
+          "layout": {
+            "text-field": ["get", "area_type_name"],
+          // "text-variable-anchor": ["top", "bottom", "left", "right"],
+          // "text-radial-offset": 0.5,
+          // "text-justify": "auto",
+            'text-size': {
+                "base": 1,
+                "stops": [
+                    [10, 10],
+                    [16, 16]
+                ]
+            },
+            "text-padding": 3,
+            "text-letter-spacing": 0.1,
+            "text-max-width": 7,
+            "text-transform": "uppercase",
+            "text-allow-overlap": true
+          },
+          "paint": {
+              "text-color": "rgba(100,0,100,.3)",
+              "text-halo-color": "hsl(0, 0%, 100%)",
+              "text-halo-width": 1.5,
+              "text-halo-blur": 1
+          }
+        }, 'county-outline');
       });
     })
 
@@ -631,11 +678,12 @@ export default class CollectionFilterMap extends React.Component {
     console.log(fixedLabelFilter);
     this._map.setFilter(
       "county-label",
-      [
-        "all",
-        ["==", "area_type", "county"],
-        fixedLabelFilter
-      ]
+      fixedLabelFilter
+      // [
+      //   "all",
+      //   ["==", "area_type", "county"],
+      //   fixedLabelFilter
+      // ]
     );
     // map.setFilter("county-label", fixedLabelFilter);
     map.getSource('countyCentroid').setData(countyCentroid);
@@ -882,6 +930,7 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (
