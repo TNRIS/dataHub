@@ -17,8 +17,8 @@ import breakpoints from '../sass/_breakpoints.scss'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
-const countyCentroids = require('../constants/countyCentroids.geojson.json');
-const quadCentroids = require('../constants/quadCentroids.geojson.json');
+const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
+const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
 
 const countyCentroid = {};
 countyCentroid.type = "FeatureCollection";
@@ -40,9 +40,7 @@ export default class CollectionFilterMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mapFilteredCollectionIds: this.props.collectionFilterMapFilter,
-      countyCentroids: {},
-      quadCentroids: {}
+      mapFilteredCollectionIds: this.props.collectionFilterMapFilter
     }
     // bind our map builder and other custom functions
     this.createMap = this.createMap.bind(this);
@@ -121,7 +119,6 @@ export default class CollectionFilterMap extends React.Component {
                   area_type.area_type IN ('county', 'quad');`
 
     sql.execute(query).done( (data) => {
-      console.log(data);
       let countyCentroids = {
         "type": "FeatureCollection",
         "features": []
@@ -182,6 +179,7 @@ export default class CollectionFilterMap extends React.Component {
         style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
         center: this.props.collectionFilterMapCenter,
         zoom: this.props.collectionFilterMapZoom,
+        maxZoom: 11.6,
         // maxBounds: texasBounds, // sets texasBounds as max to prevent panning
         interactive: true
     });
@@ -237,22 +235,9 @@ export default class CollectionFilterMap extends React.Component {
     const selectedAreaColor = '#1E8DC1';
 
     // set true to turn on tile boundaires for debugging
-    map.showTileBoundaries = true;
+    // map.showTileBoundaries = true;
 
     map.on('load', () => {
-
-      map.addSource("county-centroid-source", {
-        "type": "geojson",
-        "data": countyCentroids
-      });
-
-      map.addSource("quad-centroid-source", {
-        "type": "geojson",
-        "data": quadCentroids
-      });
-
-
-
       // define area type layers and add to the map
       const areaTypeLayerData = {
           user_name: 'tnris-flood',
@@ -327,10 +312,10 @@ export default class CollectionFilterMap extends React.Component {
           'type': 'line',
           'source': 'area-type-source',
           'source-layer': 'layer0',
-          'minzoom': 7.5,
+          'minzoom': 9,
           'maxzoom': 24,
           'paint': {
-            'line-color': 'rgba(100,0,100,1)',
+            'line-color': 'rgba(139,69,19,1)',
             'line-width': 2,
             'line-opacity': .05
           },
@@ -342,6 +327,8 @@ export default class CollectionFilterMap extends React.Component {
           "type": "fill",
           "source": 'area-type-source',
           "source-layer": 'layer0',
+          'minzoom': 2,
+          'maxzoom': 24,
           "paint": {
               "fill-color": "transparent"
           },
@@ -357,12 +344,16 @@ export default class CollectionFilterMap extends React.Component {
           "id": "county-centroids",
           "type": "symbol",
           "source": "countyCentroid",
+          'minzoom': 6,
+          'maxzoom': 24,
           "layout": {
               'text-field': ["get", "area_type_name"],
               'text-size': {
                   "base": 1,
                   "stops": [
-                      [12, 12],
+                      [6, 6],
+                      [8, 10],
+                      [10, 12],
                       [16, 16]
                   ]
               },
@@ -373,28 +364,39 @@ export default class CollectionFilterMap extends React.Component {
               "text-allow-overlap": true
           },
           "paint": {
-              "text-color": "#ff0000",
-              // "text-color": "#333",
+              "text-color": "#555",
               "text-halo-color": "hsl(0, 0%, 100%)",
               "text-halo-width": 1.5,
               "text-halo-blur": 1
           }
         });
 
+        map.addSource("county-centroid-source", {
+          "type": "geojson",
+          "data": countyLabelCentroids
+        });
+
+        map.addSource("quad-centroid-source", {
+          "type": "geojson",
+          "data": quadLabelCentroids
+        });
+
         map.addLayer({
           "id": "county-label",
           "type": "symbol",
           "source": "county-centroid-source",
+          'minzoom': 6,
+          'maxzoom': 24,
           "layout": {
             "text-field": ["get", "area_type_name"],
-          // "text-variable-anchor": ["top", "bottom", "left", "right"],
-          // "text-radial-offset": 0.5,
-          // "text-justify": "auto",
+            "text-justify": "auto",
             'text-size': {
                 "base": 1,
                 "stops": [
-                    [10, 10],
-                    [16, 16]
+                    [6, 6],
+                    [8, 10],
+                    [10, 12],
+                    [16, 18]
                 ]
             },
             "text-padding": 3,
@@ -415,16 +417,14 @@ export default class CollectionFilterMap extends React.Component {
           "id": "quad-label",
           "type": "symbol",
           "source": "quad-centroid-source",
-          'minzoom': 7.5,
+          'minzoom': 9,
           'maxzoom': 24,
           "layout": {
             "text-field": ["get", "area_type_name"],
-          // "text-variable-anchor": ["top", "bottom", "left", "right"],
-          // "text-radial-offset": 0.5,
-          // "text-justify": "auto",
             'text-size': {
                 "base": 1,
                 "stops": [
+                    [9, 8.5],
                     [10, 10],
                     [16, 16]
                 ]
@@ -432,13 +432,14 @@ export default class CollectionFilterMap extends React.Component {
             "text-padding": 3,
             "text-letter-spacing": 0.1,
             "text-max-width": 7,
-            "text-transform": "uppercase",
-            "text-allow-overlap": true
+            "text-allow-overlap": true,
+            "text-rotate": 315,
           },
           "paint": {
-              "text-color": "rgba(100,0,100,.3)",
+              "text-color": "rgb(139,69,19)",
+              "text-opacity": .4,
               "text-halo-color": "hsl(0, 0%, 100%)",
-              "text-halo-width": 1.5,
+              "text-halo-width": 1,
               "text-halo-blur": 1
           }
         }, 'county-outline');
@@ -548,14 +549,12 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('moveend', () => {
-      // this.dynamicLabels(this._map);
       let tileLoad = setInterval( () => {
           if (this._map.loaded()) {
               this.dynamicLabels(this._map);
               clearInterval(tileLoad);
           }
       }, 300);
-      console.log(this._map.getLayer("county-centroids"));
       this.props.setCollectionFilterMapCenter(this._map.getCenter());
       this.props.setCollectionFilterMapZoom(this._map.getZoom());
     })
@@ -602,7 +601,6 @@ export default class CollectionFilterMap extends React.Component {
     })
   }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   dynamicLabels(map) {
     countyCentroid.features = [];
     const countyFeatures = map.queryRenderedFeatures({
@@ -629,28 +627,18 @@ export default class CollectionFilterMap extends React.Component {
     };
 
     const visualCenterList = [];
-
-    // var fixedLabelFilter = ["!in", "area_type_name"];
     const fixedLabelFilter = ["!in", "area_type_name"];
-
     const counties = this.groupBy(countyFeatures, countyFeature => countyFeature.properties.area_type_name);
-    console.log(counties);
     counties.forEach( (value, key) => {
       let lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
       let latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
       if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
           fixedLabelFilter.push(key);
-          // console.log(key);
-          // console.log(key,value);
           let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
           if (visualCenter.clean().length) {
               visualCenterList.push(visualCenter.clean());
           }
       }
-      // let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-      // if (visualCenter.clean().length) {
-      //     visualCenterList.push(visualCenter.clean());
-      // }
     });
     visualCenterList.map(obj => {
         let coordinatesList = [];
@@ -666,26 +654,11 @@ export default class CollectionFilterMap extends React.Component {
             },
             properties: {
                 area_type_name: obj[0].properties.area_type_name,
-                minlng: obj[0].properties.minlng,
-                minlat: obj[0].properties.minlat,
-                maxlng: obj[0].properties.maxlng,
-                maxlat: obj[0].properties.maxlat
             }
         };
         countyCentroid.features.push(countyCenterFeature);
     });
-    console.log(countyCentroid);
-    console.log(fixedLabelFilter);
-    this._map.setFilter(
-      "county-label",
-      fixedLabelFilter
-      // [
-      //   "all",
-      //   ["==", "area_type", "county"],
-      //   fixedLabelFilter
-      // ]
-    );
-    // map.setFilter("county-label", fixedLabelFilter);
+    map.setFilter("county-label", fixedLabelFilter);
     map.getSource('countyCentroid').setData(countyCentroid);
   }
 
@@ -693,8 +666,8 @@ export default class CollectionFilterMap extends React.Component {
   groupBy(list, keyGetter) {
       var map = new Map();
       list.forEach(function(item) {
-          var key = keyGetter(item);
-          var collection = map.get(key);
+          let key = keyGetter(item);
+          let collection = map.get(key);
           if (!collection) {
               map.set(key, [item]);
           } else {
@@ -707,9 +680,9 @@ export default class CollectionFilterMap extends React.Component {
   // get visual center
   getVisualCenter(feature, mapViewBound) {
       if (feature.geometry.type == "Polygon") {
-          var intersection = intersect(mapViewBound, feature.geometry);
+          let intersection = intersect(mapViewBound, feature.geometry);
           if (intersection) {
-              var visualCenter = {
+              let visualCenter = {
                   type: "Feature",
                   geometry: {
                       type: "Point",
@@ -718,19 +691,21 @@ export default class CollectionFilterMap extends React.Component {
                   properties: {}
               };
               if(intersection.geometry.coordinates.length > 1) {
-                  var intersections = [];
-                  intersection.geometry.coordinates.forEach(function(coordinate){
+                  let intersections = [];
+                  intersection.geometry.coordinates.forEach(
+                    function(coordinate){
                       intersections.push(polylabel(coordinate));
-                  });
-                  visualCenter.geometry.coordinates = this.getCenter(intersections);
+                    }
+                  );
+                  visualCenter.geometry.coordinates = this.getCenter(
+                    intersections
+                  );
               } else {
-                  visualCenter.geometry.coordinates = polylabel(intersection.geometry.coordinates);
+                  visualCenter.geometry.coordinates = polylabel(
+                    intersection.geometry.coordinates
+                  );
               }
               visualCenter.properties.area_type_name = feature.properties.area_type_name;
-              visualCenter.properties.minlng = feature.properties.minlng;
-              visualCenter.properties.minlat = feature.properties.minlat;
-              visualCenter.properties.maxlng = feature.properties.maxlng;
-              visualCenter.properties.maxlat = feature.properties.maxlat;
               return visualCenter;
           }
       }
@@ -748,19 +723,6 @@ export default class CollectionFilterMap extends React.Component {
       var meanLat = latList.reduce((p,c) => p + c, 0) / latList.length;
       return [meanLng, meanLat];
   }
-
-  // remove undefined from an array
-  // Array.prototype.clean = function() {
-  //   for (var i = 0; i < this.length; i++) {
-  //     if (!this[i]) {
-  //       this.splice(i, 1);
-  //       i--;
-  //     }
-  //   }
-  //   return this;
-  // };
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   resetTheMap() {
     // resets the map filter and aoi objects to empty, enables user
@@ -930,7 +892,6 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     if (window.innerWidth <= this.downloadBreakpoint) {
       window.scrollTo(0,0);
       return (
