@@ -534,8 +534,10 @@ export default class CollectionFilterMap extends React.Component {
     })
   }
 
-  // Removes duplicate county labels at tile boundaries and determines
-  // the best placement of those labels when the map extent changes.
+  // Handles dynamic labeling of counties whose centroids fall outside
+  // of the current map extent. Removes duplicate county labels at tile
+  // boundaries and determines the best placement of a single label
+  // when the map extent changes.
   dynamicLabels(map) {
     dynamicCountyCentroid.features = [];
     const countyFeatures = map.queryRenderedFeatures({
