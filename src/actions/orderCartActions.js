@@ -220,9 +220,11 @@ export function uploadOrderFile(collectionId, cartInfo) {
         }
         formData.append('Content-Type', contentType);
         formData.append('Content-Length', file.size);
-        formData.append('AWSAccessKeyId', presignedUrl.fields.AWSAccessKeyId);
         formData.append('Policy', presignedUrl.fields.policy);
-        formData.append('Signature', presignedUrl.fields.signature);
+        formData.append('x-amz-algorithm', presignedUrl.fields['x-amz-algorithm']);
+        formData.append('x-amz-credential', presignedUrl.fields['x-amz-credential']);
+        formData.append('x-amz-date', presignedUrl.fields['x-amz-date']);
+        formData.append('x-amz-signature', presignedUrl.fields['x-amz-signature']);
         formData.append('file', file, file.name);
 
         const payload = {
@@ -238,6 +240,7 @@ export function uploadOrderFile(collectionId, cartInfo) {
         fetch(presignedUrl.url, payload)
           .then(handleErrors)
           .then(res => {
+            console.log(res);
             if (res.status === 201 && index === cartFiles.length - 1) {
               // if successful, remove the 'files' key from the form info
               // it is no longer needed since the upload was successful and
