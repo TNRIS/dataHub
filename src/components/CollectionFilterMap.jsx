@@ -20,21 +20,9 @@ const cartodb = window.cartodb;
 const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
 const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
 
-const countyCentroid = {};
-countyCentroid.type = "FeatureCollection";
-countyCentroid.features = [];
-
-// add a clean method to array to
-// remove undefined from the array
-Array.prototype.clean = function() {
-  for (var i = 0; i < this.length; i++) {
-    if (!this[i]) {
-      this.splice(i, 1);
-      i--;
-    }
-  }
-  return this;
-};
+const dynamicCountyCentroid = {};
+dynamicCountyCentroid.type = "FeatureCollection";
+dynamicCountyCentroid.features = [];
 
 export default class CollectionFilterMap extends React.Component {
   constructor(props) {
@@ -54,7 +42,7 @@ export default class CollectionFilterMap extends React.Component {
     this.dynamicLabels = this.dynamicLabels.bind(this);
     this.groupBy = this.groupBy.bind(this);
     this.getVisualCenter = this.getVisualCenter.bind(this);
-    this.getAreaTypeCentroids = this.getAreaTypeCentroids.bind(this);
+    this.cleanArray = this.cleanArray.bind(this);
 
   }
 
@@ -64,9 +52,6 @@ export default class CollectionFilterMap extends React.Component {
     }
     if (window.innerWidth > this.downloadBreakpoint) {
       this.createMap();
-      // uncomment this line if we need to update the quad
-      // centroid geojson because new quads have been added
-      // this.getAreaTypeCentroids();
     }
   }
 
@@ -111,58 +96,6 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setCollectionFilterMapZoom(5.3);
   }
 
-  getAreaTypeCentroids() {
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT
-                  *, ST_AsText(ST_Centroid(the_geom)) as centroid FROM area_type
-                WHERE
-                  area_type.area_type IN ('county', 'quad');`
-
-    sql.execute(query).done( (data) => {
-      let countyCentroids = {
-        "type": "FeatureCollection",
-        "features": []
-      };
-      let quadCentroids = {
-        "type": "FeatureCollection",
-        "features": []
-      }
-      data.rows.map(row => {
-        if (row["area_type"] === "county") {
-          countyCentroids.features.push(
-            {
-              "type": "Feature",
-              "properties": {
-                "area_type": row["area_type"],
-                "area_type_name": row["area_type_name"]
-              },
-              "geometry": parse(row["centroid"])
-            }
-          );
-        } else if (row["area_type"] === "quad") {
-          quadCentroids.features.push(
-            {
-              "type": "Feature",
-              "properties": {
-                "area_type": row["area_type"],
-                "area_type_name": row["area_type_name"]},
-              "geometry": parse(row["centroid"])
-            }
-          );
-        }
-        return row
-      });
-      // uncomment these lines if we need to update the
-      // county or quad centroid geojson
-      // console.log(countyCentroids);
-      // console.log(quadCentroids);
-      return countyCentroids, quadCentroids
-    }).error(function(errors) {
-      // errors contains a list of errors
-      console.log("errors:" + errors);
-    })
-  }
-
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -179,7 +112,7 @@ export default class CollectionFilterMap extends React.Component {
         style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
         center: this.props.collectionFilterMapCenter,
         zoom: this.props.collectionFilterMapZoom,
-        maxZoom: 11.6,
+        maxZoom: 18,
         // maxBounds: texasBounds, // sets texasBounds as max to prevent panning
         interactive: true
     });
@@ -335,15 +268,15 @@ export default class CollectionFilterMap extends React.Component {
           'filter': ["==", ["get", "area_type"], "county"]
         }, 'quad-outline');
 
-        map.addSource('countyCentroid', {
+        map.addSource('dynamic-county-centroid', {
           type: 'geojson',
-          data: countyCentroid
+          data: dynamicCountyCentroid
         });
 
         map.addLayer({
-          "id": "county-centroids",
+          "id": "dynamic-county-label",
           "type": "symbol",
-          "source": "countyCentroid",
+          "source": "dynamic-county-centroid",
           'minzoom': 6,
           'maxzoom': 24,
           "layout": {
@@ -371,12 +304,12 @@ export default class CollectionFilterMap extends React.Component {
           }
         });
 
-        map.addSource("county-centroid-source", {
+        map.addSource("county-centroid", {
           "type": "geojson",
           "data": countyLabelCentroids
         });
 
-        map.addSource("quad-centroid-source", {
+        map.addSource("quad-centroid", {
           "type": "geojson",
           "data": quadLabelCentroids
         });
@@ -384,7 +317,7 @@ export default class CollectionFilterMap extends React.Component {
         map.addLayer({
           "id": "county-label",
           "type": "symbol",
-          "source": "county-centroid-source",
+          "source": "county-centroid",
           'minzoom': 6,
           'maxzoom': 24,
           "layout": {
@@ -416,7 +349,7 @@ export default class CollectionFilterMap extends React.Component {
         map.addLayer({
           "id": "quad-label",
           "type": "symbol",
-          "source": "quad-centroid-source",
+          "source": "quad-centroid",
           'minzoom': 9,
           'maxzoom': 24,
           "layout": {
@@ -601,29 +534,31 @@ export default class CollectionFilterMap extends React.Component {
     })
   }
 
+  // Removes duplicate county labels at tile boundaries and determines
+  // the best placement of those labels when the map extent changes.
   dynamicLabels(map) {
-    countyCentroid.features = [];
+    dynamicCountyCentroid.features = [];
     const countyFeatures = map.queryRenderedFeatures({
-        layers: ['county']
+      layers: ['county']
     });
 
     const mapSW = map.getBounds()._sw;
     const mapNE = map.getBounds()._ne;
 
     const mapViewBound = {
-        type: "Feature",
-        geometry: {
-            type: "Polygon",
-            coordinates: [
-                [
-                    [mapSW.lng, mapSW.lat],
-                    [mapSW.lng, mapNE.lat],
-                    [mapNE.lng, mapNE.lat],
-                    [mapNE.lng, mapSW.lat],
-                    [mapSW.lng, mapSW.lat]
-                ]
-            ]
-        }
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [mapSW.lng, mapSW.lat],
+            [mapSW.lng, mapNE.lat],
+            [mapNE.lng, mapNE.lat],
+            [mapNE.lng, mapSW.lat],
+            [mapSW.lng, mapSW.lat]
+          ]
+        ]
+      }
     };
 
     const visualCenterList = [];
@@ -633,95 +568,111 @@ export default class CollectionFilterMap extends React.Component {
       let lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
       let latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
       if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
-          fixedLabelFilter.push(key);
-          let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-          if (visualCenter.clean().length) {
-              visualCenterList.push(visualCenter.clean());
-          }
+        fixedLabelFilter.push(key);
+        let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
+        if (this.cleanArray(visualCenter).length) {
+            visualCenterList.push(this.cleanArray(visualCenter));
+        }
       }
     });
     visualCenterList.map(obj => {
-        let coordinatesList = [];
-        obj.forEach( (feature) => {
-            coordinatesList.push(feature.geometry.coordinates);
-        });
-        let center = this.getCenter(coordinatesList);
-        let countyCenterFeature = {
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: center
-            },
-            properties: {
-                area_type_name: obj[0].properties.area_type_name,
-            }
-        };
-        countyCentroid.features.push(countyCenterFeature);
+      const coordinatesList = [];
+      obj.forEach( (feature) => {
+        coordinatesList.push(feature.geometry.coordinates);
+      });
+      const center = this.getCenter(coordinatesList);
+      const countyCenterFeature = {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: center
+        },
+        properties: {
+          area_type_name: obj[0].properties.area_type_name,
+        }
+      };
+      dynamicCountyCentroid.features.push(countyCenterFeature);
+      return obj;
     });
     map.setFilter("county-label", fixedLabelFilter);
-    map.getSource('countyCentroid').setData(countyCentroid);
+    map.getSource('dynamic-county-centroid').setData(dynamicCountyCentroid);
   }
 
-  // groupBy function
-  groupBy(list, keyGetter) {
-      var map = new Map();
-      list.forEach(function(item) {
-          let key = keyGetter(item);
-          let collection = map.get(key);
-          if (!collection) {
-              map.set(key, [item]);
-          } else {
-              collection.push(item);
-          }
-      });
-      return map;
-  }
-
-  // get visual center
-  getVisualCenter(feature, mapViewBound) {
-      if (feature.geometry.type == "Polygon") {
-          let intersection = intersect(mapViewBound, feature.geometry);
-          if (intersection) {
-              let visualCenter = {
-                  type: "Feature",
-                  geometry: {
-                      type: "Point",
-                      coordinates: []
-                  },
-                  properties: {}
-              };
-              if(intersection.geometry.coordinates.length > 1) {
-                  let intersections = [];
-                  intersection.geometry.coordinates.forEach(
-                    function(coordinate){
-                      intersections.push(polylabel(coordinate));
-                    }
-                  );
-                  visualCenter.geometry.coordinates = this.getCenter(
-                    intersections
-                  );
-              } else {
-                  visualCenter.geometry.coordinates = polylabel(
-                    intersection.geometry.coordinates
-                  );
-              }
-              visualCenter.properties.area_type_name = feature.properties.area_type_name;
-              return visualCenter;
-          }
+  // clean method to remove undefined from an array
+  cleanArray(array) {
+    for (let i = 0; i < array.length; i++) {
+      if (!array[i]) {
+        array.splice(i, 1);
+        i--;
       }
+    }
+    return array;
+  }
+
+  // groups the features by county
+  groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach(function(item) {
+      let key = keyGetter(item);
+      let collection = map.get(key);
+      if (!collection) {
+        map.set(key, [item]);
+      } else {
+        collection.push(item);
+      }
+    });
+    return map;
+  }
+
+  // Get the visual center from each county sliver after
+  // intersecting the rendered features with the map bounds.
+  // Returns a single point to account for multiple county
+  // features at tile boundaries.
+  getVisualCenter(feature, mapViewBound) {
+    if (feature.geometry.type === "Polygon") {
+      const intersection = intersect(mapViewBound, feature.geometry);
+      if (intersection) {
+        const visualCenter = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: []
+          },
+          properties: {}
+        };
+        if(intersection.geometry.coordinates.length > 1) {
+          const intersections = [];
+          intersection.geometry.coordinates.forEach(
+            (coordinate) => {
+              intersections.push(polylabel(coordinate));
+            }
+          );
+          visualCenter.geometry.coordinates = this.getCenter(
+            intersections
+          );
+        } else {
+          visualCenter.geometry.coordinates = polylabel(
+            intersection.geometry.coordinates
+          );
+        }
+        visualCenter.properties.area_type_name = feature.properties.area_type_name;
+        return visualCenter;
+      }
+    }
   }
 
   // get the center of a coordinates list
   getCenter(coordinates) {
-      var lngList = [];
-      var latList = [];
-      coordinates.map(coordinate => {
-          lngList.push(coordinate[0]);
-          latList.push(coordinate[1]);
-      });
-      var meanLng = lngList.reduce((p,c) => p + c, 0) / lngList.length;
-      var meanLat = latList.reduce((p,c) => p + c, 0) / latList.length;
-      return [meanLng, meanLat];
+    const lngList = [];
+    const latList = [];
+    coordinates.map(coordinate => {
+      lngList.push(coordinate[0]);
+      latList.push(coordinate[1]);
+      return coordinate;
+    });
+    const meanLng = lngList.reduce((p,c) => p + c, 0) / lngList.length;
+    const meanLat = latList.reduce((p,c) => p + c, 0) / latList.length;
+    return [meanLng, meanLat];
   }
 
   resetTheMap() {
