@@ -6,15 +6,10 @@ export default class Description extends React.Component {
     super(props)
 
     this.state = {
-      wikiExtract: '',
-      descriptClass: 'fade-text',
-      showButton: true,
-      expandText: 'more'
+      wikiExtract: ''
     }
 
     this.getWiki = this.getWiki.bind(this);
-    this.setTextFade = this.setTextFade.bind(this);
-    this.toggleText = this.toggleText.bind(this);
   }
 
   getWiki() {
@@ -49,41 +44,15 @@ export default class Description extends React.Component {
           const completeWiki = extract.concat(wikiAttribution);
           self.setState({wikiExtract: completeWiki});
         }
-        self.setTextFade();
       })
     }
   }
 
-  setTextFade() {
-    let descriptHt = this.refs.descript.clientHeight;
-
-    descriptHt < 400 ? this.setState({
-      descriptClass: '',
-      showButton: false
-    }) : this.setState({
-      descriptClass: 'fade-text',
-      showButton: true
-    });
-  }
-
-  toggleText() {
-    this.state.expandText === 'more' ? this.setState({
-      expandText:'less',
-      descriptClass:''
-    }) : this.setState({
-      expandText:'more',
-      descriptClass:'fade-text'
-    });
-  }
-
   componentDidMount() {
     this.getWiki();
-    this.setTextFade();
   }
 
-
   render() {
-
     const createMarkup = () => {
       if (this.state.wikiExtract) {
         return {__html: this.state.wikiExtract};
@@ -96,23 +65,15 @@ export default class Description extends React.Component {
       }
     }
 
-    const showButton = this.state.showButton ?  (
-      <div className="mdc-button mdc-button--raised expand" onClick={this.toggleText}>
-        <i className="material-icons">{`expand_${this.state.expandText}`}</i>
-        <p>Show {this.state.expandText}...</p>
-      </div>) : '';
-
-
     return (
       <div className="template-content-div">
         <div className='mdc-typography--headline5 template-content-div-header'>
           Description
         </div>
-        <div ref="descript" className={this.state.descriptClass}>
+        <div ref="descript">
           <div dangerouslySetInnerHTML={createMarkup()} />
           <p dangerouslySetInnerHTML={createMarkupDesc()} ></p>
         </div>
-        {showButton}
       </div>
     )
   }
