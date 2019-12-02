@@ -63,7 +63,6 @@ export default class Catalog extends React.Component {
 
   componentDidMount() {
     this.props.fetchCollections();
-    this.props.fetchResources();
     this.props.fetchStoredShoppingCart();
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("scroll", this.detectScroll);
