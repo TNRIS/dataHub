@@ -240,7 +240,6 @@ export function uploadOrderFile(collectionId, cartInfo) {
         fetch(presignedUrl.url, payload)
           .then(handleErrors)
           .then(res => {
-            console.log(res);
             if (res.status === 201 && index === cartFiles.length - 1) {
               // if successful, remove the 'files' key from the form info
               // it is no longer needed since the upload was successful and
