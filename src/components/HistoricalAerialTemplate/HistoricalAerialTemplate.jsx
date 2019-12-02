@@ -9,6 +9,7 @@ import Images from '../Images'
 
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
 import ContactContainer from '../../containers/ContactContainer'
+import BackButtonContainer from '../../containers/BackButtonContainer'
 
 export default class HistoricalAerialTemplate extends React.Component {
   constructor(props) {
@@ -65,7 +66,8 @@ export default class HistoricalAerialTemplate extends React.Component {
         showComponent = (
           <Images
             thumbnail={this.props.collection.thumbnail_image}
-            images={this.props.collection.images} />
+            images={this.props.collection.images}
+            template={this.props.collection.template} />
         )
         break;
       case 'order':
@@ -208,6 +210,9 @@ export default class HistoricalAerialTemplate extends React.Component {
                   </nav>
                 </div>
               </div>
+
+              <BackButtonContainer />
+
             </section>
           </div>
         </header>

@@ -19,7 +19,8 @@ export default class TnrisOutsideEntityTemplateDetails extends React.Component {
     const imageCarousel = this.props.collection.images ? (
                         <Images
                           thumbnail={this.props.collection.thumbnail_image}
-                          images={this.props.collection.images} />)
+                          images={this.props.collection.images}
+                          template={this.props.collection.template} />)
                         : "";
 
     const externalEntityBlurb = (
@@ -40,17 +41,15 @@ export default class TnrisOutsideEntityTemplateDetails extends React.Component {
                           <div className="mdc-layout-grid__inner">
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-4'>
                               <Metadata collection={this.props.collection} />
+                              {externalEntityBlurb}
                               <ShareButtons />
                               <OeServices collection={this.props.collection} />
                             </div>
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
                               {imageCarousel}
                               <div className="mdc-layout-grid__inner">
-                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
+                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
                                   <Description collection={this.props.collection} />
-                                </div>
-                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-4'>
-                                  {externalEntityBlurb}
                                 </div>
                               </div>
                             </div>

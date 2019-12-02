@@ -81,24 +81,20 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                               {lidarCard}
                               {servicesCard}
                               {supplementalDownloadsCard}
+                              {sourceCitation}
                               <ShareButtons />
                             </div>
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                              {/*{imageCarousel}*/}
                               {countyCoverage}
                               <div className="mdc-layout-grid__inner">
-                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
+                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
                                   {description}
-                                </div>
-                                <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-4'>
-                                  {sourceCitation}
                                 </div>
                               </div>
                             </div>
                           </div>) : (
                           <div className="mdc-layout-grid__inner">
                             <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                              {/*{imageCarousel}*/}
                               {countyCoverage}
                               <Metadata collection={this.props.collection} />
                               {description}

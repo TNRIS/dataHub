@@ -9,6 +9,7 @@ import Images from '../Images'
 
 import ContactContainer from '../../containers/ContactContainer'
 import OrderTnrisDataFormContainer from '../../containers/OrderTnrisDataFormContainer'
+import BackButtonContainer from '../../containers/BackButtonContainer'
 
 export default class TnrisOrderTemplate extends React.Component {
   constructor(props) {
@@ -64,7 +65,8 @@ export default class TnrisOrderTemplate extends React.Component {
         showComponent = (
           <Images
             thumbnail={this.props.collection.thumbnail_image}
-            images={this.props.collection.images} />
+            images={this.props.collection.images}
+            template={this.props.collection.template} />
         )
         break;
       case 'order':
@@ -168,7 +170,6 @@ export default class TnrisOrderTemplate extends React.Component {
 
                       <button className="mdc-tab" role="tab" aria-selected="false" tabIndex="-1"  onClick={() => this.setTemplateView("contact")} title="Contact">
                         <span className="mdc-tab__content">contact
-                          {/*<span className="mdc-tab__icon material-icons">contact_support</span>*/}
                         </span>
                         <span className="mdc-tab-indicator">
                           <span className="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -190,30 +191,21 @@ export default class TnrisOrderTemplate extends React.Component {
                   <nav className="mdc-list">
                     <div className={this.state.view === 'details' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("details")}>Details
-                       {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
                     <div className={this.state.view === 'preview' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("preview")}>Preview
-                       {/*<i className="mdc-tab__icon material-icons">details</i>*/}
                     </div>
-                    {/* this.props.collection.counties ? (
-                      <div className={this.state.view === 'coverage' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
-                         onClick={() => this.setTemplateView("coverage")}>Coverage
-
-                      </div>
-                      ) : ""
-                    */}
                     <div className={this.state.view === 'order' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("order")}>Order
-                       {/*<i className="mdc-tab__icon material-icons">shopping_basket</i>*/}
                     </div>
                     <div className={this.state.view === 'contact' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                        onClick={() => this.setTemplateView("contact")}>Contact
-                       {/*<i className="mdc-tab__icon material-icons">contact_support</i>*/}
                     </div>
                   </nav>
                 </div>
               </div>
+
+              <BackButtonContainer />
 
             </section>
           </div>

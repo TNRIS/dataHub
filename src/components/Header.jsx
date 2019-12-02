@@ -99,6 +99,7 @@ export default class Header extends React.Component {
     ) : '';
 
     const filters = ['filter', 'geo', 'sort', 'range'];
+    
     const toolDrawerNotification = filters.map(x => this.props.location.pathname.includes(x) ?
       (<NotificationBadge key={x} label='!' count={1} frameLength={30}/>) : '');
 
@@ -127,65 +128,93 @@ export default class Header extends React.Component {
                 view_comfy
             </button>) : '';
 
-    return (
-        <header
-          className={`header-component mdc-top-app-bar mdc-top-app-bar--fixed`}
-          id="master-header">
-          <div className="header-title mdc-top-app-bar__row">
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-              <a href="https://tnris.org">
-                <img className="tnris-logo" src={tnrisLogo} alt="TNRIS Logo" title="tnris.org" />
-              </a>
-              <a
-                className='header-title__tnris title-size'
-                href="https://tnris.org/"
-                tabIndex="0"
-                title="tnris.org">
-                  {this.state.tnrisTitle}
-              </a>
-            </section>
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-              <a className='header-title__twdb title-size' href="http://www.twdb.texas.gov/" tabIndex="0">
-                {this.state.twdbTitle}
-              </a>
-            </section>
-          </div>
-          <div className={`header-nav mdc-top-app-bar__row ${drawerStatusClass}`}>
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start" role="toolbar">
-              {appTitle}
-            </section>
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-              <CollectionSearcherContainer />
-              {this.props.orders && Object.keys(this.props.orders).length !== 0 && this.props.view !== 'geoFilter' ?
-                 <div className="shopping-cart-icon nav-button">
-                   {shoppingCartCountBadge}
+    const header = this.props.view === 'catalog' ? (
+      <header
+        className={`header-component mdc-top-app-bar mdc-top-app-bar--fixed`}
+        id="master-header">
+        <div className="header-title mdc-top-app-bar__row">
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <a href="https://tnris.org">
+              <img className="tnris-logo" src={tnrisLogo} alt="TNRIS Logo" title="tnris.org" />
+            </a>
+            <a
+              className='header-title__tnris title-size'
+              href="https://tnris.org/"
+              tabIndex="0"
+              title="tnris.org">
+                {this.state.tnrisTitle}
+            </a>
+          </section>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+            <a className='header-title__twdb title-size' href="http://www.twdb.texas.gov/" tabIndex="0">
+              {this.state.twdbTitle}
+            </a>
+          </section>
+        </div>
+        <div className={`header-nav mdc-top-app-bar__row ${drawerStatusClass}`}>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start" role="toolbar">
+            {appTitle}
+          </section>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <CollectionSearcherContainer />
+            {this.props.orders && Object.keys(this.props.orders).length !== 0 && this.props.view !== 'geoFilter' ?
+               <div className="shopping-cart-icon nav-button">
+                 {shoppingCartCountBadge}
+                <button
+                  onClick={this.handleOrderCartView}
+                  onKeyDown={(e) => this.handleKeyPress(e, 'cart')}
+                  className="material-icons mdc-top-app-bar__navigation-icon"
+                  title="View shopping cart"
+                  tabIndex="3">
+                  shopping_cart
+                </button>
+              </div> : ''}
+              {this.props.view === 'catalog' ?
+                <div className="tool-drawer-icon nav-button">
+                  {toolDrawerNotification}
                   <button
-                    onClick={this.handleOrderCartView}
-                    onKeyDown={(e) => this.handleKeyPress(e, 'cart')}
+                    onClick={this.props.handleToolDrawerDisplay}
+                    onKeyDown={(e) => this.handleKeyPress(e, 'toolDrawer')}
                     className="material-icons mdc-top-app-bar__navigation-icon"
-                    title="View shopping cart"
+                    id="tools"
+                    title={this.props.toolDrawerStatus === 'closed' ? 'Open tool drawer' : 'Close tool drawer'}
                     tabIndex="3">
-                    shopping_cart
+                      tune
                   </button>
                 </div> : ''}
-                {this.props.view === 'catalog' ?
-                  <div className="tool-drawer-icon nav-button">
-                    {toolDrawerNotification}
-                    <button
-                      onClick={this.props.handleToolDrawerDisplay}
-                      onKeyDown={(e) => this.handleKeyPress(e, 'toolDrawer')}
-                      className="material-icons mdc-top-app-bar__navigation-icon"
-                      id="tools"
-                      title={this.props.toolDrawerStatus === 'closed' ? 'Open tool drawer' : 'Close tool drawer'}
-                      tabIndex="3">
-                      {/*{this.props.toolDrawerVariant === 'dismissible' ?
-                        this.props.toolDrawerStatus === 'closed' ? 'menu' : 'tune' : 'tune'}*/}
-                        tune
-                    </button>
-                  </div> : ''}
-            </section>
-          </div>
-        </header>
+          </section>
+        </div>
+      </header>
+    ) : (
+      <header
+        className={`header-component mdc-top-app-bar mdc-top-app-bar--fixed`}
+        id="master-header">
+        <div className="header-title mdc-top-app-bar__row">
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <a href="https://tnris.org">
+              <img className="tnris-logo" src={tnrisLogo} alt="TNRIS Logo" title="tnris.org" />
+            </a>
+            <a
+              className='header-title__tnris title-size'
+              href="https://tnris.org/"
+              tabIndex="0"
+              title="tnris.org">
+                {this.state.tnrisTitle}
+            </a>
+          </section>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+            <a className='header-title__twdb title-size' href="http://www.twdb.texas.gov/" tabIndex="0">
+              {this.state.twdbTitle}
+            </a>
+          </section>
+        </div>
+      </header>
     );
+
+    return (
+      <div>
+        {header}
+      </div>
+    )
   }
 }

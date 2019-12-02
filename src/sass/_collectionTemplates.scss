@@ -18,7 +18,8 @@ shared styles for collection base Template components
   header {
     @include mdc-top-app-bar-fill-color($main-background);
     z-index: 3;
-    position: relative;
+    // position: relative;
+    position: fixed;
 
     // collection title, show in left hand section
     .mdc-top-app-bar__title {
@@ -97,13 +98,11 @@ shared styles for collection base Template components
 
 // template images - used for download, historical and order
 .tnris-template-images {
-  padding-top: 10px;
   max-width: 1200px;
   margin: 0 auto;
 
   // nested images (image carousel) component - BEGIN
   .image-container {
-    padding: 0 40px 0 40px;
 
     @media (max-width: $breakpoint-tablet) {
       padding: 0 15px 0 15px;
@@ -159,6 +158,10 @@ shared styles for collection base Template components
       top: 50%; /* 50% from the top of the container */
       transform: translateY(-50%); /* -50% of the height of the image */
     }
+  }
+
+  .pad-class {
+    padding: 80px 40px 0 40px;
   }
   // nested images (image carousel) component - END
 }

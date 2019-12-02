@@ -55,14 +55,15 @@ export default class Description extends React.Component {
   }
 
   setTextFade() {
-    const height = this.refs.descript.clientHeight;
-    height < 300 ? this.setState({
-      descriptClass:'',
+    let descriptHt = this.refs.descript.clientHeight;
+
+    descriptHt < 400 ? this.setState({
+      descriptClass: '',
       showButton: false
     }) : this.setState({
-      descriptClass:'fade-text',
-      showButton:true
-    })
+      descriptClass: 'fade-text',
+      showButton: true
+    });
   }
 
   toggleText() {
@@ -84,11 +85,15 @@ export default class Description extends React.Component {
   render() {
 
     const createMarkup = () => {
-      return {__html: this.state.wikiExtract};
+      if (this.state.wikiExtract) {
+        return {__html: this.state.wikiExtract};
+      }
     }
 
     const createMarkupDesc = () => {
-      return {__html: this.props.collection.description};
+      if (this.props.collection.description) {
+        return {__html: this.props.collection.description};
+      }
     }
 
     const showButton = this.state.showButton ?  (

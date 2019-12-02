@@ -1,29 +1,11 @@
 import React from 'react'
 import OrderCartContainer from '../containers/OrderCartContainer'
+import BackButtonContainer from '../containers/BackButtonContainer'
 
 class OrderCartView extends React.Component {
-  constructor() {
-    super();
-    this.handleBack = this.handleBack.bind(this);
-  }
 
   componentDidMount() {
     window.scrollTo(0,0);
-  }
-
-  handleBack() {
-    if (this.props.previousUrl.includes('/catalog/')) {
-      this.props.setViewCatalog();
-      this.props.setUrl(this.props.previousUrl);
-    } else if (this.props.previousUrl.includes('/collection/')) {
-        const collectionUuid = this.props.previousUrl.replace('/collection/', '');
-        this.props.setViewCollection();
-        this.props.selectCollection(collectionUuid);
-        this.props.setUrl(this.props.previousUrl);
-    } else {
-        this.props.setViewCatalog();
-        this.props.setUrl(this.props.previousUrl);
-    }
   }
 
   render() {
@@ -36,12 +18,7 @@ class OrderCartView extends React.Component {
             </span>
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-            <button
-              className="close-shopping-cart mdc-icon-button material-icons"
-              onClick={this.handleBack}
-              title="Close shopping cart">
-              close
-            </button>
+            <BackButtonContainer />
           </section>
         </div>
         <OrderCartContainer />
