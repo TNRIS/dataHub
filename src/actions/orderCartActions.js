@@ -150,18 +150,26 @@ function handleErrors(response) {
 // shared function for getting permissions from the contact app to do the upload
 // to s3. contact app lets the bucket know an upload is coming and returns
 // a key which expires after a few minutes
-function getPolicy(policyUrl, dispatch) {
-  return fetch(policyUrl)
-         .then(handleErrors)
-         .then(res => res.json())
-         .then(json => {
-           return json;
-         })
-         .catch(error => dispatch(uploadOrderFailure(error)));
+async function getPolicy(policyUrl, key, dispatch) {
+  const payload = {
+    method: 'POST',
+    body: JSON.stringify({key: key}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  try {
+    const response = await fetch(policyUrl, payload);
+    const res = await handleErrors(response);
+    const json = res.json();
+    return json;
+  }
+  catch (error) {
+    return dispatch(uploadOrderFailure(error));
+  }
 }
 
 export function uploadOrderFile(collectionId, cartInfo) {
-  const bucket = 'https://contact-uploads.s3.amazonaws.com/';
   // if in development mode, use local api build for forms; otherwise, use prod deployed api
   const contactUrl = process.env.REACT_APP_API_URL + '/api/v1/contact/policy/';
   let policyUrl;
@@ -174,82 +182,86 @@ export function uploadOrderFile(collectionId, cartInfo) {
   }
   return (dispatch, getState) => {
     dispatch(uploadOrderBegin());
-    return getPolicy(policyUrl, dispatch)
-           .then((s3policy) => {
-             const cartFiles = Array.from(cartInfo.files);
-             const fileDetails = {};
-             // iterate all cart files since mulitple screenshot images permitted
-             cartFiles.forEach((file, index) => {
-               // build fake form to do the upload. required to use the s3 rest api
-               const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name.split(' ').join('_');
-               let formData = new FormData();
-               formData.append('key', fileKey);
-               formData.append('acl', 'private');
-               formData.append('success_action_status', '201');
-               formData.append('success_action_redirect', '');
-               // if a zipfile upload, declare as application/zip as per contact-app policy requirement
-               // otherwise, use the individual file type
-               let contentType;
-               if (cartInfo.type === 'AOI') {
-                 switch (file.type) {
-                   case 'application/zip':
-                    contentType = 'application/zip';
-                    break;
-                   case 'application/x-zip-compressed':
-                    contentType = 'application/zip';
-                    break;
-                   case 'application/x-zip':
-                    contentType = 'application/zip';
-                    break;
-                   default:
-                    contentType = file.type;
-                 }
-               }
-               else {
-                 contentType = file.type;
-               }
-               formData.append('Content-Type', contentType);
-               formData.append('Content-Length', file.size);
-               formData.append('AWSAccessKeyId', s3policy.key);
-               formData.append('Policy', s3policy.policy);
-               formData.append('Signature', s3policy.signature);
-               formData.append('file', file, file.name);
+    const cartFiles = Array.from(cartInfo.files);
+    const fileDetails = {};
+    // iterate all cart files since mulitple screenshot images permitted
+    cartFiles.forEach((file, index) => {
+      // create unique datetime'd key and retrieve policy permission
+      const fileKey = 'data-tnris-org-order/' + collectionId + '_' + Date.now() + '_' + file.name.split(' ').join('_');
+      getPolicy(policyUrl, fileKey, dispatch)
+      .then((presignedUrl) => {
+        // presigned url/policy created, so now...
+        // build fake form to do the upload. required to use the s3 rest api
+        let formData = new FormData();
+        formData.append('key', presignedUrl.fields.key);
+        formData.append('acl', 'private');
+        formData.append('success_action_status', '201');
+        formData.append('success_action_redirect', '');
+        // if a zipfile upload, declare as application/zip as per contact-app policy requirement
+        // otherwise, use the individual file type
+        let contentType;
+        if (cartInfo.type === 'AOI') {
+          switch (file.type) {
+            case 'application/zip':
+              contentType = 'application/zip';
+              break;
+            case 'application/x-zip-compressed':
+              contentType = 'application/zip';
+              break;
+            case 'application/x-zip':
+              contentType = 'application/zip';
+              break;
+            default:
+              contentType = file.type;
+          }
+        }
+        else {
+          contentType = file.type;
+        }
+        formData.append('Content-Type', contentType);
+        formData.append('Content-Length', file.size);
+        formData.append('Policy', presignedUrl.fields.policy);
+        formData.append('x-amz-algorithm', presignedUrl.fields['x-amz-algorithm']);
+        formData.append('x-amz-credential', presignedUrl.fields['x-amz-credential']);
+        formData.append('x-amz-date', presignedUrl.fields['x-amz-date']);
+        formData.append('x-amz-signature', presignedUrl.fields['x-amz-signature']);
+        formData.append('file', file, file.name);
 
-               const payload = {
-                 method: 'POST',
-                 body: formData
-               };
+        const payload = {
+          method: 'POST',
+          body: formData
+        };
 
-               fileDetails[index] = {
-                 'filename': file.name,
-                 'link': "https://s3.amazonaws.com/contact-uploads/" + fileKey
-               };
-               // do the upload
-               fetch(bucket, payload)
-                .then(handleErrors)
-                .then(res => {
-                  if (res.status === 201 && index === cartFiles.length - 1) {
-                    // if successful, remove the 'files' key from the form info
-                    // it is no longer needed since the upload was successful and
-                    // it just screws up the info saved in local storage
-                    const filesKey = 'files';
-                    const { [filesKey]:value , ...removedOrders } = cartInfo;
-                    const newCart = {
-                      ...removedOrders,
-                      attachments: fileDetails
-                    };
-                    // now that uploads are done, add to the store for components
-                    dispatch(addCollectionToCart(collectionId, newCart));
-                    dispatch(uploadOrderSuccess());
-                  }
-                  else if (res.status !== 201) {
-                    dispatch(uploadOrderFailure(res.statusText));
-                  }
-                })
-                .catch(error => dispatch(uploadOrderFailure(error)));
-             });
-           })
-           .catch(error => dispatch(uploadOrderFailure(error)));
+        fileDetails[index] = {
+          'filename': file.name,
+          'link': "https://s3.amazonaws.com/contact-uploads/" + presignedUrl.fields.key
+        };
+        // do the upload
+        fetch(presignedUrl.url, payload)
+          .then(handleErrors)
+          .then(res => {
+            if (res.status === 201 && index === cartFiles.length - 1) {
+              // if successful, remove the 'files' key from the form info
+              // it is no longer needed since the upload was successful and
+              // it just screws up the info saved in local storage
+              const filesKey = 'files';
+              const { [filesKey]:value , ...removedOrders } = cartInfo;
+              const newCart = {
+                ...removedOrders,
+                attachments: fileDetails
+              };
+              // now that uploads are done, add to the store for components
+              dispatch(addCollectionToCart(collectionId, newCart));
+              dispatch(uploadOrderSuccess());
+            }
+            else if (res.status !== 201) {
+              dispatch(uploadOrderFailure(res.statusText));
+            }
+          })
+          .catch(error => dispatch(uploadOrderFailure(error)));
+      })
+      .catch(error => dispatch(uploadOrderFailure(error)));
+    });
   };
 }
 
