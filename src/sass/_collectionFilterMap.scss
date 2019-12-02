@@ -1,12 +1,26 @@
 .collection-filter-map-component {
 
   #collection-filter-map {
-    position:absolute;
-    top: 170px;
+    position: absolute;
+    top: 110px;
     left: 0;
     bottom: 50px;
     width: 100%;
+
+    .navigate-to-extent {
+      font-size: 1.7em;
+    }
   }
+
+  .disabled-map {
+    pointer-events: none;
+  }
+
+  .disabled-button {
+    -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+    filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+    cursor: default !important;
+}
 
   .map-filter-button {
     position: absolute;
@@ -20,7 +34,7 @@
     color: $nest-text;
     position: absolute;
     z-index: 2;
-    top: 180px;
+    top: 120px;
     right: 10px;
     border-radius: 3px;
     border: 1px solid rgba(0,0,0,0.4);
@@ -45,6 +59,7 @@
       #instruction-polygon-icon {
         height: 18px;
         width: 20px;
+        margin-top: 2px;
         display: inline-flex;
         vertical-align: text-top;
       }

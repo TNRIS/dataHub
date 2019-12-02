@@ -9,37 +9,10 @@ styles for component: TnrisDownloadTemplateDownload
     margin: 0;
   }
 
-  #tnris-download-menu {
-    background: $main-background;
-    color: $nest-text;
-    position: absolute;
-    z-index: 1;
-    top: 48px;
-    right: 16px;
-    border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.4);
-
-    &.hidden-layer-menu {
-      display: none;
-    }
-
-    .mdc-list-item {
-      margin: 3px 6px 3px 6px;
-      height: initial;
-      display: block;
-      text-align: center;
-    }
-
-    .mdc-list-item.mdc-list-item--activated {
-      background-color: $nest-text;
-      color: $main-background;
-    }
-  }
-
   #tnris-download-map {
     position: relative;
     width: auto;
-    height: 55vh;
+    height: 62vh;
     top: 0;
 
     .mapboxgl-canvas {
@@ -58,71 +31,33 @@ styles for component: TnrisDownloadTemplateDownload
     }
   }
 
-  #tnris-download-note {
-    background: $main-background;
-    color: $nest-text;
-    position: absolute;
-    z-index: 2;
-    bottom: 16px;
-    left: 16px;
-    text-align: center;
-    border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.4);
+  .tnris-download-menu {
+    width: 100%;
+    height: auto;
+    min-height: 30px;
     padding: 3px;
-    line-height: 12px;
 
-    i {
-      font-size: 16px;
+    &.hidden-layer-menu {
+      display: none;
     }
 
-    p {
-      margin: 0;
-      line-height: 20px;
-      max-width: 250px;
-    }
-  }
-
-  #tnris-download-instructions {
-    background: $main-background;
-    color: $nest-text;
-    position: absolute;
-    z-index: 2;
-    top: 145px;
-    left: 16px;
-    border-radius: 5px;
-    border: 1.5px solid rgba(0,0,0,0.15);
-    padding: 3px;
-    line-height: 12px;
-    max-width: 200px;
-
-    .close-icon {
-      cursor: pointer;
-      float: left;
-      border-radius: 3px;
-
-      &:hover {
-        background-color: #ccc;
-      }
-    }
-
-    i {
-      cursor: pointer;
-      font-size: 25px;
-    }
-
-    p {
-      margin: 0;
-      line-height: 20px;
-      padding: 5px;
-      width: auto;
+    .mdc-list-item {
+      margin: 3px 6px 3px 6px;
+      height: initial;
+      display: block;
       text-align: center;
+    }
+
+    .mdc-list-item.mdc-list-item--activated {
+      background-color: $nest-text;
+      color: $main-background;
     }
   }
 
   .tnris-download-template-download__mobile {
     background: $main-background;
     color: $nest-text;
-    padding: 35px;
+    padding: 20px;
   }
 
   .tnris-download-template-download__loading {
@@ -137,6 +72,11 @@ styles for component: TnrisDownloadTemplateDownload
     background: $main-background;
     color: $error-text;
     padding: 35px;
+  }
+
+  .template-content-div-subheader {
+    color: $nest-text;
+    padding: 8px 0 8px 0;
   }
 
 }

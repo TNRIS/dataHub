@@ -9,7 +9,7 @@ styles for component: CountyCoverage
   #county-coverage-map {
     position: relative;
     width: auto;
-    height: 55vh;
+    height: 62vh;
     top: 0;
 
     .mapboxgl-canvas {
@@ -26,41 +26,9 @@ styles for component: CountyCoverage
     }
   }
 
-  #county-coverage-notice {
-    background: $main-background;
+  .template-content-div-subheader {
     color: $nest-text;
-    position: absolute;
-    z-index: 2;
-    top: 145px;
-    left: 16px;
-    border-radius: 5px;
-    border: 1.5px solid rgba(0,0,0,0.15);
-    padding: 3px;
-    line-height: 12px;
-    max-width: 200px;
-
-    .close-icon {
-      cursor: pointer;
-      float: left;
-      border-radius: 3px;
-
-      &:hover {
-        background-color: #ccc;
-      }
-    }
-
-    i {
-      cursor: pointer;
-      font-size: 25px;
-    }
-
-    p {
-      margin: 0;
-      line-height: 20px;
-      padding: 5px;
-      width: auto;
-      text-align: center;
-    }
+    padding: 8px 0 8px 0;
   }
 
 }

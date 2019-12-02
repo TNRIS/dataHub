@@ -3,11 +3,22 @@ import { connect } from 'react-redux'
 import CollectionFilterMapView from '../components/CollectionFilterMapView'
 
 import { catalogActions,
-         urlTrackerActions } from '../actions'
+         collectionFilterMapActions,
+         urlTrackerActions } from '../actions';
 
 const mapStateToProps = state => ({
-  previousUrl: state.urlTracker.previousUrl,
-  catalogFilterUrl: state.urlTracker.catalogFilterUrl
+  previousUrl:
+    state.urlTracker.previousUrl,
+  catalogFilterUrl:
+    state.urlTracker.catalogFilterUrl,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter,
+  collectionFilterMapMoveMap:
+    state.collectionFilterMap.collectionFilterMapMoveMap,
+  collectionFilterMapSelectedAreaType:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
+  collectionFilterMapSelectedAreaTypeName:
+    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -16,6 +27,36 @@ const mapDispatchToProps = dispatch => ({
   },
   setViewCatalog: () => {
     dispatch(catalogActions.setViewCatalog());
+  },
+  setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapMoveMap(
+        collectionFilterMapMoveMap
+      )
+    );
+  },
+  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
+  },
+  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
+  },
+  setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
+    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
+  },
+  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
+        collectionFilterMapSelectedAreaType
+      )
+    );
+  },
+  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
+        collectionFilterMapSelectedAreaTypeName
+      )
+    );
   }
 })
 

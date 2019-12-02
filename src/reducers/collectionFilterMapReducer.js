@@ -2,7 +2,10 @@ import {
   SET_COLLECTION_FILTER_MAP_AOI,
   SET_COLLECTION_FILTER_MAP_CENTER,
   SET_COLLECTION_FILTER_MAP_FILTER,
-  SET_COLLECTION_FILTER_MAP_ZOOM
+  SET_COLLECTION_FILTER_MAP_ZOOM,
+  SET_COLLECTION_FILTER_MAP_MOVE_MAP,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
+  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME
 } from '../constants/collectionFilterMapActionTypes';
 
 import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
@@ -11,9 +14,12 @@ import { POP_BROWSER_STORE } from '../constants/catalogActionTypes';
 // these will be passed to the component when it is instantiated
 const initialState = {
   collectionFilterMapAoi: {},
-  collectionFilterMapCenter: {lng: -99.341389, lat: 31.33},
+  collectionFilterMapCenter: {lng: -99.341389, lat: 31.33}, // the center of Texas
   collectionFilterMapFilter: [],
-  collectionFilterMapZoom: 5.8
+  collectionFilterMapZoom: 5.3,
+  collectionFilterMapMoveMap: false,
+  collectionFilterMapSelectedAreaType: "",
+  collectionFilterMapSelectedAreaTypeName: ""
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {
@@ -44,6 +50,34 @@ export default function collectionFilterMapReducer(state = initialState, action)
       return {
         ...state,
         collectionFilterMapZoom: action.payload.collectionFilterMapZoom
+      };
+
+    // case SET_COLLECTION_FILTER_MAP_ZOOM:
+    //   // Set the zoom level of the collection filter map in the state
+    //   return {
+    //     ...state,
+    //     collectionFilterMapZoom: action.payload.collectionFilterMapZoom
+    //   };
+
+    case SET_COLLECTION_FILTER_MAP_MOVE_MAP:
+      // Set the property Move Map to true or false in the state
+      return {
+        ...state,
+        collectionFilterMapMoveMap: action.payload.collectionFilterMapMoveMap
+      };
+
+    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE:
+      // Set the property SelectedArea to the user selected area_type in the state
+      return {
+        ...state,
+        collectionFilterMapSelectedAreaType: action.payload.collectionFilterMapSelectedAreaType
+      };
+
+    case SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME:
+      // Set the property SelectedAreaTypeName to the user selected area_type in the state
+      return {
+        ...state,
+        collectionFilterMapSelectedAreaTypeName: action.payload.collectionFilterMapSelectedAreaTypeName
       };
 
     case POP_BROWSER_STORE:

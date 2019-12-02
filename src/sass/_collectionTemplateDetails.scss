@@ -6,7 +6,7 @@ shared styles for collection TemplateDetails components
 .tnris-order-template-details,
 .historical-aerial-template-details,
 .outside-entity-template-details {
-  padding: 0;
+  padding: 50px 0 0 0;
   overflow-x: hidden;
   overflow-y: auto;
 
@@ -40,6 +40,10 @@ shared styles for collection TemplateDetails components
       &.-expanded {
         max-height: 100vh;
       }
+    }
+
+    .mw-empty-elt {
+      display: none;
     }
 
     .fade-text:not(.-expanded)::after {

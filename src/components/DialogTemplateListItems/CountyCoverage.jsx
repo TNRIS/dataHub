@@ -1,7 +1,7 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
-import CountyCoverageNote from './CountyCoverageNote'
+
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -31,8 +31,20 @@ export default class CountyCoverage extends React.Component {
         zoom: 4
     });
     this.map = map;
-    // add those controls!
-    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    // add regular out-of-the-box controls if they dont already exist
+    // prevents stacking/duplicating controls on component update
+    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
+      map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    }
+    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
+      map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    }
+
+    // add tooltips for map controls
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
 
     const re = new RegExp(", ", 'g');
     const quotedCounties = this.props.counties.replace(re, "','");
@@ -146,11 +158,16 @@ export default class CountyCoverage extends React.Component {
     return (
 
       <div className="template-content-div county-coverage-component">
-        <div className='mdc-typography--headline5 template-content-div-header'>
+        <div className='template-content-div-header mdc-typography--headline5'>
           Coverage Area
         </div>
+        <div className='template-content-div-subheader mdc-typography--headline7'>
+          Counties displayed in the map show general coverage for this dataset. Coverage may be incomplete and of varying quality.
+        </div>
         <div id='county-coverage-map'></div>
-        <CountyCoverageNote />
+        <div className='template-content-div-subheader mdc-typography--headline7'>
+          <strong>Note:</strong> Data cannot be downloaded from this map, but can be ordered by clicking the 'Order' tab.
+        </div>
       </div>
     )
   }

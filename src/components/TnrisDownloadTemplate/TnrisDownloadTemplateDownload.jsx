@@ -1,6 +1,5 @@
 import React from 'react'
 import { GridLoader } from 'react-spinners'
-import TnrisDownloadMapNote from './TnrisDownloadMapNote'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -19,6 +18,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         resourceLength: null,
         areaTypesLength: 1
       };
+
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
       this.createLayers = this.createLayers.bind(this);
@@ -109,8 +109,53 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         zoom: 6.1
     });
     this.map = map;
-    // add those controls!
-    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    // add regular out-of-the-box controls if they dont already exist
+    // prevents stacking/duplicating controls on component update
+    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
+      map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    }
+    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
+      map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    }
+    // class for custom map controls used below
+    // *** event handler is commented out but might be useful for future new controls ***
+    class ButtonControl {
+      constructor({
+        id = "",
+        className = "",
+        title = ""
+        // eventHandler = ""
+      }) {
+        this._id = id;
+        this._className = className;
+        this._title = title;
+        // this._eventHandler = eventHandler;
+      }
+      onAdd(map){
+        this._btn = document.createElement("button");
+        this._btn.id = this._id;
+        this._btn.className = this._className;
+        this._btn.type = "button";
+        this._btn.title = this._title;
+        // this._btn.onclick = this._eventHandler;
+
+        this._container = document.createElement("div");
+        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+        this._container.appendChild(this._btn);
+
+        return this._container;
+      }
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    // custom control variable
+    const ctrlMenu = new ButtonControl({
+      id: 'download-menu',
+      className: 'tnris-download-menu',
+      title: 'Download Area Selector'
+    });
+
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
     // for faster initial load
@@ -126,10 +171,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     } else if (areaTypesAry.includes('quad')) {
       startLayer = 'quad';
     }
+
     // areaTypes length in state turns on display of layer menu if more than 1 layer
     if (areaTypesAry.length !== this.state.areaTypesLength) {
       this.setState({
-        areaTypesLength:areaTypesAry.length
+        areaTypesLength: areaTypesAry.length
       });
     }
 
@@ -145,10 +191,29 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
 
+    // add custom control to map; only add download area
+    // menu control if areaTypesAry.length is greater than
+    // one and the control doesn't already exist in the Dom
+    if (areaTypesAry.length > 1) {
+      if (!document.querySelector('.tnris-download-menu')) {
+        map.addControl(ctrlMenu, 'top-right')
+      }
+    }
+
+    // add tooltips for all map controls
+    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
+    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
+    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
+    document.querySelector('.mapboxgl-ctrl-fullscreen').setAttribute('title', 'Fullscreen Map');
+
+    // add custom controls to map
+    const menuItems = document.querySelector('#download-menu');
+
     // reset layer menu in case of component update
-    var menuItems = document.getElementById('tnris-download-menu');
-    while (menuItems.firstChild) {
-      menuItems.removeChild(menuItems.firstChild);
+    if (menuItems) {
+      while (menuItems.firstChild) {
+        menuItems.removeChild(menuItems.firstChild);
+      }
     }
 
     // iterate our area_types so we can add them to different layers for
@@ -192,8 +257,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             e.stopPropagation();
             this.toggleLayers(e, map, areaType);
         };
+
         // add areaType layer to layer menu
-        menuItems.appendChild(link);
+        if (menuItems) {menuItems.appendChild(link)};
 
         // get total number of resources available for download
         const total = areasList.length;
@@ -311,8 +377,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
     const areaLookup = this.areaLookup;
+
     map.on('click', layerBaseName, function (e) {
-      // console.log(e.lngLat);
       const clickedAreaId = e.features[0].properties.area_type_id;
       const clickedAreaName = e.features[0].properties.area_type_name;
       const downloads = areaLookup[clickedAreaId];
@@ -407,16 +473,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       )
     }
 
-    const menuDisplayClass = this.state.areaTypesLength > 1 ? 'mdc-list' : 'mdc-list hidden-layer-menu';
-
     return (
       <div className='template-content-div tnris-download-template-download'>
-        <nav id='tnris-download-menu' className={menuDisplayClass}></nav>
-          <div className='template-content-div-header mdc-typography--headline5'>
-            Download
-          </div>
+        <div className='template-content-div-header mdc-typography--headline5'>
+          Download
+        </div>
+        <div className='template-content-div-subheader mdc-typography--headline7'>
+          Click a polygon in the map to download available data.
+        </div>
         <div id='tnris-download-map'></div>
-        <TnrisDownloadMapNote />
       </div>
     );
   }

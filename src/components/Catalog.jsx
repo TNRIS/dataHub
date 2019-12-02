@@ -63,6 +63,7 @@ export default class Catalog extends React.Component {
 
   componentDidMount() {
     this.props.fetchCollections();
+    this.props.fetchResources();
     this.props.fetchStoredShoppingCart();
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("scroll", this.detectScroll);
@@ -312,6 +313,8 @@ export default class Catalog extends React.Component {
       return this.loadingMessage;
     }
 
+    const viewClass = this.props.view === 'catalog' ? 'catalog-view-container' : 'other-view-container';
+
     return (
       <div className="catalog-component">
 
@@ -319,7 +322,7 @@ export default class Catalog extends React.Component {
 
         <HeaderContainer handleToolDrawerDisplay={this.handleToolDrawerDisplay} />
 
-        <div className='view-container'>
+        <div className={viewClass}>
           <Switch>
             <Route path='/collection/:collectionId' exact render={(props) => this.handleShowCollectionView()} />
             <Route path='/catalog/:filters' exact render={(props) => this.setCatalogView()} />
