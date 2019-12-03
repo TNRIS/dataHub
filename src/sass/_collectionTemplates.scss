@@ -18,7 +18,6 @@ shared styles for collection base Template components
   header {
     @include mdc-top-app-bar-fill-color($main-background);
     z-index: 3;
-    // position: relative;
     position: fixed;
 
     // collection title, show in left hand section

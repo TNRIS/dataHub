@@ -6,9 +6,13 @@ shared styles for collection TemplateDetails components
 .tnris-order-template-details,
 .historical-aerial-template-details,
 .outside-entity-template-details {
-  padding: 50px 0 0 0;
+  margin: 50px 0 0 0;
   overflow-x: hidden;
   overflow-y: auto;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: 0 5%;
+  }
 
   // main template content container div - BEGIN
   .template-content-div {
