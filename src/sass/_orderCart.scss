@@ -17,8 +17,12 @@ styles for component: OrderCart
     @include mdc-radio-checked-stroke-color($primary-color);
     @include mdc-radio-focus-indicator-color($primary-color)
 
-    padding: 15px;
+    margin: 20px 20px;
     color: $nest-text;
+
+    @media (min-width: $breakpoint-desktop) {
+      padding: 0 10%;
+    }
 
     .order-cart-data-items {
       .mdc-list-item {
