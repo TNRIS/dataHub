@@ -8,10 +8,14 @@ styles for component: ContactTnrisForm
   @include mdc-text-field-line-ripple-color($primary-color);
   @include mdc-text-field-textarea-stroke-color(rgba(0, 0, 0, 0.12));
 
-  padding: 10px 20px 20px 20px;
+  margin: 20px 20px 20px 20px;
   min-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: 0 10%;
+  }
 
   p.mdc-typography--body2 {
     margin-bottom: 6px;

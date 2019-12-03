@@ -16,10 +16,14 @@ styles for component: OrderTnrisDataForm
     border-color: $nest-text;
   }
 
-  padding: 10px 20px 20px 20px;
+  margin: 20px 20px 20px 20px;
   min-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: 0 10%;
+  }
 
   div.mdc-text-field {
     border-bottom-width: 1px;
