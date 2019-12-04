@@ -118,7 +118,9 @@ export default class CollectionFilterMap extends React.Component {
     });
     this._map = map;
 
-    this._navControl = new mapboxgl.NavigationControl()
+    this._navControl = new mapboxgl.NavigationControl({
+      showCompass: false
+    });
     map.addControl(this._navControl, 'top-left');
 
     // Define custom map control to reset the map to its
