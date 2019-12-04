@@ -415,24 +415,24 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   render() {
-    if (window.innerWidth <= this.downloadBreakpoint) {
-      window.scrollTo(0,0);
-      return (
-        <div className='tnris-download-template-download'>
-          <div className="tnris-download-template-download__mobile">
-            <h3>Download Map Disabled for Mobile Devices</h3>
-            <p>
-              Due to the average size of data downloads and in consideration of user experience,
-              data downloads have been <strong>disabled</strong> for small browser windows and mobile devices.
-            </p>
-            <p>
-              Please visit this page with a desktop computer or increase the browser window size and refresh
-              the page to download this dataset.
-            </p>
-          </div>
-        </div>
-      )
-    }
+    // if (window.innerWidth <= this.downloadBreakpoint) {
+    //   window.scrollTo(0,0);
+    //   return (
+    //     <div className='tnris-download-template-download'>
+    //       <div className="tnris-download-template-download__mobile">
+    //         <h3>Download Map Disabled for Mobile Devices</h3>
+    //         <p>
+    //           Due to the average size of data downloads and in consideration of user experience,
+    //           data downloads have been <strong>disabled</strong> for small browser windows and mobile devices.
+    //         </p>
+    //         <p>
+    //           Please visit this page with a desktop computer or increase the browser window size and refresh
+    //           the page to download this dataset.
+    //         </p>
+    //       </div>
+    //     </div>
+    //   )
+    // }
 
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (

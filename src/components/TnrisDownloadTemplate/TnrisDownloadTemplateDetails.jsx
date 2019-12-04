@@ -9,6 +9,8 @@ import Supplementals from '../DialogTemplateListItems/Supplementals'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
 
 import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownloadTemplateDownloadContainer'
+// coverage map for mobile
+import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss'
@@ -50,6 +52,14 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                           <TnrisDownloadTemplateDownloadContainer collectionName={this.props.collection.name} />
                         ) : "";
 
+    const coverageMap = this.props.collection.counties ? (
+                          <CountyCoverageContainer
+                            counties={this.props.collection.counties}
+                            template={this.props.collection.template} />
+                        ) : "";
+
+    const map = window.innerWidth >= parseInt(breakpoints.tablet, 10) ? downloadMap : coverageMap;
+
     const lidarCard = this.props.collection.category.includes('Lidar') ? (
                         <LidarBlurb />)
                         : "";
@@ -85,7 +95,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                             <ShareButtons />
                           </div>
                           <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                            {downloadMap}
+                            {map}
                             <div className="mdc-layout-grid__inner">
                               <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
                                 {description}
@@ -95,7 +105,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                         </div>) : (
                         <div className="mdc-layout-grid__inner">
                           <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                            {downloadMap}
+                            {map}
                             <Metadata collection={this.props.collection} />
                             {description}
                             {sourceCitation}

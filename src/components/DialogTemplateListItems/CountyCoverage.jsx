@@ -151,6 +151,10 @@ export default class CountyCoverage extends React.Component {
 
   render() {
 
+    const downloadsDisabledNote = this.props.counties && this.props.template === 'tnris-download' ? (
+      'Downloads have been disabled for smaller devices. Please use a device with a larger screen size to download data. '
+    ) : "";
+
     return (
 
       <div className="template-content-div county-coverage-component">
@@ -158,7 +162,7 @@ export default class CountyCoverage extends React.Component {
           Coverage Area
         </div>
         <div className='template-content-div-subheader mdc-typography--headline7'>
-          Counties displayed in the map show general coverage for this dataset. Coverage may be incomplete and of varying quality.
+          {downloadsDisabledNote}Counties displayed in the map show general coverage for this dataset. Coverage may be incomplete and of varying quality.
         </div>
         <div id='county-coverage-map'></div>
         <div className='template-content-div-subheader mdc-typography--headline7'>
