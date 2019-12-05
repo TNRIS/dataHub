@@ -26,6 +26,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
       };
 
     this.handleResize = this.handleResize.bind(this);
+    this.downloadBreakpoint = parseInt(breakpoints.download, 10);
   }
 
   componentDidMount() {
@@ -58,7 +59,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                             template={this.props.collection.template} />
                         ) : "";
 
-    const map = window.innerWidth >= parseInt(breakpoints.tablet, 10) ? downloadMap : coverageMap;
+    const map = window.innerWidth >= this.downloadBreakpoint ? downloadMap : coverageMap;
 
     const lidarCard = this.props.collection.category.includes('Lidar') ? (
                         <LidarBlurb />)
