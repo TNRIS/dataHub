@@ -112,7 +112,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // add regular out-of-the-box controls if they dont already exist
     // prevents stacking/duplicating controls on component update
     if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
-      map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+      map.addControl(new mapboxgl.NavigationControl({
+        showCompass: false
+      }), 'top-left');
     }
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
       map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
@@ -199,12 +201,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         map.addControl(ctrlMenu, 'top-right')
       }
     }
-
-    // add tooltips for all map controls
-    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
-    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
-    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
-    document.querySelector('.mapboxgl-ctrl-fullscreen').setAttribute('title', 'Fullscreen Map');
 
     // add custom controls to map
     const menuItems = document.querySelector('#download-menu');
@@ -419,25 +415,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   render() {
-    if (window.innerWidth <= this.downloadBreakpoint) {
-      window.scrollTo(0,0);
-      return (
-        <div className='tnris-download-template-download'>
-          <div className="tnris-download-template-download__mobile">
-            <h3>Download Map Disabled for Mobile Devices</h3>
-            <p>
-              Due to the average size of data downloads and in consideration of user experience,
-              data downloads have been <strong>disabled</strong> for small browser windows and mobile devices.
-            </p>
-            <p>
-              Please visit this page with a desktop computer or increase the browser window size and refresh
-              the page to download this dataset.
-            </p>
-          </div>
-        </div>
-      )
-    }
-
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (
       // <div className='tnris-download-template-download'>
