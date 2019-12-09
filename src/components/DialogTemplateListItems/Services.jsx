@@ -30,10 +30,12 @@ export default class Services extends React.Component {
           Online Mapping Service
         </div>
         <p>
-          This dataset is available as an online mapping service. Use the URL
-          below to connect to the service in your software. To use the service
-          in your software package, consult the software help/support information.
+          This dataset is available as an online mapping service. An OGC WMS service and an ArcGIS service are available.
+          To connect to the WMS service in your software, please copy the unique url provided in the box below. To access
+          the TNRIS ArcGIS Server, please use the following url in your ESRI software and select from the list of available
+          services: <strong>https://webservices.tnris.org/arcgis/services</strong>.
         </p>
+        <i>For questions regarding the use of one of these services in your software package, please consult the software help/support information.</i>
         <div className="services-link-details">
           <input type="text" id="service-link-details-input"
                  className="mdc-text-field__input styled-input"
