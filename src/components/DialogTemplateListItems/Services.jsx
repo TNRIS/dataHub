@@ -29,11 +29,6 @@ export default class Services extends React.Component {
         <div className="mdc-typography--headline5 template-content-div-header">
           Online Mapping Service
         </div>
-        {/*<p>
-          This dataset is available as an online mapping service. Use the URL
-          below to connect to the service in your software. To use the service
-          in your software package, consult the software help/support information.
-        </p>*/}
         <p>
           This dataset is available as an online mapping service. An OGC WMS service and an ArcGIS service are available.
           To connect to the WMS service in your software, please copy the unique url provided in the box below. To access
