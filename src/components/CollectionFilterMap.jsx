@@ -81,10 +81,16 @@ export default class CollectionFilterMap extends React.Component {
         }
         // Select the chosen area type and pan to that feature
         // in the map.
-        this.getAreaTypeGeoJson(
-          this.props.collectionFilterMapSelectedAreaType,
-          this.props.collectionFilterMapSelectedAreaTypeName
-        )
+        console.log(this.props.colllectionFilterMapSelectedAreaType);
+        console.log(this.props.collectionFilterMapSelectedAreaTypeName);
+        if (this.props.collectionFilterMapSelectedAreaTypeName !== '') {
+          this.getAreaTypeGeoJson(
+            this.props.collectionFilterMapSelectedAreaType,
+            this.props.collectionFilterMapSelectedAreaTypeName
+          )
+        } else {
+          this.resetTheMap();
+        }
     }
   }
 
@@ -793,6 +799,7 @@ export default class CollectionFilterMap extends React.Component {
 
     sql.execute(query).done( (data) => {
       let areaTypeGeoJson = data.rows[0].row_to_json;
+      console.log(areaTypeGeoJson);
       this.moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson);
     })
   }
