@@ -34,17 +34,13 @@ export default class CountyCoverage extends React.Component {
     // add regular out-of-the-box controls if they dont already exist
     // prevents stacking/duplicating controls on component update
     if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
-      map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+      map.addControl(new mapboxgl.NavigationControl({
+        showCompass: false
+      }), 'top-left');
     }
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
       map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     }
-
-    // add tooltips for map controls
-    document.querySelector('.mapboxgl-ctrl-zoom-in').setAttribute('title', 'Zoom In');
-    document.querySelector('.mapboxgl-ctrl-zoom-out').setAttribute('title', 'Zoom Out');
-    document.querySelector('.mapboxgl-ctrl-compass-arrow').setAttribute('title', 'Compass Arrow');
-    document.querySelector(".mapboxgl-ctrl-fullscreen").setAttribute('title', 'Fullscreen Map');
 
     const re = new RegExp(", ", 'g');
     const quotedCounties = this.props.counties.replace(re, "','");
@@ -155,6 +151,10 @@ export default class CountyCoverage extends React.Component {
 
   render() {
 
+    const downloadsDisabledNote = this.props.counties && this.props.template === 'tnris-download' ? (
+      'Downloads have been disabled for smaller devices. Please use a device with a larger screen size to download data. '
+    ) : "";
+
     return (
 
       <div className="template-content-div county-coverage-component">
@@ -162,7 +162,7 @@ export default class CountyCoverage extends React.Component {
           Coverage Area
         </div>
         <div className='template-content-div-subheader mdc-typography--headline7'>
-          Counties displayed in the map show general coverage for this dataset. Coverage may be incomplete and of varying quality.
+          {downloadsDisabledNote}Counties displayed in the map show general coverage for this dataset. Coverage may be incomplete and of varying quality.
         </div>
         <div id='county-coverage-map'></div>
         <div className='template-content-div-subheader mdc-typography--headline7'>

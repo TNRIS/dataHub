@@ -81,10 +81,14 @@ export default class CollectionFilterMap extends React.Component {
         }
         // Select the chosen area type and pan to that feature
         // in the map.
-        this.getAreaTypeGeoJson(
-          this.props.collectionFilterMapSelectedAreaType,
-          this.props.collectionFilterMapSelectedAreaTypeName
-        )
+        if (this.props.collectionFilterMapSelectedAreaTypeName === '') {
+          this.resetTheMap();
+        } else {
+          this.getAreaTypeGeoJson(
+            this.props.collectionFilterMapSelectedAreaType,
+            this.props.collectionFilterMapSelectedAreaTypeName
+          )
+        }
     }
   }
 
@@ -118,7 +122,9 @@ export default class CollectionFilterMap extends React.Component {
     });
     this._map = map;
 
-    this._navControl = new mapboxgl.NavigationControl()
+    this._navControl = new mapboxgl.NavigationControl({
+      showCompass: false
+    });
     map.addControl(this._navControl, 'top-left');
 
     // Define custom map control to reset the map to its
