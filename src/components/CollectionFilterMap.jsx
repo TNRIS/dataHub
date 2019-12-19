@@ -81,10 +81,14 @@ export default class CollectionFilterMap extends React.Component {
         }
         // Select the chosen area type and pan to that feature
         // in the map.
-        this.getAreaTypeGeoJson(
-          this.props.collectionFilterMapSelectedAreaType,
-          this.props.collectionFilterMapSelectedAreaTypeName
-        )
+        if (this.props.collectionFilterMapSelectedAreaTypeName === '') {
+          this.resetTheMap();
+        } else {
+          this.getAreaTypeGeoJson(
+            this.props.collectionFilterMapSelectedAreaType,
+            this.props.collectionFilterMapSelectedAreaTypeName
+          )
+        }
     }
   }
 
