@@ -608,7 +608,7 @@ export default class CollectionFilterMap extends React.Component {
 
   // clean method to remove undefined from an array
   cleanArray(array) {
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0, n = array.length; i < n; i++) {
       if (!array[i]) {
         array.splice(i, 1);
         i--;
