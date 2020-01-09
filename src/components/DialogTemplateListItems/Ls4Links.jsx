@@ -46,12 +46,10 @@ export default class Ls4Links extends React.Component {
               return (
                 <li key={index} className={odd}>
                   <div>Sheet #{scan.sheet}</div>
+                  <div>{scan.link.split('/')[5]}</div>
                   <div>{scan.size}</div>
                   <div>
                     <a href={scan.link} target="_blank" rel="noopener noreferrer">Download</a>
-                  </div>
-                  <div>
-                    {scan.link.split("/")[4]}
                   </div>
                 </li>
               )}
