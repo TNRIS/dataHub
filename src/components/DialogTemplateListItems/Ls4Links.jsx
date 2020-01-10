@@ -27,6 +27,7 @@ export default class Ls4Links extends React.Component {
   render() {
     let scanLinks;
     const scans = this.props.scans ? JSON.parse("[" + this.props.scans + "]") : [];
+
     if (scans.length > 0) {
       scanLinks = (
         <div className="ls4-scans">
@@ -45,6 +46,7 @@ export default class Ls4Links extends React.Component {
               return (
                 <li key={index} className={odd}>
                   <div>Sheet #{scan.sheet}</div>
+                  <div>{scan.link.split('/')[5]}</div>
                   <div>{scan.size}</div>
                   <div>
                     <a href={scan.link} target="_blank" rel="noopener noreferrer">Download</a>
