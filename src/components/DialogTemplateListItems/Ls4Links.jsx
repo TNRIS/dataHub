@@ -59,62 +59,65 @@ export default class Ls4Links extends React.Component {
       );
     }
 
-    const indexCopied = this.state.indexCopied ? "Copied!" : "Copy URL";
-    const indexUrl = this.props.index && this.props.index !== "" ? (
-      <div className="ls4-links">
-        <div className="mdc-typography--headline5 template-content-div-header">
-          Index WMS Service
-        </div>
-        <input type="text" id="ls4-links-index-input"
-               className="mdc-text-field__input"
-               value={this.props.index} readOnly/>
-        <div className="ls4-links-buttons">
-          <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-index-input', 'indexCopied')}>
-            <i className="material-icons">file_copy</i>{indexCopied}
-          </button>
-        </div>
-      </div>
-    ) : "";
+    // const indexCopied = this.state.indexCopied ? "Copied!" : "Copy URL";
+    const indexUrl = "";
+    // const indexUrl = this.props.index && this.props.index !== "" ? (
+    //   <div className="ls4-links">
+    //     <div className="mdc-typography--headline5 template-content-div-header">
+    //       Index WMS Service
+    //     </div>
+    //     <input type="text" id="ls4-links-index-input"
+    //            className="mdc-text-field__input"
+    //            value={this.props.index} readOnly/>
+    //     <div className="ls4-links-buttons">
+    //       <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-index-input', 'indexCopied')}>
+    //         <i className="material-icons">file_copy</i>{indexCopied}
+    //       </button>
+    //     </div>
+    //   </div>
+    // ) : "";
 
-    const mosaicCopied = this.state.mosaicCopied ? "Copied!" : "Copy URL";
-    const mosaicUrl = this.props.mosaic && this.props.mosaic !== "" ? (
-      <div className="ls4-links">
-        <div className="mdc-typography--headline5 template-content-div-header">
-          Mosaic WMS Service
-        </div>
-        <p className="mdc-typography--caption">
-          (Comprised only of the currently scanned dataset frames)
-        </p>
-        <input type="text" id="ls4-links-mosaic-input"
-               className="mdc-text-field__input"
-               value={this.props.mosaic} readOnly/>
-             <div className="ls4-links-buttons">
-          <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-mosaic-input', 'mosaicCopied')}>
-            <i className="material-icons">file_copy</i>{mosaicCopied}
-          </button>
-        </div>
-      </div>
-    ) : "";
+    // const mosaicCopied = this.state.mosaicCopied ? "Copied!" : "Copy URL";
+    const mosaicUrl = "";
+    // const mosaicUrl = this.props.mosaic && this.props.mosaic !== "" ? (
+    //   <div className="ls4-links">
+    //     <div className="mdc-typography--headline5 template-content-div-header">
+    //       Mosaic WMS Service
+    //     </div>
+    //     <p className="mdc-typography--caption">
+    //       (Comprised only of the currently scanned dataset frames)
+    //     </p>
+    //     <input type="text" id="ls4-links-mosaic-input"
+    //            className="mdc-text-field__input"
+    //            value={this.props.mosaic} readOnly/>
+    //          <div className="ls4-links-buttons">
+    //       <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-mosaic-input', 'mosaicCopied')}>
+    //         <i className="material-icons">file_copy</i>{mosaicCopied}
+    //       </button>
+    //     </div>
+    //   </div>
+    // ) : "";
 
-    const framesCopied = this.state.framesCopied ? "Copied!" : "Copy URL";
-    const framesUrl = this.props.frames && this.props.frames !== "" ? (
-      <div className="ls4-links">
-        <div className="mdc-typography--headline5 template-content-div-header">
-          Individual Frames WMS Service
-        </div>
-        <p className="mdc-typography--caption">
-          (Comprised only of the currently scanned dataset frames)
-        </p>
-        <input type="text" id="ls4-links-frames-input"
-               className="mdc-text-field__input"
-               value={this.props.frames} readOnly/>
-             <div className="ls4-links-buttons">
-          <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-frames-input', 'framesCopied')}>
-            <i className="material-icons">file_copy</i>{framesCopied}
-          </button>
-        </div>
-      </div>
-    ) : "";
+    // const framesCopied = this.state.framesCopied ? "Copied!" : "Copy URL";
+    const framesUrl = "";
+    // const framesUrl = this.props.frames && this.props.frames !== "" ? (
+    //   <div className="ls4-links">
+    //     <div className="mdc-typography--headline5 template-content-div-header">
+    //       Individual Frames WMS Service
+    //     </div>
+    //     <p className="mdc-typography--caption">
+    //       (Comprised only of the currently scanned dataset frames)
+    //     </p>
+    //     <input type="text" id="ls4-links-frames-input"
+    //            className="mdc-text-field__input"
+    //            value={this.props.frames} readOnly/>
+    //          <div className="ls4-links-buttons">
+    //       <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-frames-input', 'framesCopied')}>
+    //         <i className="material-icons">file_copy</i>{framesCopied}
+    //       </button>
+    //     </div>
+    //   </div>
+    // ) : "";
 
     return (
       <div className="template-content-div ls4-links-container">
