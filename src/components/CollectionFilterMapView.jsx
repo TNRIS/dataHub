@@ -91,11 +91,12 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   render() {
-    let countyNameOptions = [
-      <option data-value="" key=""></option>
-    ].concat(this.state.countyNames.map(countyName => {
-      return <option data-value={countyName} key={countyName}>{countyName}</option>;
-    }));
+////// commented out for hotfix //////////////////////////////////////////////////////////
+    // let countyNameOptions = [
+    //   <option data-value="" key=""></option>
+    // ].concat(this.state.countyNames.map(countyName => {
+    //   return <option data-value={countyName} key={countyName}>{countyName}</option>;
+    // }));
 
     // const countySelector = window.innerWidth <= this.downloadBreakpoint ? "" : (
     //   <div className="county-select__wrapper">
