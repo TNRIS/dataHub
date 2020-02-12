@@ -130,7 +130,7 @@ export default class CollectionFilterMapView extends React.Component {
             </h2>
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-            {countySelector}
+            {/*}{countySelector}*/}
             <BackButtonContainer />
           </section>
         </div>
