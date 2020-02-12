@@ -91,36 +91,35 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   render() {
-////// commented out for hotfix //////////////////////////////////////////////////////////
-    // let countyNameOptions = [
-    //   <option data-value="" key=""></option>
-    // ].concat(this.state.countyNames.map(countyName => {
-    //   return <option data-value={countyName} key={countyName}>{countyName}</option>;
-    // }));
+    let countyNameOptions = [
+      <option data-value="" key=""></option>
+    ].concat(this.state.countyNames.map(countyName => {
+      return <option data-value={countyName} key={countyName}>{countyName}</option>;
+    }));
 
-    // const countySelector = window.innerWidth <= this.downloadBreakpoint ? "" : (
-    //   <div className="county-select__wrapper">
-    //     <div className="mdc-select mdc-select--outlined county-select">
-    //       <i className="mdc-select__dropdown-icon"></i>
-    //       <select className="mdc-select__native-control"
-    //         id="county-select"
-    //         value={
-    //           this.props.collectionFilterMapSelectedAreaTypeName ?
-    //           this.props.collectionFilterMapSelectedAreaTypeName : ""}
-    //         onChange={this.handleChangeCountyName}
-    //         ref="countySelect">
-    //         {countyNameOptions}
-    //       </select>
-    //       <div className="mdc-notched-outline">
-    //         <div className="mdc-notched-outline__leading"></div>
-    //         <div className="mdc-notched-outline__notch">
-    //           <label className="mdc-floating-label">Select a County</label>
-    //         </div>
-    //         <div className="mdc-notched-outline__trailing"></div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // );
+    const countySelector = window.innerWidth <= this.downloadBreakpoint ? "" : (
+      <div className="county-select__wrapper">
+        <div className="mdc-select mdc-select--outlined county-select">
+          <i className="mdc-select__dropdown-icon"></i>
+          <select className="mdc-select__native-control"
+            id="county-select"
+            value={
+              this.props.collectionFilterMapSelectedAreaTypeName ?
+              this.props.collectionFilterMapSelectedAreaTypeName : ""}
+            onChange={this.handleChangeCountyName}
+            ref="countySelect">
+            {countyNameOptions}
+          </select>
+          <div className="mdc-notched-outline">
+            <div className="mdc-notched-outline__leading"></div>
+            <div className="mdc-notched-outline__notch">
+              <label className="mdc-floating-label">Select a County</label>
+            </div>
+            <div className="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+      </div>
+    );
 
     return (
       <div className="filter-map-view">
@@ -131,7 +130,7 @@ export default class CollectionFilterMapView extends React.Component {
             </h2>
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-            {/*}{countySelector}*/}
+            {countySelector}
             <BackButtonContainer />
           </section>
         </div>
