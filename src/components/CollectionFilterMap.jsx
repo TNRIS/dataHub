@@ -17,8 +17,8 @@ import breakpoints from '../sass/_breakpoints.scss'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
-const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
-const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
+// const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
+// const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
 
 const dynamicCountyCentroid = {};
 dynamicCountyCentroid.type = "FeatureCollection";
