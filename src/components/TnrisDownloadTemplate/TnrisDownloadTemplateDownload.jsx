@@ -117,7 +117,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       }), 'top-left');
     }
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
-      map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+      map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
     }
     // class for custom map controls used below
     // *** event handler is commented out but might be useful for future new controls ***
