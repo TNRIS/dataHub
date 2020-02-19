@@ -6,6 +6,10 @@ available to the app
 @import 'materialSassImporter';
 @import 'breakpoints';
 @import 'themeColors';
+// add the cdn for mapbox stylesheet
+// IMPORTANT: if we update the node module we also need to update
+// the version number in this css reference
+@import url('https://api.tiles.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css');
 
 html {
   min-height: 100%;

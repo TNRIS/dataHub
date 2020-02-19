@@ -19,15 +19,19 @@ styles for component: TnrisDownloadTemplateDownload
       height: 100% !important;
     }
 
+    .mapboxgl-ctrl-icon {
+      padding: 0;
+    }
+
     .mapboxgl-popup {
         max-width: 400px;
 
-        .mapboxgl-popup-content {
-          ul {
-            list-style: none;
-            padding-inline-start: 0;
-          }
+      .mapboxgl-popup-content {
+        ul {
+          list-style: none;
+          padding-inline-start: 0;
         }
+      }
     }
   }
 
