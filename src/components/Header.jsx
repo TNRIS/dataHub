@@ -99,7 +99,7 @@ export default class Header extends React.Component {
     ) : '';
 
     const filters = ['filter', 'geo', 'sort', 'range'];
-    
+
     const toolDrawerNotification = filters.map(x => this.props.location.pathname.includes(x) ?
       (<NotificationBadge key={x} label='!' count={1} frameLength={30}/>) : '');
 
@@ -120,7 +120,7 @@ export default class Header extends React.Component {
                 DataHub
             </button>) : window.innerWidth < tablet && this.props.view !== 'catalog' ? (
             <button
-              className="back-to-hub material-icons mdc-top-app-bar__navigation-icon"
+              className="back-to-hub material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
               title="back to DataHub"
               onClick={this.handleCatalogView}
               onKeyDown={(e) => this.handleKeyPress(e, 'catalog')}
@@ -163,7 +163,7 @@ export default class Header extends React.Component {
                 <button
                   onClick={this.handleOrderCartView}
                   onKeyDown={(e) => this.handleKeyPress(e, 'cart')}
-                  className="material-icons mdc-top-app-bar__navigation-icon"
+                  className="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
                   title="View shopping cart"
                   tabIndex="3">
                   shopping_cart
@@ -175,7 +175,7 @@ export default class Header extends React.Component {
                   <button
                     onClick={this.props.handleToolDrawerDisplay}
                     onKeyDown={(e) => this.handleKeyPress(e, 'toolDrawer')}
-                    className="material-icons mdc-top-app-bar__navigation-icon"
+                    className="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
                     id="tools"
                     title={this.props.toolDrawerStatus === 'closed' ? 'Open tool drawer' : 'Close tool drawer'}
                     tabIndex="3">

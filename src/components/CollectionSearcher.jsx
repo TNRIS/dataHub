@@ -195,7 +195,7 @@ export default class CollectionSearcher extends React.Component {
             {this.props.collectionSearchSuggestionsQuery ?
               <button
                 id='clear-icon'
-                className="clear-button mdc-top-app-bar__action-item material-icons mdc-text-field__icon"
+                className="clear-button mdc-top-app-bar__action-item material-icons mdc-icon-button mdc-text-field__icon"
                 tabIndex="3"
                 onClick={this.handleClearSearch}>
                 clear
