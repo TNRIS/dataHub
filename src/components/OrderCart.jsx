@@ -716,17 +716,33 @@ class OrderCart extends Component {
           <div className='mdc-typography--body2'>
             <h3 className='mdc-list-group__subheader'>Historical Imagery Costs</h3>
             <ul>
-              <li>Historical search (1 image per decade): <strong>$40.00 per site</strong></li>
-              <li>Single year search: <strong>$18.00 per site</strong></li>
-              <li>Scanned historical frame: <strong>$10.00 per image</strong></li>
-              <li>Scanned + georeferenced historical frame: <strong>$20.00 per image</strong></li>
-              <li>Digital download (0 - 10GB): <strong>$7.00</strong></li>
+              <li>Research:</li>
+              <ul>
+                <li>Full Historical Search (multiple years or sites): <strong>$60.00</strong></li>
+                <li>Single Year Search (one site and one year): <strong>$30.00</strong></li>
+                <li>Frame Search (customer must be able to identify specific frames needed): <strong>$15.00</strong></li>
+              </ul>
+              <li>Imagery:</li>
+              <ul>
+                <li>Scanned Historical Frame: <strong>$10.00 per image</strong></li>
+                <li>Scanned + Georeferenced Historical Frame: <strong>$20.00 per image</strong></li>
+                <span className='mdc-typography--caption' style={{'marginLeft': 0}}>All frames will be georeferenced to WGS 1984</span>
+              </ul>
             </ul>
-
-            <h3 className='mdc-list-group__subheader'>Data Reproduction Costs</h3>
+            <h3 className='mdc-list-group__subheader'>Bulk Collection Delivery Option</h3>
+            <div className='mdc-typography--body2' style={{'marginLeft': 20}}>
+              Customers have the option of ordering any collection that has already <strong>been scanned in full</strong> for the data size price (see Data Reproduction Costs), rather than paying by frame.
+            </div>
             <ul>
-              <li>Staff time: <strong>$46.00 per TB</strong></li>
-              <li>Server/computer time: <strong>$0.15 per GB</strong></li>
+              <li>Staff Time: <strong>$46.00 per TB</strong></li>
+              <li>Server/Computer Time: <strong>$0.15 per GB</strong></li>
+            </ul>
+            <h3 className='mdc-list-group__subheader'>Delivery Options and Policy</h3>
+            <div className='mdc-typography--body2' style={{'marginLeft': 20}}>
+              TNRIS requests 3-10 business days for data requests and product turn around. We do not accommodate any expedited orders.
+            </div>
+            <ul>
+              <li>Digital Download Delivery (0-10 GB): <strong>$7</strong></li>
               <li>TNRIS provided USB flash drive (64 GB): <strong>$40.00</strong></li>
               <li>TNRIS provided external hard drive (1 TB): <strong>$100.00</strong></li>
             </ul>
