@@ -17,6 +17,10 @@ styles for component: CountyCoverage
     }
 
     .mapboxgl-control-container {
+      .mapboxgl-ctrl-icon {
+         padding: 0;
+       }
+
       .mapboxgl-ctrl-top-left {
         button {
           margin-left: 0;
