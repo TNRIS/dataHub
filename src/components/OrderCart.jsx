@@ -742,7 +742,7 @@ class OrderCart extends Component {
               TNRIS requests 3-10 business days for data requests and product turn around. We do not accommodate any expedited orders.
             </div>
             <ul>
-              <li>Digital Download Delivery (0-10 GB): <strong>$7</strong></li>
+              <li>Digital Download Delivery (0-10 GB): <strong>$7.00</strong></li>
               <li>TNRIS provided USB flash drive (64 GB): <strong>$40.00</strong></li>
               <li>TNRIS provided external hard drive (1 TB): <strong>$100.00</strong></li>
             </ul>
