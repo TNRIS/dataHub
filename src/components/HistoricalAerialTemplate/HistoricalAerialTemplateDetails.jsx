@@ -92,9 +92,9 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                            <div className="mdc-layout-grid__inner">
                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-4'>
                                <Metadata collection={this.props.collection} />
-                               {archiveAbout}
-                               {productsCard}
                                {ls4LinksCard}
+                               {productsCard}
+                               {archiveAbout}
                                {sourceCitation}
                                <ShareButtons />
                              </div>
@@ -113,9 +113,9 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                                <Metadata collection={this.props.collection} />
                                <Description collection={collectionObj} />
                                {sourceCitation}
-                               {archiveAbout}
-                               {productsCard}
                                {ls4LinksCard}
+                               {productsCard}
+                               {archiveAbout}
                                <ShareButtons />
                              </div>
                            </div>);
