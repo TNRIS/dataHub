@@ -45,10 +45,20 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
+    // build map layer variables for passing to download map
+    let serviceLayer = "";
+    if (this.props.collection.index_service_url && this.props.collection.index_service_url !== "") {
+      // if multicounty, use word Multi-County
+      const locale = this.props.collection.counties.includes(", ") ? "Multi-County" : this.props.collection.counties.replace(/ /g, "");
+      serviceLayer = locale + "_" + this.props.collection.source_abbreviation + "_" + this.props.collection.acquisition_date.substring(0, 4);
+    }
+
     const downloadMap = (
       this.props.collection.template === 'historical-aerial'  &&
       this.props.collection.index_service_url && this.props.collection.index_service_url !== "") ? (
-      <HistoricalAerialTemplateIndexDownload indexUrl={this.props.collection.index_service_url} />
+      <HistoricalAerialTemplateIndexDownload
+        indexUrl={this.props.collection.index_service_url}
+        serviceLayer={serviceLayer} />
     ) : "";
     
     const coverageMap = this.props.collection.counties ? (

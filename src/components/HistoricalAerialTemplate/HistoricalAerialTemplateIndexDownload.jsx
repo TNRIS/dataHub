@@ -37,32 +37,63 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
             map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
         }
-        
-        
-        const mapfile = this.props.indexUrl.split("/")[this.props.indexUrl.split("/").length - 1]
-        console.log(mapfile);
-        const wmsLayer = mapfile.replace(/_/g, "").replace(/.map/g, "").toUpperCase();
-        const rasterLayer = mapfile.replace(/.map/g, "");
-        const boundaryLayer = mapfile.replace(/.map/g, "") + '_index';
-        console.log(wmsLayer, rasterLayer, boundaryLayer);
-        const indexUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=' + wmsLayer;
-        console.log(indexUrl);
+
+
+        console.log(this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities');
+        fetch(this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities')
+        // .then(handleErrors)
+        .then(res => res.text())
+        .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+        .then(data => {
+            console.log(data.getElementsByTagName("BoundingBox")[0]);
+            console.log(data.getElementsByTagName("BoundingBox")[0].getAttribute('minx'));
+        })
+        // .catch(error => dispatch(fetchCollectionResourcesFailure(error)));
+
+
+
+
+        // const mapfile = this.props.indexUrl.split("/")[this.props.indexUrl.split("/").length - 1]
+        // const wmsLayer = mapfile.replace(/_/g, "").replace(/.map/g, "").toUpperCase();
+        const rasterLayer = this.props.serviceLayer + '_index';
+        const boundaryLayer = this.props.serviceLayer + '_index_index';
+        const baseUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=';
+
         map.on('load', function() {
-            map.addSource('index-wms', {
+            // create sources, add layers
+            // raster layer
+            map.addSource('index-raster-wms', {
                 'type': 'raster',
                 'tiles': [
-                    indexUrl
+                    baseUrl + rasterLayer
                 ],
                 'tileSize': 256
             });
             map.addLayer(
                 {
-                'id': 'index-wms-layer',
+                'id': 'raster-layer',
                 'type': 'raster',
-                'source': 'index-wms',
+                'source': 'index-raster-wms',
                 'paint': {}
                 }
             );
+            // boundary layer
+            map.addSource('index-boundary-wms', {
+                'type': 'raster',
+                'tiles': [
+                    baseUrl + boundaryLayer
+                ],
+                'tileSize': 256
+            });
+            map.addLayer(
+                {
+                'id': 'boundary-layer',
+                'type': 'raster',
+                'source': 'index-boundary-wms',
+                'paint': {}
+                }
+            );
+            
         });
     }
   
