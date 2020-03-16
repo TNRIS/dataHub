@@ -6,6 +6,7 @@ import Metadata from '../DialogTemplateListItems/Metadata'
 import HistoricalProducts from '../DialogTemplateListItems/HistoricalProducts'
 import Ls4Links from '../DialogTemplateListItems/Ls4Links'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
+import HistoricalAerialTemplateIndexDownload from './HistoricalAerialTemplateIndexDownload.jsx'
 import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
@@ -22,6 +23,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     };
 
     this.handleResize = this.handleResize.bind(this);
+    this.downloadBreakpoint = parseInt(breakpoints.download, 10);
   }
 
   componentDidMount() {
@@ -43,10 +45,24 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   }
 
   render() {
+    const downloadMap = (
+      this.props.collection.template === 'historical-aerial'  &&
+      this.props.collection.index_service_url && this.props.collection.index_service_url !== "") ? (
+      <HistoricalAerialTemplateIndexDownload indexUrl={this.props.collection.index_service_url} />
+    ) : "";
+    
+    const coverageMap = this.props.collection.counties ? (
+      <CountyCoverageContainer
+        counties={this.props.collection.counties}
+        template={this.props.collection.template}
+        historicalIndexUrl={this.props.collection.index_service_url} />
+    ) : "";
 
-    const countyCoverage = this.props.collection.counties ? (
-                              <CountyCoverageContainer counties={this.props.collection.counties} />
-                            ) : "";
+    const map = (
+      window.innerWidth >= this.downloadBreakpoint &&
+      this.props.collection.index_service_url && this.props.collection.index_service_url !== "") ? (
+        downloadMap
+       ) : coverageMap;
 
     const productsCard = this.props.collection.products ? (
                           <HistoricalProducts products={this.props.collection.products} />)
@@ -99,7 +115,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                                <ShareButtons />
                              </div>
                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-8'>
-                               {countyCoverage}
+                               {map}
                                <div className="mdc-layout-grid__inner">
                                  <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
                                    <Description collection={collectionObj} />
@@ -109,7 +125,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
                            </div>) : (
                            <div className="mdc-layout-grid__inner">
                              <div className='mdc-layout-grid__cell mdc-layout-grid__cell--span-12'>
-                               {countyCoverage}
+                               {map}
                                <Metadata collection={this.props.collection} />
                                <Description collection={collectionObj} />
                                {sourceCitation}
