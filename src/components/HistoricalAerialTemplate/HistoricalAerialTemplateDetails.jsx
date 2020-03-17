@@ -48,9 +48,12 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     // build map layer variables for passing to download map
     let serviceLayer = "";
     if (this.props.collection.index_service_url && this.props.collection.index_service_url !== "") {
-      // if multicounty, use word Multi-County
+      // if multicounty, use word Multi-County. temporary filler in preparation for multi county
+      // collections - to be processed thru ls4 in the near future.
+      // current state of LORE is that no multi county have been processed thus far
       const locale = this.props.collection.counties.includes(", ") ? "Multi-County" : this.props.collection.counties.replace(/ /g, "");
-      serviceLayer = locale + "_" + this.props.collection.source_abbreviation + "_" + this.props.collection.acquisition_date.substring(0, 4);
+      const mapfile = this.props.collection.index_service_url.split("/")[this.props.collection.index_service_url.split("/").length - 1]
+      serviceLayer = locale + "_" + mapfile.split("_")[1].toUpperCase() + "_" + mapfile.split("_")[2];
     }
 
     const downloadMap = (
@@ -81,7 +84,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
     const ls4LinksCard = (this.props.collection.index_service_url && this.props.collection.index_service_url !== "") ||
                          (this.props.collection.mosaic_service_url && this.props.collection.mosaic_service_url !== "") ||
                          (this.props.collection.frames_service_url && this.props.collection.frames_service_url !== "") ||
-                         (this.props.collection.scanned_index_ls4_links && this.props.collection.scanned_index_ls4_links) !== "" ? (
+                         (this.props.collection.scanned_index_ls4_links && this.props.collection.scanned_index_ls4_links !== "") ? (
                          <Ls4Links index={this.props.collection.index_service_url}
                                      mosaic={this.props.collection.mosaic_service_url}
                                      frames={this.props.collection.frames_service_url}

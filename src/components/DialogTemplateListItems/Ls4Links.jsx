@@ -41,7 +41,10 @@ export default class Ls4Links extends React.Component {
 
     const scans = this.props.scans ? JSON.parse("[" + this.props.scans + "]") : [];
     const indexCopied = this.state.indexCopied ? "Copied!" : "Copy URL";
-    const indexSheets = scans.length > 0 && this.props.index !== "" ? (
+    const indexSheets = (
+      scans.length > 0 && 
+      (this.props.index === null ||
+        this.props.index === "")) ? (
         <div className="ls4-scans">
           {indexTitle}
           <ul className="mdc-list">
