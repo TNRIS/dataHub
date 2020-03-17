@@ -37,28 +37,25 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
             map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
         }
-
-
-        console.log(this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities');
-        fetch(this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities')
-        // .then(handleErrors)
+        // get the service bounding box and zoom map to features' extent
+        const wmsCapabilities = this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities';
+        fetch(wmsCapabilities)
         .then(res => res.text())
         .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
         .then(data => {
-            console.log(data.getElementsByTagName("BoundingBox")[0]);
-            console.log(data.getElementsByTagName("BoundingBox")[0].getAttribute('minx'));
+            const bbox = data.getElementsByTagName("LatLonBoundingBox")[0];
+            map.fitBounds([[bbox.getAttribute('minx'), bbox.getAttribute('miny')], [bbox.getAttribute('maxx'), bbox.getAttribute('maxy')]],{padding: 20});
         })
-        // .catch(error => dispatch(fetchCollectionResourcesFailure(error)));
-
-
-
-
+        .catch(error => {
+            console.log('Error retrieving LatLongBoundingBox of WMS Service', error);
+            console.log('URL', wmsCapabilities)
+        });
+        // add wms service layers
         // const mapfile = this.props.indexUrl.split("/")[this.props.indexUrl.split("/").length - 1]
         // const wmsLayer = mapfile.replace(/_/g, "").replace(/.map/g, "").toUpperCase();
         const rasterLayer = this.props.serviceLayer + '_index';
         const boundaryLayer = this.props.serviceLayer + '_index_index';
         const baseUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=';
-
         map.on('load', function() {
             // create sources, add layers
             // raster layer
@@ -98,9 +95,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     }
   
     render() {
-  
       return (
-  
         <div className="template-content-div historical-aerial-template-index-download">
           <div className='template-content-div-header mdc-typography--headline5'>
             Download
