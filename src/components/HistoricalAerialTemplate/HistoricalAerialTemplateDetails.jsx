@@ -6,7 +6,7 @@ import Metadata from '../DialogTemplateListItems/Metadata'
 import HistoricalProducts from '../DialogTemplateListItems/HistoricalProducts'
 import Ls4Links from '../DialogTemplateListItems/Ls4Links'
 import ShareButtons from '../DialogTemplateListItems/ShareButtons'
-import HistoricalAerialTemplateIndexDownload from './HistoricalAerialTemplateIndexDownload.jsx'
+import HistoricalAerialTemplateIndexDownloadContainer from '../../containers/HistoricalAerialTemplateIndexDownloadContainer'
 import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
@@ -56,12 +56,15 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
       serviceLayer = locale + "_" + mapfile.split("_")[1].toUpperCase() + "_" + mapfile.split("_")[2];
     }
 
+    // const popupTitle = this.props.collection.source_abbreviation + ' ' + this.props.collection.acquisition_date.substring(0, 4)+ ': Index Sheets';
+    const popupTitle = 'Index Sheets';
     const downloadMap = (
       this.props.collection.template === 'historical-aerial'  &&
       this.props.collection.index_service_url && this.props.collection.index_service_url !== "") ? (
-      <HistoricalAerialTemplateIndexDownload
+      <HistoricalAerialTemplateIndexDownloadContainer
         indexUrl={this.props.collection.index_service_url}
-        serviceLayer={serviceLayer} />
+        serviceLayer={serviceLayer}
+        popupTitle={popupTitle} />
     ) : "";
     
     const coverageMap = this.props.collection.counties ? (

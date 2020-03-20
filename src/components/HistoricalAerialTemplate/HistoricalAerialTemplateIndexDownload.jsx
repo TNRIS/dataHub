@@ -1,6 +1,6 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
-// import styles from '../../sass/index.scss'
+import styles from '../../sass/index.scss'
 
 export default class HistoricalAerialTemplateIndexDownload extends React.Component {
     constructor(props) {
@@ -51,78 +51,103 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             console.log('Error retrieving LatLongBoundingBox of WMS Service', error);
             console.log('URL', wmsCapabilities)
         });
-        // add wms service layers
-        // const mapfile = this.props.indexUrl.split("/")[this.props.indexUrl.split("/").length - 1]
-        // const wmsLayer = mapfile.replace(/_/g, "").replace(/.map/g, "").toUpperCase();
+        // 
+        // add wms & vector tile service layers
+        // 
         const rasterLayer = this.props.serviceLayer + '_index';
         const boundaryLayer = this.props.serviceLayer + '_index_index';
-        const baseUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=';
-        // const filler = this.props.theme + "Fill";
-        // const texter = this.props.theme + "Text";
-        const filler = "lightFill";
-        const texter = "lightText";
+        const mvtUrl = this.props.indexUrl + '&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=all&map.imagetype=mvt';
+        const wmsRasterUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=' + rasterLayer;
+        
+        const filler = this.props.theme + "Fill";
+        const texter = this.props.theme + "Text";
+        
         map.on('load', function() {
-            // create sources, add layers
-            // raster layer
-            map.addSource('index-raster-wms', {
-                type: 'raster',
-                tiles: [
-                    baseUrl + rasterLayer
-                ],
-                tileSize: 256
-            });
-            map.addLayer(
-                {
-                    id: 'raster-layer',
-                    type: 'raster',
-                    source: 'index-raster-wms',
-                    paint: {}
+            // use the wms url query on index service to add source to the map
+            map.addSource('index-raster-wms', { type: 'raster', tiles: [wmsRasterUrl], tileSize: 256 });
+            // add the index sheets raster layer
+            // map.addLayer({
+            //     id: 'raster-layer',
+            //     type: 'raster',
+            //     source: 'index-raster-wms'
+            // });
+            // use the tiles url query on index service to add source to the map
+            map.addSource('index-boundary-mvt', { type: 'vector', tiles: [mvtUrl] });
+            // add the index sheets polygon layer
+            map.addLayer({
+                id: 'boundary-layer',
+                'type': 'fill',
+                'source': 'index-boundary-mvt',
+                'source-layer': boundaryLayer,
+                'layout': {'visibility': 'visible'},
+                'interactive': true,
+                'paint': {
+                    'fill-color': styles[filler],
+                    'fill-opacity': .3,
+                    'fill-outline-color': styles[texter]
                 }
-            );
-            // boundary layer
-            map.addSource('index-boundary-wms', {
-                type: 'raster',
-                tiles: [
-                    baseUrl + boundaryLayer
-                ],
-                tileSize: 256
             });
-            map.addLayer(
-                {
-                    id: 'boundary-layer',
-                    type: 'raster',
-                    source: 'index-boundary-wms',
-                    paint: {}
-                }
-            );
+            // add the index sheets polygon hover layer. wired below to toggle on hover
+            map.addLayer({
+                id: 'boundary-layer-hover',
+                'type': 'fill',
+                'source': 'index-boundary-mvt',
+                'source-layer': boundaryLayer,
+                'layout': {'visibility': 'visible'},
+                'interactive': true,
+                'paint': {
+                    'fill-color': styles[filler],
+                    'fill-opacity': .7,
+                    'fill-outline-color': styles[texter]
+                },
+                'filter': ['==', 'oid', '']
+            }, 'boundary-layer');
         });
         // popup
+        const popupTitle = this.props.popupTitle;
         map.on('click', 'boundary-layer', function (e) {
-            console.log(e);
-            console.log(e.features);
-        // const clickedAreaId = e.features[0].properties.area_type_id;
-        // const clickedAreaName = e.features[0].properties.area_type_name;
-        // const downloads = areaLookup[clickedAreaId];
-        // let popupContent = "";
-        // // iterate available downloads for the area
-        // Object.keys(downloads).sort().map(abbr => {
-        //   const dldInfo = downloads[abbr];
-        //   // if a filesize is populated in the resource table so the popup,
-        //   // we don't want to display empty popups, right?
-        //   let filesizeString = "";
-        //   if (dldInfo.filesize != null) {
-        //     const filesize = parseFloat(dldInfo.filesize / 1000000).toFixed(2).toString();
-        //     filesizeString = " - " + filesize + "MB";
-        //   }
-        //   // create html link and append to content string
-        //   const dld = `<li><a href="${dldInfo.link}" target="_blank">${dldInfo.name}${filesizeString}</a></li>`;
-        //   return popupContent += dld;
-        // });
-        // // create popup with constructed content string
-        // new mapboxgl.Popup()
-        //   .setLngLat(e.lngLat)
-        //   .setHTML(`<strong>${clickedAreaName}</strong><ul>${popupContent}</ul>`)
-        //   .addTo(map);
+            // since sheets can possibly overlap, order by sheet number
+            function compare(a,b) {
+                if (a.properties.frame_num < b.properties.frame_num)
+                    return -1;
+                if (a.properties.frame_num > b.properties.frame_num)
+                    return 1;
+                return 0;
+            }
+            const ordered = e.features.sort(compare);
+            // iterate all features to populate
+            // details of all features clicked into popup
+            let popupContent = "";
+            ordered.forEach(f => {
+                const sheet = `
+                    <li>
+                        <strong>Sheet #${f.properties.frame_num}</strong>
+                        <ul>
+                            <li><a href="${f.properties.dl_orig}" target="_blank">Original Scan</a></li>
+                            <li><a href="${f.properties.dl_georef}" target="_blank">Georeferenced Scan</a></li>
+                        </ul>
+                    </li>
+                `;
+                popupContent += sheet;
+            });
+            // create popup with constructed content string
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`<strong>${popupTitle}</strong><br/><a href="${e.features[0].properties.dl_index}" target="_blank">Bounding Box Shapefile</a><ul>${popupContent}</ul>`)
+              .addTo(map);
+        });
+
+        // Change the cursor to a pointer when it enters a feature in the 'area_type' layer
+        // Also, toggle the hover layer with a filter based on the cursor
+        map.on('mousemove', 'boundary-layer', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+            map.setFilter('boundary-layer-hover', ['==', 'oid', e.features[0].properties.oid]);
+        });
+        // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
+        // Also, untoggle the hover layer with a filter
+        map.on('mouseleave', 'boundary-layer', function () {
+            map.getCanvas().style.cursor = '';
+            map.setFilter('boundary-layer-hover', ['==', 'oid', '']);
         });
     }
   
