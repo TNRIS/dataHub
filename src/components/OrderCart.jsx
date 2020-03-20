@@ -56,29 +56,6 @@ class OrderCart extends Component {
     });
   }
 
-  componentWillUpdate(nextProps) {
-    // change display based on lifecycle of submitting order
-    if (nextProps.submitting === false &&
-        nextProps.submitError !== null &&
-        this.state.display === 'submitting') {
-      this.setState({
-        display: 'error'
-      });
-    }
-    else if (nextProps.submitting === false &&
-             nextProps.submitError === null &&
-             this.state.display === 'submitting') {
-      this.setState({
-       display: 'success'
-      });
-    }
-    else if (this.state.display === 'success' && Object.keys(nextProps.orders).length !== 0) {
-      this.setState({
-        display: 'form'
-      });
-    }
-  }
-
   componentDidUpdate() {
     // if showing the form and datasets present in cart then adjust form inputs
     if (this.state.display === 'form' && Object.keys(this.props.orders).length !== 0) {
@@ -132,6 +109,27 @@ class OrderCart extends Component {
         document.getElementById("payment-pickup-input").disabled = true;
         document.getElementById("payment-pickup-input").checked = false;
       }
+    }
+
+    // change display based on lifecycle of submitting order
+    if (this.props.submitting === false &&
+        this.props.submitError !== null &&
+        this.state.display === 'submitting') {
+      this.setState({
+        display: 'error'
+      });
+    }
+    else if (this.props.submitting === false &&
+             this.props.submitError === null &&
+             this.state.display === 'submitting') {
+      this.setState({
+       display: 'success'
+      });
+    }
+    else if (this.state.display === 'success' && Object.keys(this.props.orders).length !== 0) {
+      this.setState({
+        display: 'form'
+      });
     }
   }
 
