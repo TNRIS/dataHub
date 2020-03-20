@@ -35,52 +35,46 @@ styles for component: HistoricalAerialTemplateIndexDownload
     }
   }
 
-  // .tnris-download-menu {
-  //   width: 100%;
-  //   height: auto;
-  //   min-height: 30px;
-  //   padding: 3px;
+  .tnris-download-menu {
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    padding: 3px;
 
-  //   &.hidden-layer-menu {
-  //     display: none;
-  //   }
+    &.hidden-layer-menu {
+      display: none;
+    }
 
-  //   .mdc-list-item {
-  //     margin: 3px 6px 3px 6px;
-  //     height: initial;
-  //     display: block;
-  //     text-align: center;
-  //   }
+    .mdc-list-item {
+      margin: 3px 6px 3px 6px;
+      height: initial;
+      display: block;
+      text-align: center;
+    }
 
-  //   .mdc-list-item.mdc-list-item--activated {
-  //     background-color: $nest-text;
-  //     color: $main-background;
-  //   }
-  // }
+    .mdc-list-item.mdc-list-item--activated {
+      background-color: $nest-text;
+      color: $main-background;
+    }
+  }
 
-  // .tnris-download-template-download__mobile {
-  //   background: $main-background;
-  //   color: $nest-text;
-  //   padding: 8px 12px 8px 12px;
-  // }
+  .historical-aerial-template-index-download__mobile {
+    background: $main-background;
+    color: $nest-text;
+    padding: 8px 12px 8px 12px;
+  }
 
-  // .tnris-download-template-download__loading {
-  //   overflow: hidden;
+  .historical-aerial-template-index-download__loading {
+    overflow: hidden;
 
-  //   .holodeck-loading-image {
-  //     width: 100%;
-  //   }
-  // }
+    .holodeck-loading-image {
+      width: 100%;
+    }
+  }
 
-  // .tnris-download-template-download__none {
-  //   background: $main-background;
-  //   color: $error-text;
-  //   padding: 35px;
-  // }
-
-  // .template-content-div-subheader {
-  //   color: $nest-text;
-  //   padding: 8px 0 8px 0;
-  // }
+  .template-content-div-subheader {
+    color: $nest-text;
+    padding: 8px 0 8px 0;
+  }
 
 }

@@ -7,6 +7,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       super(props);
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
+      this.toggleLayers = this.toggleLayers.bind(this);
     }
   
     componentDidMount() {
@@ -16,6 +17,27 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     componentWillUnmount() {
       this.map.remove();
     }
+
+    toggleLayers (e, map, menuItemId) {
+        // if popup is open, close it
+        if (document.querySelector('.mapboxgl-popup')) {
+          document.querySelector('.mapboxgl-popup').remove();
+        }
+        // toggle between boundary and raster based on clicked menuItem
+        if (menuItemId === 'boundary-layer') {
+            map.setLayoutProperty('boundary-layer', 'visibility', 'visible');
+            map.setLayoutProperty('boundary-layer-hover', 'visibility', 'visible');
+            map.setLayoutProperty('raster-layer', 'visibility', 'none');
+            document.querySelector('#boundary-layer').className = 'mdc-list-item mdc-list-item--activated';
+            document.querySelector('#raster-layer').className = 'mdc-list-item';
+        } else {
+            map.setLayoutProperty('boundary-layer', 'visibility', 'none');
+            map.setLayoutProperty('boundary-layer-hover', 'visibility', 'none');
+            map.setLayoutProperty('raster-layer', 'visibility', 'visible');
+            document.querySelector('#boundary-layer').className = 'mdc-list-item';
+            document.querySelector('#raster-layer').className = 'mdc-list-item mdc-list-item--activated';
+        };
+      }
   
     createMap() {
         // define mapbox map
@@ -36,8 +58,88 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             }), 'top-left');
         }
         if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
-            map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+            map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
         }
+        // 
+        // START LAYER CONTROL
+        // 
+        // class for custom map controls used below
+        // *** event handler is commented out but might be useful for future new controls ***
+        class ButtonControl {
+            constructor({
+            id = "",
+            className = "",
+            title = ""
+            // eventHandler = ""
+            }) {
+            this._id = id;
+            this._className = className;
+            this._title = title;
+            // this._eventHandler = eventHandler;
+            }
+            onAdd(map){
+            this._btn = document.createElement("button");
+            this._btn.id = this._id;
+            this._btn.className = this._className;
+            this._btn.type = "button";
+            this._btn.title = this._title;
+            // this._btn.onclick = this._eventHandler;
+    
+            this._container = document.createElement("div");
+            this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+            this._container.appendChild(this._btn);
+    
+            return this._container;
+            }
+            onRemove() {
+            this._container.parentNode.removeChild(this._container);
+            }
+        }
+        // custom control variable
+        const ctrlMenu = new ButtonControl({
+            id: 'download-menu',
+            className: 'tnris-download-menu',
+            title: 'Download Area Selector'
+        });
+        if (!document.querySelector('.tnris-download-menu')) {
+            map.addControl(ctrlMenu, 'top-right')
+        }
+        // add custom controls to map
+        const menuItems = document.querySelector('#download-menu');
+        // reset layer menu in case of component update
+        if (menuItems) {
+            while (menuItems.firstChild) {
+                menuItems.removeChild(menuItems.firstChild);
+            }
+        }
+        // add mvt layer to menu items. use layer 'id' for link 'id'
+        var mvtMenuLink = document.createElement('a');
+        mvtMenuLink.href = '#';
+        mvtMenuLink.id = 'boundary-layer';
+        mvtMenuLink.textContent = 'DOWNLOAD';
+        mvtMenuLink.className = 'mdc-list-item mdc-list-item--activated';
+        mvtMenuLink.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.toggleLayers(e, map, 'boundary-layer');
+        };
+        menuItems.appendChild(mvtMenuLink);
+        // add wms layer to menu items
+        var wmsMenuLink = document.createElement('a');
+        wmsMenuLink.href = '#';
+        wmsMenuLink.id = 'raster-layer';
+        wmsMenuLink.textContent = 'PREVIEW';
+        wmsMenuLink.className = 'mdc-list-item';
+        wmsMenuLink.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.toggleLayers(e, map, 'raster-layer');
+        };
+        menuItems.appendChild(wmsMenuLink);
+        // 
+        // END LAYER CONTROL
+        // 
+
         // get the service bounding box and zoom map to features' extent
         const wmsCapabilities = this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities';
         fetch(wmsCapabilities)
@@ -63,14 +165,6 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         const texter = this.props.theme + "Text";
         
         map.on('load', function() {
-            // use the wms url query on index service to add source to the map
-            map.addSource('index-raster-wms', { type: 'raster', tiles: [wmsRasterUrl], tileSize: 256 });
-            // add the index sheets raster layer
-            // map.addLayer({
-            //     id: 'raster-layer',
-            //     type: 'raster',
-            //     source: 'index-raster-wms'
-            // });
             // use the tiles url query on index service to add source to the map
             map.addSource('index-boundary-mvt', { type: 'vector', tiles: [mvtUrl] });
             // add the index sheets polygon layer
@@ -102,8 +196,17 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
                 },
                 'filter': ['==', 'oid', '']
             }, 'boundary-layer');
+            // use the wms url query on index service to add source to the map
+            map.addSource('index-raster-wms', { type: 'raster', tiles: [wmsRasterUrl], tileSize: 256 });
+            // add the index sheets raster layer
+            map.addLayer({
+                id: 'raster-layer',
+                type: 'raster',
+                source: 'index-raster-wms',
+                'layout': {'visibility': 'none'}
+            });
         });
-        // popup
+        // wire the popup
         const popupTitle = this.props.popupTitle;
         map.on('click', 'boundary-layer', function (e) {
             // since sheets can possibly overlap, order by sheet number
@@ -121,10 +224,10 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             ordered.forEach(f => {
                 const sheet = `
                     <li>
-                        <strong>Sheet #${f.properties.frame_num}</strong>
+                        <strong>#${f.properties.frame_num}</strong>
                         <ul>
-                            <li><a href="${f.properties.dl_orig}" target="_blank">Original Scan</a></li>
-                            <li><a href="${f.properties.dl_georef}" target="_blank">Georeferenced Scan</a></li>
+                            <li><a href="${f.properties.dl_orig}" target="_blank">Original</a></li>
+                            <li><a href="${f.properties.dl_georef}" target="_blank">Georeferenced</a></li>
                         </ul>
                     </li>
                 `;
@@ -137,7 +240,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
               .addTo(map);
         });
 
-        // Change the cursor to a pointer when it enters a feature in the 'area_type' layer
+        // Change the cursor to a pointer when it enters a feature in the 'boundary-layer' layer
         // Also, toggle the hover layer with a filter based on the cursor
         map.on('mousemove', 'boundary-layer', function (e) {
             map.getCanvas().style.cursor = 'pointer';
