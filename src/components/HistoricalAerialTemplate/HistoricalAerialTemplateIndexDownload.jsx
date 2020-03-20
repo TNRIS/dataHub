@@ -223,7 +223,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             let popupContent = "";
             ordered.forEach(f => {
                 const countyPathSlot = f.properties.dl_orig.split("/")[5];
-                const county = countyPathSlot != 'MultiCounty' ? ' - ' + countyPathSlot : '';
+                const county = countyPathSlot !== 'MultiCounty' ? ' - ' + countyPathSlot : '';
                 const sheet = `
                     <li>
                         <strong>#${f.properties.frame_num}${county}</strong>
