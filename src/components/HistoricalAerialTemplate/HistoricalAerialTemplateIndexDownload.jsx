@@ -2,6 +2,11 @@ import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
 
+// the carto core api is a CDN in the app template HTML (not available as NPM package)
+// so we create a constant to represent it so it's available to the component
+const cartodb = window.cartodb;
+const countyLabelCentroids = require('../../constants/countyCentroids.geojson.json');
+
 export default class HistoricalAerialTemplateIndexDownload extends React.Component {
     constructor(props) {
       super(props);
@@ -165,6 +170,96 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         const texter = this.props.theme + "Text";
         
         map.on('load', function() {
+            // 
+            // START COUNTY REFERENCE LAYER
+            // 
+            map.addSource("county-centroid", {
+                "type": "geojson",
+                "data": countyLabelCentroids
+            });
+
+            map.addLayer({
+                "id": "county-label",
+                "type": "symbol",
+                "source": "county-centroid",
+                'minzoom': 6,
+                'maxzoom': 24,
+                "layout": {
+                  "text-field": ["get", "area_type_name"],
+                  "text-justify": "auto",
+                  'text-size': {
+                      "base": 1,
+                      "stops": [
+                          [6, 6],
+                          [8, 10],
+                          [10, 12],
+                          [16, 18]
+                      ]
+                  },
+                  "text-padding": 3,
+                  "text-letter-spacing": 0.1,
+                  "text-max-width": 7,
+                  "text-transform": "uppercase",
+                  "text-allow-overlap": true
+                },
+                "paint": {
+                    "text-color": "#555",
+                    "text-halo-color": "hsl(0, 0%, 100%)",
+                    "text-halo-width": 1.5,
+                    "text-halo-blur": 1
+                }
+            });
+            // define area type layers and add to the map
+            const areaTypeLayerData = {
+                user_name: 'tnris-flood',
+                sublayers: [{
+                        sql: `SELECT
+                                *, ST_AsText(ST_Centroid(the_geom)) as centroid FROM area_type
+                            WHERE
+                                area_type.area_type = 'county';`,
+                        cartocss: '{}'
+                    }],
+                maps_api_template: 'https://tnris-flood.carto.com'
+            };
+
+            cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
+                if (result == null) {
+                    console.log("error: ", error.errors.join('\n'));
+                    return;
+                }
+
+                const areaTypeTiles = result.tiles.map(function (tileUrl) {
+                    return tileUrl
+                    .replace('{s}', 'a')
+                    .replace(/\.png/, '.mvt');
+                });
+
+                map.addSource(
+                    'area-type-source',
+                    { type: 'vector', tiles: areaTypeTiles }
+                );
+
+                // Add the county outlines to the map
+                map.addLayer({
+                    'id': 'county-outline',
+                    'type': 'line',
+                    'source': 'area-type-source',
+                    'source-layer': 'layer0',
+                    'minzoom': 2,
+                    'maxzoom': 24,
+                    'paint': {
+                    'line-color': 'rgba(100,100,100,.5)',
+                    'line-width': 2,
+                    'line-opacity': .2
+                    }
+                });
+
+                
+            });
+            // 
+            // END COUNTY REFERENCE LAYER
+            // 
+
             // use the tiles url query on index service to add source to the map
             map.addSource('index-boundary-mvt', { type: 'vector', tiles: [mvtUrl] });
             // add the index sheets polygon layer
