@@ -85,6 +85,10 @@ shared styles for collection TemplateDetails components
           .metadata-wraptext-list-item {
             white-space: normal;
           }
+          .mdc-chip {
+            margin-top: 5px;
+            cursor: auto;
+          }
         }
 
         strong {
@@ -260,6 +264,7 @@ shared styles for collection TemplateDetails components
         li.mdc-list-item  {
           padding-left: 0;
           padding-right: 0;
+          cursor: auto;
 
           div.cell-container {
             width: 50%;
@@ -294,6 +299,7 @@ shared styles for collection TemplateDetails components
 
           .mdc-list-item {
             border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: auto;
 
             div {
               display: table-cell;
