@@ -51,6 +51,8 @@ styles for component: OrderCart
       color: $nest-text-subtle;
 
       .mdc-list-item {
+        cursor: auto;
+        
         .mdc-list-item__graphic {
           color: $primary-color;
         }
@@ -61,6 +63,7 @@ styles for component: OrderCart
               font-size: 16px;
               text-decoration: inherit;
               color: $primary-color;
+              background-color: $main-background;
               border: none;
               padding: 0;
             }

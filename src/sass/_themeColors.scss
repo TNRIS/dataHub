@@ -25,6 +25,7 @@ $tnris-blue: #1E8DC1;
 $primary-color: $tnris-blue;
 $secondary-color: #BADBFF;
 $button-text: white;
+$link-color: $primary-color;
 
 $main-background: white;
 $nest-text: #444;
@@ -74,10 +75,11 @@ When adding new themes you will also need to update:
   $primary-color: $dark-theme-primary;
   $secondary-color: #999999;
   $button-text: lightgray;
+  $link-color: $button-text;
 
   $main-background: #383838;
   $nest-text: #ededed;
-  $nest-text-subtle: #555;
+  $nest-text-subtle: $secondary-color;
 
   $search-background: $secondary-color;
   $header-border: #282828;
@@ -221,6 +223,7 @@ When adding new themes you will also need to update:
   $primary-color: $satan-theme-primary;
   $secondary-color: #999999;
   $button-text: lightgray;
+  $link-color: $primary-color;
 
   $main-background: #860000;
   $nest-text: #ededed;
