@@ -51,6 +51,13 @@ $footer-text: #f5f5f5;
 
 body {
   background-color: $main-background;
+
+  .mapboxgl-popup-content {
+    background-color: $main-background !important;
+  }
+  .mapboxgl-popup-tip {
+    border-top-color: $main-background !important;
+  }
 }
 
 @import 'componentSassImporter';
@@ -100,6 +107,13 @@ When adding new themes you will also need to update:
   body {
     background-color: #282828;
 
+    .mapboxgl-popup-content {
+      background-color: $main-background !important;
+    }
+    .mapboxgl-popup-tip {
+      border-top-color: $main-background !important;
+    }
+
     .search-component {
       .search-input {
         background-color: #333;
@@ -148,7 +162,7 @@ When adding new themes you will also need to update:
       }
 
       a {
-      color: $tnris-blue !important;
+        color: $tnris-blue !important;
       }
 
       li {
@@ -223,7 +237,7 @@ When adding new themes you will also need to update:
   $primary-color: $satan-theme-primary;
   $secondary-color: #999999;
   $button-text: lightgray;
-  $link-color: $primary-color;
+  $link-color: lightgray;
 
   $main-background: #860000;
   $nest-text: #ededed;
@@ -247,6 +261,13 @@ When adding new themes you will also need to update:
 
   body {
     background-color: $main-background;
+
+    .mapboxgl-popup-content {
+      background-color: $main-background !important;
+    }
+    .mapboxgl-popup-tip {
+      border-top-color: $main-background !important;
+    }
 
     .search-component {
       .search-input {

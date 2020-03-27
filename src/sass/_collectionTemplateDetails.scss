@@ -82,6 +82,9 @@ shared styles for collection TemplateDetails components
             content: "";
             vertical-align: -7px;
           }
+          .mdc-list-item__secondary-text {
+            color: $nest-text-subtle;
+          }
           .metadata-wraptext-list-item {
             white-space: normal;
           }
