@@ -259,20 +259,20 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
         // get total number of resources available for download
         const total = areasList.length;
-        // if < 1000 downloads, we know the map can perform so we'll just get them
+        // if < 2000 downloads, we know the map can perform so we'll just get them
         // all at once
-        if (total < 1000) {
+        if (total < 2000) {
           const allAreasString = areasList.join("','");
           const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
           this.createLayers(allAreasQuery, map, "0", areaType, visibility);
         }
-        // if more than 1000, we will get area_types to display on the map in chunks
+        // if more than 2000, we will get area_types to display on the map in chunks
         // since the carto api payload has a maximum limit
         else {
           let loop = 0;
           let s = 0;
-          let e = 1000;
-          // iterate resources in 1000 record chunks creating the polygon, hover, and label
+          let e = 2000;
+          // iterate resources in 2000 record chunks creating the polygon, hover, and label
           // layers for each chunk as separate 'chunk layers'
           while (s < total) {
             let chunk = areasList.slice(s, e);
@@ -280,8 +280,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             let chunkQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + chunkString + "')";
             this.createLayers(chunkQuery, map, loop.toString(), areaType, visibility);
             loop += 1;
-            s += 1000;
-            e += 1000;
+            s += 2000;
+            e += 2000;
           }
         }
         return areaType;
