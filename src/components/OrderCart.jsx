@@ -251,12 +251,12 @@ class OrderCart extends Component {
     const hdClass = this.state.delivery !== '' && this.state.delivery !== 'Zipfile Download' ? "hard-drive-field" : "hidden-field";
     const zipfileDownloadLidarBlurb = this.state.delivery === 'Zipfile Download' ? <div className='mdc-typography--caption'><strong>Note:</strong> Lidar datasets are often very large, and TNRIS cannot offer digital downloads for datasets larger than 10 GB. If the ordered dataset is larger than 10 GB, you have the option of either providing a factory-sealed external hard drive (or multiple factory-sealed external hard drives) or purchasing them at cost from TNRIS.</div> : "";
     // empty cart html
-    const emptyCartMessage = (
+    const emptyCartMessage = this.state.display === 'form' ? (
       <ul className="mdc-list empty-cart-message">
         <li><strong>There are no datasets in your cart.</strong></li>
         <li>Although only some datasets are available for download, all datasets are available for ordering directly from TNRIS. To order a dataset(s), click the Catalog icon above, open a dataset card, and choose the Order tab in the top right.</li>
       </ul>
-    );
+    ) : "";
     // if cart not empty, iterate datasets and display their order details,
     // otherwise show emptyCartMessage
     const cartItems = Object.keys(this.props.orders).length !== 0 && this.state.display === 'form'?

@@ -18,7 +18,7 @@ shared styles for collection TemplateDetails components
 
     // general elements - BEGIN
     a {
-      color: $primary-color;
+      color: $link-color;
     }
 
     p {
@@ -81,6 +81,9 @@ shared styles for collection TemplateDetails components
             height: 20px;
             content: "";
             vertical-align: -7px;
+          }
+          .mdc-list-item__secondary-text {
+            color: $nest-text-subtle;
           }
           .metadata-wraptext-list-item {
             white-space: normal;

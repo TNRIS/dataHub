@@ -25,6 +25,7 @@ $tnris-blue: #1E8DC1;
 $primary-color: $tnris-blue;
 $secondary-color: #BADBFF;
 $button-text: white;
+$link-color: $primary-color;
 
 $main-background: white;
 $nest-text: #444;
@@ -50,6 +51,13 @@ $footer-text: #f5f5f5;
 
 body {
   background-color: $main-background;
+
+  .mapboxgl-popup-content {
+    background-color: $main-background !important;
+  }
+  .mapboxgl-popup-tip {
+    border-top-color: $main-background !important;
+  }
 }
 
 @import 'componentSassImporter';
@@ -74,10 +82,11 @@ When adding new themes you will also need to update:
   $primary-color: $dark-theme-primary;
   $secondary-color: #999999;
   $button-text: lightgray;
+  $link-color: $button-text;
 
   $main-background: #383838;
   $nest-text: #ededed;
-  $nest-text-subtle: #555;
+  $nest-text-subtle: $secondary-color;
 
   $search-background: $secondary-color;
   $header-border: #282828;
@@ -97,6 +106,13 @@ When adding new themes you will also need to update:
 
   body {
     background-color: #282828;
+
+    .mapboxgl-popup-content {
+      background-color: $main-background !important;
+    }
+    .mapboxgl-popup-tip {
+      border-top-color: $main-background !important;
+    }
 
     .search-component {
       .search-input {
@@ -146,7 +162,7 @@ When adding new themes you will also need to update:
       }
 
       a {
-      color: $tnris-blue !important;
+        color: $tnris-blue !important;
       }
 
       li {
@@ -221,6 +237,7 @@ When adding new themes you will also need to update:
   $primary-color: $satan-theme-primary;
   $secondary-color: #999999;
   $button-text: lightgray;
+  $link-color: lightgray;
 
   $main-background: #860000;
   $nest-text: #ededed;
@@ -244,6 +261,13 @@ When adding new themes you will also need to update:
 
   body {
     background-color: $main-background;
+
+    .mapboxgl-popup-content {
+      background-color: $main-background !important;
+    }
+    .mapboxgl-popup-tip {
+      border-top-color: $main-background !important;
+    }
 
     .search-component {
       .search-input {
