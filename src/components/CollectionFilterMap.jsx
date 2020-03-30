@@ -264,25 +264,25 @@ export default class CollectionFilterMap extends React.Component {
           'filter': ["==", ["get", "area_type"], "quad"]
         }, 'county-outline');
 
-        map.addLayer({
-          "id": "county",
-          "type": "fill",
-          "source": 'area-type-source',
-          "source-layer": 'layer0',
-          'minzoom': 2,
-          'maxzoom': 24,
-          "paint": {
-              "fill-color": "transparent"
-          },
-          'filter': ["==", ["get", "area_type"], "county"]
-        }, 'quad-outline');
-
         // These are the source and layer for the map's dynamic
         // labels. They are commented out because they were causing
         // the app to lock up for unknown reasons, 02/12/2020. Leave
         // unused until we can verify it is working again. The other
-        // poece to this is commented out below in the map methods within
+        // piece to this is commented out below in the map methods within
         // the map's on moveend method.
+        
+        // map.addLayer({
+        //   "id": "county",
+        //   "type": "fill",
+        //   "source": 'area-type-source',
+        //   "source-layer": 'layer0',
+        //   'minzoom': 2,
+        //   'maxzoom': 24,
+        //   "paint": {
+        //       "fill-color": "transparent"
+        //   },
+        //   'filter': ["==", ["get", "area_type"], "county"]
+        // }, 'quad-outline');
 
         // map.addSource('dynamic-county-centroid', {
         //   type: 'geojson',

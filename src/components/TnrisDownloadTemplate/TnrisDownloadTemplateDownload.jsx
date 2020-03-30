@@ -10,6 +10,8 @@ import breakpoints from '../../sass/_breakpoints.scss'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
+const countyLabelCentroids = require('../../constants/countyCentroids.geojson.json');
+const quadLabelCentroids = require('../../constants/quadCentroids.geojson.json');
 
 export default class TnrisDownloadTemplateDownload extends React.Component {
   constructor(props) {
@@ -119,6 +121,151 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
       map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
     }
+
+    //
+    // START COUNTY AND QUAD REFERENCE LAYER
+    //
+    map.on('load', () => {
+      // define area type layers and add to the map
+      const areaTypeLayerData = {
+          user_name: 'tnris-flood',
+          sublayers: [{
+                  sql: `SELECT
+                          * FROM area_type
+                        WHERE
+                          area_type.area_type IN ('county', 'quad');`,
+                  cartocss: '{}'
+              }],
+          maps_api_template: 'https://tnris-flood.carto.com'
+      };
+
+      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
+          if (result == null) {
+              console.log("error: ", error.errors.join('\n'));
+              return;
+          }
+
+          const areaTypeTiles = result.tiles.map(function (tileUrl) {
+              return tileUrl
+              .replace('{s}', 'a')
+              .replace(/\.png/, '.mvt');
+          });
+
+          map.addSource(
+              'area-type-source',
+              { type: 'vector', tiles: areaTypeTiles }
+          );
+
+          // Add the county outlines to the map
+          map.addLayer({
+              'id': 'county-outline',
+              'type': 'line',
+              'source': 'area-type-source',
+              'source-layer': 'layer0',
+              'minzoom': 2,
+              'maxzoom': 24,
+              'paint': {
+                'line-color': 'rgba(100,100,100,.5)',
+                'line-width': 2,
+                'line-opacity': .2
+              },
+              'filter': ["==", ["get", "area_type"], "county"]
+          });
+
+          // Add the quad outlines to the map
+          map.addLayer({
+            'id': 'quad-outline',
+            'type': 'line',
+            'source': 'area-type-source',
+            'source-layer': 'layer0',
+            'minzoom': 9,
+            'maxzoom': 24,
+            'paint': {
+              'line-color': 'rgba(139,69,19,1)',
+              'line-width': 2,
+              'line-opacity': .05
+            },
+            'filter': ["==", ["get", "area_type"], "quad"]
+          }, 'county-outline');
+        });
+
+        map.addSource("county-centroid", {
+            "type": "geojson",
+            "data": countyLabelCentroids
+        });
+
+        map.addSource("quad-centroid", {
+          "type": "geojson",
+          "data": quadLabelCentroids
+        });
+
+        map.addLayer({
+            "id": "county-label",
+            "type": "symbol",
+            "source": "county-centroid",
+            'minzoom': 6,
+            'maxzoom': 24,
+            "layout": {
+              "text-field": ["get", "area_type_name"],
+              "text-justify": "auto",
+              'text-size': {
+                  "base": 1,
+                  "stops": [
+                      [6, 6],
+                      [8, 10],
+                      [10, 12],
+                      [16, 18]
+                  ]
+              },
+              "text-padding": 3,
+              "text-letter-spacing": 0.1,
+              "text-max-width": 7,
+              "text-transform": "uppercase",
+              "text-allow-overlap": true
+            },
+            "paint": {
+                "text-color": "#555",
+                "text-halo-color": "hsl(0, 0%, 100%)",
+                "text-halo-width": 1.5,
+                "text-halo-blur": 1
+            }
+        });
+
+        map.addLayer({
+          "id": "quad-label",
+          "type": "symbol",
+          "source": "quad-centroid",
+          'minzoom': 9,
+          'maxzoom': 24,
+          "layout": {
+            "text-field": ["get", "area_type_name"],
+            'text-size': {
+                "base": 1,
+                "stops": [
+                    [9, 8.5],
+                    [10, 10],
+                    [16, 16]
+                ]
+            },
+            "text-padding": 3,
+            "text-letter-spacing": 0.1,
+            "text-max-width": 7,
+            "text-allow-overlap": true,
+            "text-rotate": 315,
+          },
+          "paint": {
+              "text-color": "rgb(139,69,19)",
+              "text-opacity": .4,
+              "text-halo-color": "hsl(0, 0%, 100%)",
+              "text-halo-width": 1,
+              "text-halo-blur": 1
+          }
+        }, 'county-label');
+    });
+    //
+    // END COUNTY AND QUAD REFERENCE LAYER
+    //
+
     // class for custom map controls used below
     // *** event handler is commented out but might be useful for future new controls ***
     class ButtonControl {
@@ -321,6 +468,56 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       setTimeout(function () {
           // use the tiles from the response to add a source to the map
           map.addSource(layerSourceName, { type: 'vector', tiles: areaTiles });
+          // add the index sheets hover outline layer
+          map.addLayer({
+              id: layerBaseName + '__outline-hover',
+              'type': 'line',
+              'source': layerSourceName,
+              'source-layer': 'layer0',
+              'layout': {'visibility': 'visible'},
+              'interactive': true,
+              'paint': {
+                'line-color': '#1E8DC1',
+                'line-width': 2,
+                'line-opacity': 1
+              },
+              'filter': ['==', 'area_type_name', '']
+          }, 'boundary_country_inner');
+
+          // add the index sheets outline layer
+          map.addLayer({
+              id: layerBaseName + '__outline',
+              'type': 'line',
+              'source': layerSourceName,
+              'source-layer': 'layer0',
+              'layout': {'visibility': 'visible'},
+              'interactive': true,
+              'paint': {
+                'line-color': 'rgba(100,100,100,.4)',
+                'line-width': 1.5,
+                'line-opacity': 1
+              }
+          }, layerBaseName + '__outline-hover');
+
+          // add the polygon area_type hover layer. wired below to toggle on hover
+          map.addLayer({
+              id: layerHoverName,
+              'type': 'fill',
+              'source': layerSourceName,
+              'source-layer': 'layer0',
+              'layout': {'visibility': visibility},
+              'paint': {
+                // 'fill-color': styles[filler],
+                // 'fill-opacity': .7,
+                // 'fill-outline-color': styles[texter]
+                // 'fill-color': 'rgba(30,141,193,.4)',
+                'fill-color': '#1E8DC1',
+                'fill-opacity': .1,
+                'fill-outline-color': '#1E8DC1'
+              },
+              'filter': ['==', 'area_type_name', '']
+          }, layerBaseName + '__outline');
+
           // add the polygon area_type layer
           map.addLayer({
               id: layerBaseName,
@@ -330,24 +527,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
               'layout': {'visibility': visibility},
               'paint': {
                 'fill-color': styles[filler],
-                'fill-opacity': .3,
+                'fill-opacity': .1,
                 'fill-outline-color': styles[texter]
               }
-          });
-          // add the polygon area_type hover layer. wired below to toggle on hover
-          map.addLayer({
-              id: layerHoverName,
-              'type': 'fill',
-              'source': layerSourceName,
-              'source-layer': 'layer0',
-              'layout': {'visibility': visibility},
-              'paint': {
-                'fill-color': styles[filler],
-                'fill-opacity': .7,
-                'fill-outline-color': styles[texter]
-              },
-              'filter': ['==', 'area_type_name', '']
-          }, layerBaseName);
+          }, layerHoverName);
           // add the labels layer for the area_type polygons
           // map.addLayer({
           //     id: layerLabelName,
@@ -405,23 +588,20 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     map.on('mousemove', layerBaseName, function (e) {
       map.getCanvas().style.cursor = 'pointer';
       map.setFilter(layerHoverName, ['==', 'area_type_name', e.features[0].properties.area_type_name]);
+      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
     });
     // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
     // Also, untoggle the hover layer with a filter
     map.on('mouseleave', layerBaseName, function () {
       map.getCanvas().style.cursor = '';
       map.setFilter(layerHoverName, ['==', 'area_type_name', '']);
+      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', '']);
     });
   }
 
   render() {
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (
-      // <div className='tnris-download-template-download'>
-      //   <div className="tnris-download-template-download__loading">
-      //     <img src={loadingImage} alt="Holodeck Loading..." className="holodeck-loading-image" />
-      //   </div>
-      // </div>
       <div className='sweet-loading-animation'>
         <GridLoader
           sizeUnit={"px"}
