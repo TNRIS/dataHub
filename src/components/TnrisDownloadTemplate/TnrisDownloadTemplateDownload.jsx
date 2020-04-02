@@ -10,6 +10,8 @@ import breakpoints from '../../sass/_breakpoints.scss'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
+const countyLabelCentroids = require('../../constants/countyCentroids.geojson.json');
+const quadLabelCentroids = require('../../constants/quadCentroids.geojson.json');
 
 export default class TnrisDownloadTemplateDownload extends React.Component {
   constructor(props) {
@@ -77,24 +79,26 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
     // iterate layerRef for layers in map by areaType key
-    Object.keys(this.layerRef).map(layer => {
+    Object.keys(this.layerRef).forEach( layer => {
       // if iteration is looking at the clicked layer in the menu, turn that
       // layer's layer id's on. otherwise, turn the that layer's layer id's off
       if (layer === areaType) {
         // iterate layer id's for clicked areaType and toggle their visibility
-        this.layerRef[layer].map(layerName => {
-          return map.setLayoutProperty(layerName, 'visibility', 'visible');
+        this.layerRef[layer].forEach( layerName => {
+          map.setLayoutProperty(layerName, 'visibility', 'visible');
+          map.setLayoutProperty(layerName + '__outline', 'visibility', 'visible');
         }, this);
         // make the layer's menu button active by classname
-        return document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
+        document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
       }
       else {
         // iterate layer id's for clicked areaType and toggle their visibility
-        this.layerRef[layer].map(layerName => {
-          return map.setLayoutProperty(layerName, 'visibility', 'none');
+        this.layerRef[layer].forEach( layerName => {
+          map.setLayoutProperty(layerName, 'visibility', 'none');
+          map.setLayoutProperty(layerName + '__outline', 'visibility', 'none');
         }, this);
         // make the layer's menu button active by classname
-        return document.querySelector('#dld-' + layer).className = 'mdc-list-item';
+        document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
     }, this);
   }
@@ -119,6 +123,154 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
       map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
     }
+
+    //
+    // START COUNTY AND QUAD REFERENCE LAYERS
+    //
+    map.on('load', () => {
+      // define area type layers and add to the map
+      const areaTypeLayerData = {
+          user_name: 'tnris-flood',
+          sublayers: [{
+            sql: `SELECT
+                    the_geom_webmercator,
+                    area_type
+                  FROM
+                    area_type
+                  WHERE
+                    area_type IN ('county', 'quad');`,
+            cartocss: '{}'
+          }],
+          maps_api_template: 'https://tnris-flood.carto.com'
+      };
+
+      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
+        if (result == null) {
+          console.log("error: ", error.errors.join('\n'));
+          return;
+        }
+
+        const areaTypeTiles = result.tiles.map(function (tileUrl) {
+          return tileUrl
+          .replace('{s}', 'a')
+          .replace(/\.png/, '.mvt');
+        });
+
+        map.addSource(
+          'area-type-source',
+          { type: 'vector', tiles: areaTypeTiles }
+        );
+
+        // Add the county outlines to the map
+        map.addLayer({
+          'id': 'county-outline',
+          'type': 'line',
+          'source': 'area-type-source',
+          'source-layer': 'layer0',
+          'minzoom': 2,
+          'maxzoom': 24,
+          'paint': {
+            'line-color': styles['boundaryOutline'],
+            'line-width': 1.5,
+            'line-opacity': .2
+          },
+          'filter': ['==', ['get', 'area_type'], 'county']
+        });
+
+        // Add the quad outlines to the map
+        map.addLayer({
+          'id': 'quad-outline',
+          'type': 'line',
+          'source': 'area-type-source',
+          'source-layer': 'layer0',
+          'minzoom': 9,
+          'maxzoom': 24,
+          'paint': {
+            'line-color': 'rgba(139,69,19,1)',
+            'line-width': 1.5,
+            'line-opacity': .05
+          },
+          'filter': ['==', ['get', 'area_type'], 'quad']
+        }, 'county-outline');
+      });
+
+      map.addSource("county-centroid", {
+        "type": "geojson",
+        "data": countyLabelCentroids
+      });
+
+      map.addSource("quad-centroid", {
+        "type": "geojson",
+        "data": quadLabelCentroids
+      });
+
+      map.addLayer({
+        "id": "county-label",
+        "type": "symbol",
+        "source": "county-centroid",
+        'minzoom': 6,
+        'maxzoom': 24,
+        "layout": {
+          "text-field": ["get", "area_type_name"],
+          "text-justify": "auto",
+          "text-size": {
+            "base": 1,
+            "stops": [
+              [6, 6],
+              [8, 10],
+              [10, 12],
+              [16, 18]
+            ]
+          },
+          "text-padding": 3,
+          "text-letter-spacing": 0.1,
+          "text-max-width": 7,
+          "text-transform": "uppercase",
+          "text-allow-overlap": true
+        },
+        "paint": {
+          "text-color": "#555",
+          "text-halo-color": "hsl(0, 0%, 100%)",
+          "text-halo-width": 1.5,
+          "text-halo-blur": 1
+        }
+      });
+
+      map.addLayer({
+        "id": "quad-label",
+        "type": "symbol",
+        "source": "quad-centroid",
+        'minzoom': 9,
+        'maxzoom': 24,
+        "layout": {
+          "text-field": ["get", "area_type_name"],
+          "text-size": {
+            "base": 1,
+            "stops": [
+              [9, 8.5],
+              [10, 10],
+              [16, 16]
+            ]
+          },
+          "text-padding": 3,
+          "text-letter-spacing": 0.1,
+          "text-max-width": 7,
+          "text-allow-overlap": true,
+          "text-rotate": 315,
+        },
+        "paint": {
+          "text-color": "rgb(139,69,19)",
+          "text-opacity": .4,
+          "text-halo-color": "hsl(0, 0%, 100%)",
+          "text-halo-width": 1,
+          "text-halo-blur": 1
+        }
+      }, "county-label");
+    });
+    //
+    // END COUNTY AND QUAD REFERENCE LAYER
+    //
+
     // class for custom map controls used below
     // *** event handler is commented out but might be useful for future new controls ***
     class ButtonControl {
@@ -215,95 +367,96 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
     areaTypesAry.map(areaType => {
-        // set aside array in layerRef object for populating with layer ids for
-        // layers of this areaType
-        this.layerRef[areaType] = [];
-        // set aside the api response with all available resources (downloads)
-        // for this areaType
-        const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
-        // create the layer control in the DOM
-        var link = document.createElement('a');
-        link.href = '#';
-        link.id = 'dld-' + areaType;
-        link.textContent = areaType.toUpperCase();
-        // determine if it is the active layer. apply the correct classes and
-        // assign the visibility layoutProperty
-        let linkClass;
-        let visibility;
-        switch (areaType === startLayer) {
-          case true:
-            linkClass = 'mdc-list-item mdc-list-item--activated';
-            visibility = 'visible';
-            // since this is our initial layer on display, we'll zoom to the bounds
-            const areasString = areasList.join("','");
-            const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
-            const sql = new cartodb.SQL({ user: 'tnris-flood' });
-            sql.getBounds(boundsQuery).done(function(bounds) {
-              // set map to extent of download areas
-              map.fitBounds([[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],{padding: 20});
-            });
-            break;
-          default:
-            linkClass = 'mdc-list-item';
-            visibility = 'none';
-        }
-        link.className = linkClass;
-        link.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleLayers(e, map, areaType);
-        };
+      // set aside array in layerRef object for populating with layer ids for
+      // layers of this areaType
+      this.layerRef[areaType] = [];
+      // set aside the api response with all available resources (downloads)
+      // for this areaType
+      const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
+      // create the layer control in the DOM
+      var link = document.createElement('a');
+      link.href = '#';
+      link.id = 'dld-' + areaType;
+      link.textContent = areaType.toUpperCase();
+      // determine if it is the active layer. apply the correct classes and
+      // assign the visibility layoutProperty
+      let linkClass;
+      let visibility;
+      switch (areaType === startLayer) {
+        case true:
+          linkClass = 'mdc-list-item mdc-list-item--activated';
+          visibility = 'visible';
+          // since this is our initial layer on display, we'll zoom to the bounds
+          const areasString = areasList.join("','");
+          const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
+          const sql = new cartodb.SQL({ user: 'tnris-flood' });
+          sql.getBounds(boundsQuery).done(function(bounds) {
+            // set map to extent of download areas
+            map.fitBounds(
+              [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
+              {padding: 20}
+            );
+          });
+          break;
+        default:
+          linkClass = 'mdc-list-item';
+          visibility = 'none';
+      }
+      link.className = linkClass;
+      link.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleLayers(e, map, areaType);
+      };
 
-        // add areaType layer to layer menu
-        if (menuItems) {menuItems.appendChild(link)};
+      // add areaType layer to layer menu
+      if (menuItems) {menuItems.appendChild(link)};
 
-        // get total number of resources available for download
-        const total = areasList.length;
-        // if < 1000 downloads, we know the map can perform so we'll just get them
-        // all at once
-        if (total < 1000) {
-          const allAreasString = areasList.join("','");
-          const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
-          this.createLayers(allAreasQuery, map, "0", areaType, visibility);
+      // get total number of resources available for download
+      const total = areasList.length;
+      // if < 2000 downloads, we know the map can perform so we'll just get them
+      // all at once
+      if (total < 2000) {
+        const allAreasString = areasList.join("','");
+        const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
+        this.createLayers(allAreasQuery, map, "0", areaType, visibility);
+      }
+      // if more than 2000, we will get area_types to display on the map in chunks
+      // since the carto api payload has a maximum limit
+      else {
+        let loop = 0;
+        let s = 0;
+        let e = 2000;
+        // iterate resources in 2000 record chunks creating the polygon, hover, and label
+        // layers for each chunk as separate 'chunk layers'
+        while (s < total) {
+          let chunk = areasList.slice(s, e);
+          let chunkString = chunk.join("','");
+          let chunkQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + chunkString + "')";
+          this.createLayers(chunkQuery, map, loop.toString(), areaType, visibility);
+          loop += 1;
+          s += 2000;
+          e += 2000;
         }
-        // if more than 1000, we will get area_types to display on the map in chunks
-        // since the carto api payload has a maximum limit
-        else {
-          let loop = 0;
-          let s = 0;
-          let e = 1000;
-          // iterate resources in 1000 record chunks creating the polygon, hover, and label
-          // layers for each chunk as separate 'chunk layers'
-          while (s < total) {
-            let chunk = areasList.slice(s, e);
-            let chunkString = chunk.join("','");
-            let chunkQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + chunkString + "')";
-            this.createLayers(chunkQuery, map, loop.toString(), areaType, visibility);
-            loop += 1;
-            s += 1000;
-            e += 1000;
-          }
-        }
-        return areaType;
+      }
+      return areaType;
     }, this);
   }
 
   createLayers(query, map, loop, areaType, visibility) {
     // prepare carto tile api information
     var layerData = {
-        user_name: 'tnris-flood',
-        sublayers: [{
-                sql: query,
-                cartocss: '{}'
-            }],
-        maps_api_template: 'https://tnris-flood.carto.com'
+      user_name: 'tnris-flood',
+      sublayers: [{
+        sql: query,
+        cartocss: '{}'
+      }],
+      maps_api_template: 'https://tnris-flood.carto.com'
     };
+
     const layerSourceName = areaType + '__area_type_source' + loop;
     const layerBaseName = areaType + '__area_type' + loop;
-    const layerHoverName = areaType + '__area_type_hover' + loop;
-    // const layerLabelName = areaType + '__area_type_label' + loop;
-    const filler = this.props.theme + "Fill";
-    const texter = this.props.theme + "Text";
+
     // get the raster tiles from the carto api
     cartodb.Tiles.getTiles(layerData, function (result, error) {
       if (result == null) {
@@ -318,57 +471,69 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           .replace(/.png/, '.mvt');
       });
 
-      setTimeout(function () {
-          // use the tiles from the response to add a source to the map
-          map.addSource(layerSourceName, { type: 'vector', tiles: areaTiles });
-          // add the polygon area_type layer
-          map.addLayer({
-              id: layerBaseName,
-              'type': 'fill',
-              'source': layerSourceName,
-              'source-layer': 'layer0',
-              'layout': {'visibility': visibility},
-              'paint': {
-                'fill-color': styles[filler],
-                'fill-opacity': .3,
-                'fill-outline-color': styles[texter]
-              }
-          });
-          // add the polygon area_type hover layer. wired below to toggle on hover
-          map.addLayer({
-              id: layerHoverName,
-              'type': 'fill',
-              'source': layerSourceName,
-              'source-layer': 'layer0',
-              'layout': {'visibility': visibility},
-              'paint': {
-                'fill-color': styles[filler],
-                'fill-opacity': .7,
-                'fill-outline-color': styles[texter]
-              },
-              'filter': ['==', 'area_type_name', '']
-          }, layerBaseName);
-          // add the labels layer for the area_type polygons
-          // map.addLayer({
-          //     id: layerLabelName,
-          //     'type': 'symbol',
-          //     'source': layerSourceName,
-          //     'source-layer': 'layer0',
-          //     // 'minzoom': 10,
-          //     'layout': {
-          //       "text-field": "{area_type_name}",
-          //       'visibility': visibility
-          //     },
-          //     'paint': {
-          //       "text-color": styles[texter]
-          //     }
-          // });
+    setTimeout(function () {
+      // use the tiles from the response to add a source to the map
+      map.addSource(layerSourceName, {
+        'type': 'vector',
+        'tiles': areaTiles,
+        'promoteId': 'objectid'
+      });
+
+      /// add the area_type outline hover layer
+        map.addLayer({
+            id: layerBaseName + '__outline-hover',
+            'type': 'line',
+            'source': layerSourceName,
+            'source-layer': 'layer0',
+            'layout': {'visibility': 'visible'},
+            'interactive': true,
+            'paint': {
+              'line-color': styles['selectedFeature'],
+              'line-width': 2.5,
+              'line-opacity': 1
+            },
+            'filter': ['==', 'area_type_name', '']
+        }, 'boundary_country_inner');
+
+        // add the area_type outline layer
+        map.addLayer({
+            id: layerBaseName + '__outline',
+            'type': 'line',
+            'source': layerSourceName,
+            'source-layer': 'layer0',
+            'layout': {'visibility': visibility},
+            'interactive': true,
+            'paint': {
+              'line-color': styles['boundaryOutline'],
+              'line-width': 1.5,
+              'line-opacity': 1
+            }
+        }, layerBaseName + '__outline-hover');
+
+        // add the area_type polygon layer
+        map.addLayer({
+            id: layerBaseName,
+            'type': 'fill',
+            'source': layerSourceName,
+            'source-layer': 'layer0',
+            'layout': {'visibility': visibility},
+            'paint': {
+              // hover state is set here using a case expression
+              // if hover is false, then color should be grey
+              // if hover is true then color should be blue
+              'fill-color': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                styles['selectedFeature'],
+                styles['boundaryFill']
+              ],
+              'fill-opacity': .1            }
+        }, layerBaseName + '__outline');
       }, 500);
     });
+
     // add the layer id's to the areaType's array in the layerRef for toggling
-    // next line is legacy and is commented out to turn off labels
-    // this.layerRef[areaType].push(layerBaseName, layerHoverName, layerLabelName);
-    this.layerRef[areaType].push(layerBaseName, layerHoverName);
+    this.layerRef[areaType].push(layerBaseName);
 
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
@@ -400,28 +565,62 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         .addTo(map);
     });
 
-    // Change the cursor to a pointer when it enters a feature in the 'area_type' layer
-    // Also, toggle the hover layer with a filter based on the cursor
+    // toggle the layer symbology when the cursor enters a feature
+    let hoveredStateId = null;
     map.on('mousemove', layerBaseName, function (e) {
+      // Change the cursor to a pointer when it enters a boundary feature
       map.getCanvas().style.cursor = 'pointer';
-      map.setFilter(layerHoverName, ['==', 'area_type_name', e.features[0].properties.area_type_name]);
+      // Change the cursor to a pointer when it enters a boundary feature
+      map.getCanvas().style.cursor = 'pointer';
+      if (e.features.length > 0) {
+        // check if the feature id > -1 because our feature ids start at 0
+        if (hoveredStateId !== undefined) {
+          // set the hover attribute to false with feature state
+          map.setFeatureState({
+            source: layerSourceName,
+            sourceLayer: 'layer0',
+            id: hoveredStateId
+          }, {
+            hover: false
+          });
+        }
+        hoveredStateId = e.features[0].id;
+        // set the hover attribute to true with feature state
+        map.setFeatureState({
+          source: layerSourceName,
+          sourceLayer: 'layer0',
+          id: hoveredStateId
+        }, {
+          hover: true
+        });
+      }
+      // set the area_type outline hover layer filter
+      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
     });
-    // Undo the cursor pointer when it leaves a feature in the 'area_type' layer
-    // Also, untoggle the hover layer with a filter
+
+    // toggle the layer symbology when the cursor leaves a feature
     map.on('mouseleave', layerBaseName, function () {
+      // Undo the cursor pointer when it leaves a boundary feature
       map.getCanvas().style.cursor = '';
-      map.setFilter(layerHoverName, ['==', 'area_type_name', '']);
+      if (hoveredStateId !== undefined) {
+        // set the hover attribute to false with feature state
+        map.setFeatureState({
+          source: layerSourceName,
+          sourceLayer: 'layer0',
+          id: hoveredStateId
+        }, {
+          hover: false
+        });
+      }
+      hoveredStateId = null;
+      // reset the area_type outline hover layer filter
+      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', '']);
     });
   }
 
   render() {
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (
-      // <div className='tnris-download-template-download'>
-      //   <div className="tnris-download-template-download__loading">
-      //     <img src={loadingImage} alt="Holodeck Loading..." className="holodeck-loading-image" />
-      //   </div>
-      // </div>
       <div className='sweet-loading-animation'>
         <GridLoader
           sizeUnit={"px"}

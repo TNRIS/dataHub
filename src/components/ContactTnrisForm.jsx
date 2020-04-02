@@ -42,7 +42,7 @@ class ContactTnrisForm extends Component {
     window.scrollTo(0,0);
   }
 
-  componentWillUpdate(nextProps) {
+  componentDidUpdate(nextProps) {
     if (nextProps.submitStatus === false &&
         nextProps.errorStatus !== null &&
         this.state.display === 'submitting') {

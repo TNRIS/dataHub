@@ -51,6 +51,8 @@ styles for component: OrderCart
       color: $nest-text-subtle;
 
       .mdc-list-item {
+        cursor: auto;
+
         .mdc-list-item__graphic {
           color: $primary-color;
         }
@@ -60,7 +62,8 @@ styles for component: OrderCart
             button {
               font-size: 16px;
               text-decoration: inherit;
-              color: $primary-color;
+              color: $link-color;;
+              background-color: $main-background;
               border: none;
               padding: 0;
             }
@@ -93,7 +96,7 @@ styles for component: OrderCart
       margin-bottom: 16px;
       display: flex;
 
-      input {
+      input, textarea {
         color: $nest-text;
       }
     }
@@ -122,7 +125,6 @@ styles for component: OrderCart
       @include mdc-select-bottom-line-color(rgba(0, 0, 0, 0.12));
       @include mdc-select-focused-bottom-line-color($primary-color);
 
-
       select {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -135,6 +137,7 @@ styles for component: OrderCart
 
         option {
           color: $nest-text !important;
+          background-color: $main-background;
         }
       }
 
@@ -155,6 +158,10 @@ styles for component: OrderCart
 
     .mdc-typography--body2 {
       color: $nest-text;
+
+      h3.mdc-list-group__subheader {
+        color: $nest-text;
+      }
     }
 
     .mdc-typography--caption {
@@ -163,7 +170,7 @@ styles for component: OrderCart
     }
 
     .expiration-note {
-      float: right;
+      text-align: end;
     }
 
     .mdc-form-field {

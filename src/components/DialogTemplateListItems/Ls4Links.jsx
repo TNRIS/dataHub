@@ -25,21 +25,28 @@ export default class Ls4Links extends React.Component {
   }
 
   render() {
-    let scanLinks;
-    const scans = this.props.scans ? JSON.parse("[" + this.props.scans + "]") : [];
+    const indexTitle = (
+      <div>
+        <div className="mdc-typography--headline5 template-content-div-header">
+          Scanned Indexes
+        </div>
+        <p>
+          This Historic Imagery dataset has scanned indexes (.tif format) available for download. Use the scanned indexes to view this collection's spatial extent and the identification numbers of the individual frames which comprise it.
+        </p>
+        <p>
+          <strong>Note:</strong> Frames shown within each index sheet may or may not be availabile due to incomplete collections within the archive.
+        </p>
+      </div>
+    )
 
-    if (scans.length > 0) {
-      scanLinks = (
+    const scans = this.props.scans ? JSON.parse("[" + this.props.scans + "]") : [];
+    const indexCopied = this.state.indexCopied ? "Copied!" : "Copy URL";
+    const indexSheets = (
+      scans.length > 0 && 
+      (this.props.index === null ||
+        this.props.index === "")) ? (
         <div className="ls4-scans">
-          <div className="mdc-typography--headline5 template-content-div-header">
-            Scanned Indexes
-          </div>
-          <p>
-            This Historic Imagery dataset has scanned indexes (.tif format) available for download. Use the scanned indexes to view this collection's spatial extent and the identification numbers of the individual frames which comprise it.
-          </p>
-          <p>
-            <strong>Note:</strong> Frames shown within each index sheet may or may not be availabile due to incomplete collections within the archive.
-          </p>
+          {indexTitle}
           <ul className="mdc-list">
             {scans.map((scan, index) => {
               const odd = index % 2 === 1 ? "mdc-list-item odd" : "mdc-list-item even";
@@ -56,26 +63,22 @@ export default class Ls4Links extends React.Component {
             )}
           </ul>
         </div>
+      ) : (
+        <div className="ls4-links">
+          {indexTitle}
+          <div className="mdc-typography--headline5 template-content-div-header">
+            Index WMS Service
+          </div>
+          <input type="text" id="ls4-links-index-input"
+                className="mdc-text-field__input"
+                value={this.props.index} readOnly/>
+          <div className="ls4-links-buttons">
+            <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-index-input', 'indexCopied')}>
+              <i className="material-icons">file_copy</i>{indexCopied}
+            </button>
+          </div>
+        </div>
       );
-    }
-
-    // const indexCopied = this.state.indexCopied ? "Copied!" : "Copy URL";
-    const indexUrl = "";
-    // const indexUrl = this.props.index && this.props.index !== "" ? (
-    //   <div className="ls4-links">
-    //     <div className="mdc-typography--headline5 template-content-div-header">
-    //       Index WMS Service
-    //     </div>
-    //     <input type="text" id="ls4-links-index-input"
-    //            className="mdc-text-field__input"
-    //            value={this.props.index} readOnly/>
-    //     <div className="ls4-links-buttons">
-    //       <button className="mdc-button mdc-button--raised" onClick={() => this.copyUrl('ls4-links-index-input', 'indexCopied')}>
-    //         <i className="material-icons">file_copy</i>{indexCopied}
-    //       </button>
-    //     </div>
-    //   </div>
-    // ) : "";
 
     // const mosaicCopied = this.state.mosaicCopied ? "Copied!" : "Copy URL";
     const mosaicUrl = "";
@@ -121,8 +124,7 @@ export default class Ls4Links extends React.Component {
 
     return (
       <div className="template-content-div ls4-links-container">
-        {scanLinks}
-        {indexUrl}
+        {indexSheets}
         {mosaicUrl}
         {framesUrl}
       </div>

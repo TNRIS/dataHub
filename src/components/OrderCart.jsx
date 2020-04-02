@@ -56,29 +56,6 @@ class OrderCart extends Component {
     });
   }
 
-  componentWillUpdate(nextProps) {
-    // change display based on lifecycle of submitting order
-    if (nextProps.submitting === false &&
-        nextProps.submitError !== null &&
-        this.state.display === 'submitting') {
-      this.setState({
-        display: 'error'
-      });
-    }
-    else if (nextProps.submitting === false &&
-             nextProps.submitError === null &&
-             this.state.display === 'submitting') {
-      this.setState({
-       display: 'success'
-      });
-    }
-    else if (this.state.display === 'success' && Object.keys(nextProps.orders).length !== 0) {
-      this.setState({
-        display: 'form'
-      });
-    }
-  }
-
   componentDidUpdate() {
     // if showing the form and datasets present in cart then adjust form inputs
     if (this.state.display === 'form' && Object.keys(this.props.orders).length !== 0) {
@@ -132,6 +109,27 @@ class OrderCart extends Component {
         document.getElementById("payment-pickup-input").disabled = true;
         document.getElementById("payment-pickup-input").checked = false;
       }
+    }
+
+    // change display based on lifecycle of submitting order
+    if (this.props.submitting === false &&
+        this.props.submitError !== null &&
+        this.state.display === 'submitting') {
+      this.setState({
+        display: 'error'
+      });
+    }
+    else if (this.props.submitting === false &&
+             this.props.submitError === null &&
+             this.state.display === 'submitting') {
+      this.setState({
+       display: 'success'
+      });
+    }
+    else if (this.state.display === 'success' && Object.keys(this.props.orders).length !== 0) {
+      this.setState({
+        display: 'form'
+      });
     }
   }
 
@@ -253,12 +251,12 @@ class OrderCart extends Component {
     const hdClass = this.state.delivery !== '' && this.state.delivery !== 'Zipfile Download' ? "hard-drive-field" : "hidden-field";
     const zipfileDownloadLidarBlurb = this.state.delivery === 'Zipfile Download' ? <div className='mdc-typography--caption'><strong>Note:</strong> Lidar datasets are often very large, and TNRIS cannot offer digital downloads for datasets larger than 10 GB. If the ordered dataset is larger than 10 GB, you have the option of either providing a factory-sealed external hard drive (or multiple factory-sealed external hard drives) or purchasing them at cost from TNRIS.</div> : "";
     // empty cart html
-    const emptyCartMessage = (
+    const emptyCartMessage = this.state.display === 'form' ? (
       <ul className="mdc-list empty-cart-message">
         <li><strong>There are no datasets in your cart.</strong></li>
         <li>Although only some datasets are available for download, all datasets are available for ordering directly from TNRIS. To order a dataset(s), click the Catalog icon above, open a dataset card, and choose the Order tab in the top right.</li>
       </ul>
-    );
+    ) : "";
     // if cart not empty, iterate datasets and display their order details,
     // otherwise show emptyCartMessage
     const cartItems = Object.keys(this.props.orders).length !== 0 && this.state.display === 'form'?
