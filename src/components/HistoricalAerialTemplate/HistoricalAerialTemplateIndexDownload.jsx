@@ -396,9 +396,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     map.on('click', 'boundary-layer', function (e) {
       // since sheets can possibly overlap, order by sheet number
       function compare(a,b) {
-        if (a.properties.frame_num < b.properties.frame_num)
+        if (parseInt(a.properties.frame_num) < parseInt(b.properties.frame_num))
             return -1;
-        if (a.properties.frame_num > b.properties.frame_num)
+        if (parseInt(a.properties.frame_num) > parseInt(b.properties.frame_num))
             return 1;
         return 0;
       }
