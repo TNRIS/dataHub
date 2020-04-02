@@ -339,6 +339,9 @@ When adding new themes you will also need to update:
 
 // export colors for use by jsx. specifically, tnrisDownloadTemplateDownload map
 :export {
+  boundaryFill: #7D7D7D;
+  boundaryOutline: rgba(100,100,100,.5);
+  selectedFeature: #1E8DC1;
   lightFill: #7D7D7D; lightText: white;
   darkFill: #7D7D7D; darkText: white;
   satanFill: $satan-theme-primary; satanText: white;

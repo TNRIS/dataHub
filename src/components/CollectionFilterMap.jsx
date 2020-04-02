@@ -6,6 +6,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import turfExtent from 'turf-extent';
+import styles from '../sass/index.scss'
 // below commented out till we verify dynamic labels work again
 // import intersect from '@turf/intersect';
 // import polylabel from 'polylabel';
@@ -106,22 +107,13 @@ export default class CollectionFilterMap extends React.Component {
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
-    // define the map bounds for Texas at the initial zoom and center,
-    // these will keep the map bounds centered around Texas. Probably
-    // will need to calc an appropriate bounds or initial zoom for all
-    // different screen sizes.
-    // const texasBounds = [
-    //   [-108.83792172606844, 25.535364049344025], // Southwest coordinates
-    //   [-89.8448562738755, 36.78883840623598] // Northeast coordinates
-    // ]
     const map = new mapboxgl.Map({
-        container: 'collection-filter-map', // container id
-        style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-        center: this.props.collectionFilterMapCenter,
-        zoom: this.props.collectionFilterMapZoom,
-        maxZoom: 18,
-        // maxBounds: texasBounds, // sets texasBounds as max to prevent panning
-        interactive: true
+      container: 'collection-filter-map', // container id
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      center: this.props.collectionFilterMapCenter,
+      zoom: this.props.collectionFilterMapZoom,
+      maxZoom: 18,
+      interactive: true
     });
     this._map = map;
 
@@ -173,24 +165,26 @@ export default class CollectionFilterMap extends React.Component {
     const navigateToExtentControl = new NavigateToExtentControl();
     map.addControl(navigateToExtentControl, 'top-left');
 
-    // Define the color to use to show selected areas on the map
-    const selectedAreaColor = '#1E8DC1';
-
     // set true to turn on tile boundaires for debugging
     // map.showTileBoundaries = true;
 
     map.on('load', () => {
       // define area type layers and add to the map
       const areaTypeLayerData = {
-          user_name: 'tnris-flood',
-          sublayers: [{
-                  sql: `SELECT
-                          *, ST_AsText(ST_Centroid(the_geom)) as centroid FROM area_type
-                        WHERE
-                          area_type.area_type IN ('county', 'quad');`,
-                  cartocss: '{}'
-              }],
-          maps_api_template: 'https://tnris-flood.carto.com'
+        user_name: 'tnris-flood',
+        sublayers: [{
+          sql: `SELECT
+                  the_geom_webmercator,
+                  area_type,
+                  area_type_name,
+                  ST_AsText(ST_Centroid(the_geom)) as centroid
+                FROM
+                  area_type
+                WHERE
+                  area_type IN ('county', 'quad');`,
+          cartocss: '{}'
+        }],
+        maps_api_template: 'https://tnris-flood.carto.com'
       };
 
       cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
@@ -214,38 +208,38 @@ export default class CollectionFilterMap extends React.Component {
         // This layer is used to highlight te outline of the user
         // selected area type.
         map.addLayer({
-            'id': 'area-type-outline-selected',
-            'type': 'line',
-            'source': 'area-type-source',
-            'source-layer': 'layer0',
-            'minzoom': 2,
-            'maxzoom': 24,
-            'paint': {
-              'line-color': selectedAreaColor,
-              'line-width': 4,
-              'line-opacity': 1
-            },
-            'filter': [
-              "all",
-              ["==", ["get", "area_type"], ""],
-              ["==", ["get", "area_type_name"], ""]
+          'id': 'area-type-outline-selected',
+          'type': 'line',
+          'source': 'area-type-source',
+          'source-layer': 'layer0',
+          'minzoom': 2,
+          'maxzoom': 24,
+          'paint': {
+            'line-color': styles['selectedFeature'],
+            'line-width': 3,
+            'line-opacity': 1
+          },
+          'filter': [
+            "all",
+            ["==", ["get", "area_type"], ""],
+            ["==", ["get", "area_type_name"], ""]
             ]
         }, 'boundary_country_inner');
 
         // Add the county outlines to the map
         map.addLayer({
-            'id': 'county-outline',
-            'type': 'line',
-            'source': 'area-type-source',
-            'source-layer': 'layer0',
-            'minzoom': 2,
-            'maxzoom': 24,
-            'paint': {
-              'line-color': 'rgba(100,100,100,1)',
-              'line-width': 2,
-              'line-opacity': .2
-            },
-            'filter': ["==", ["get", "area_type"], "county"]
+          'id': 'county-outline',
+          'type': 'line',
+          'source': 'area-type-source',
+          'source-layer': 'layer0',
+          'minzoom': 2,
+          'maxzoom': 24,
+          'paint': {
+            'line-color': styles['boundaryOutline'],
+            'line-width': 1.5,
+            'line-opacity': .4
+          },
+          'filter': ["==", ["get", "area_type"], "county"]
         }, 'area-type-outline-selected');
 
         // Add the quad outlines to the map
@@ -258,7 +252,7 @@ export default class CollectionFilterMap extends React.Component {
           'maxzoom': 24,
           'paint': {
             'line-color': 'rgba(139,69,19,1)',
-            'line-width': 2,
+            'line-width': 1.5,
             'line-opacity': .05
           },
           'filter': ["==", ["get", "area_type"], "quad"]
@@ -270,7 +264,7 @@ export default class CollectionFilterMap extends React.Component {
         // unused until we can verify it is working again. The other
         // piece to this is commented out below in the map methods within
         // the map's on moveend method.
-        
+
         // map.addLayer({
         //   "id": "county",
         //   "type": "fill",
@@ -339,14 +333,14 @@ export default class CollectionFilterMap extends React.Component {
           "layout": {
             "text-field": ["get", "area_type_name"],
             "text-justify": "auto",
-            'text-size': {
-                "base": 1,
-                "stops": [
-                    [6, 6],
-                    [8, 10],
-                    [10, 12],
-                    [16, 18]
-                ]
+            "text-size": {
+              "base": 1,
+              "stops": [
+                [6, 6],
+                [8, 10],
+                [10, 12],
+                [16, 18]
+              ]
             },
             "text-padding": 3,
             "text-letter-spacing": 0.1,
@@ -355,10 +349,10 @@ export default class CollectionFilterMap extends React.Component {
             "text-allow-overlap": true
           },
           "paint": {
-              "text-color": "#555",
-              "text-halo-color": "hsl(0, 0%, 100%)",
-              "text-halo-width": 1.5,
-              "text-halo-blur": 1
+            "text-color": "#555",
+            "text-halo-color": "hsl(0, 0%, 100%)",
+            "text-halo-width": 1.5,
+            "text-halo-blur": 1
           }
         });
 
@@ -370,13 +364,13 @@ export default class CollectionFilterMap extends React.Component {
           'maxzoom': 24,
           "layout": {
             "text-field": ["get", "area_type_name"],
-            'text-size': {
-                "base": 1,
-                "stops": [
-                    [9, 8.5],
-                    [10, 10],
-                    [16, 16]
-                ]
+            "text-size": {
+              "base": 1,
+              "stops": [
+                [9, 8.5],
+                [10, 10],
+                [16, 16]
+              ]
             },
             "text-padding": 3,
             "text-letter-spacing": 0.1,
@@ -385,13 +379,13 @@ export default class CollectionFilterMap extends React.Component {
             "text-rotate": 315,
           },
           "paint": {
-              "text-color": "rgb(139,69,19)",
-              "text-opacity": .4,
-              "text-halo-color": "hsl(0, 0%, 100%)",
-              "text-halo-width": 1,
-              "text-halo-blur": 1
+            "text-color": "rgb(139,69,19)",
+            "text-opacity": .4,
+            "text-halo-color": "hsl(0, 0%, 100%)",
+            "text-halo-width": 1,
+            "text-halo-blur": 1
           }
-        }, 'county-outline');
+        }, "county-outline");
       });
     })
 
@@ -412,8 +406,8 @@ export default class CollectionFilterMap extends React.Component {
             ['!=', 'mode', 'static']
           ],
           'paint': {
-            'fill-color': '#1E8DC1',
-            'fill-outline-color': selectedAreaColor,
+            'fill-color': styles['selectedFeature'],
+            'fill-outline-color': styles['selectedFeature'],
             'fill-opacity': 0
           }
         },
@@ -424,8 +418,8 @@ export default class CollectionFilterMap extends React.Component {
             ['==', '$type', 'Polygon']
           ],
           'paint': {
-            'fill-color': '#1E8DC1',
-            'fill-outline-color': selectedAreaColor,
+            'fill-color': styles['selectedFeature'],
+            'fill-outline-color': styles['selectedFeature'],
             'fill-opacity': 0.2
           }
         },
@@ -441,7 +435,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': selectedAreaColor,
+            'line-color': styles['selectedFeature'],
             'line-width': 3
           }
         },
@@ -456,7 +450,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': selectedAreaColor,
+            'line-color': styles['selectedFeature'],
             'line-dasharray': [0.2, 2],
             'line-width': 2
           }

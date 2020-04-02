@@ -169,21 +169,21 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     const mvtUrl = this.props.indexUrl + '&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=all&map.imagetype=mvt';
     const wmsRasterUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=' + rasterLayer;
 
-    const filler = this.props.theme + "Fill";
-    const texter = this.props.theme + "Text";
-
     map.on('load', function() {
       //
-      // START COUNTY AND QUAD REFERENCE LAYERS FROM CARTO
+      // START COUNTY AND QUAD REFERENCE LAYERS
       //
       // define area type layers and add to the map
       const areaTypeLayerData = {
         user_name: 'tnris-flood',
         sublayers: [{
           sql: `SELECT
-                  * FROM area_type
+                  the_geom_webmercator,
+                  area_type
+                FROM
+                  area_type
                 WHERE
-                  area_type.area_type IN ('county', 'quad');`,
+                  area_type IN ('county', 'quad');`,
           cartocss: '{}'
         }],
         maps_api_template: 'https://tnris-flood.carto.com'
@@ -215,7 +215,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           'minzoom': 2,
           'maxzoom': 24,
           'paint': {
-            'line-color': 'rgba(100,100,100,.5)',
+            'line-color': styles['boundaryOutline'],
             'line-width': 2,
             'line-opacity': .2
           },
@@ -238,9 +238,6 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           'filter': ["==", ["get", "area_type"], "quad"]
         }, 'county-outline');
       });
-      //
-      // END COUNTY AND QUAD REFERENCE LAYERS FROM CARTO
-      //
 
       // add the point sources for the county and quad
       // reference layer labels
@@ -318,6 +315,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           "text-halo-blur": 1
         }
       }, 'county-label');
+      //
+      // END COUNTY AND QUAD REFERENCE LAYERS
+      //
 
       // use the tiles url query on index service
       // to add a source to the map
@@ -335,14 +335,21 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           'layout': {'visibility': 'visible'},
           'interactive': true,
           'paint': {
+            // hover state is set here using a case expression
+            // if hover is false, then color should be grey
+            // if hover is true then color should be blue
             'line-color': [
               'case',
               ['boolean', ['feature-state', 'hover'], false],
-              '#1E8DC1',
-              'rgba(100,100,100,.6)'
-              // styles[filler]
+              styles['selectedFeature'],
+              styles['boundaryOutline']
             ],
-            'line-width': 1.5,
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              2.5,
+              1.5
+            ],
             'line-opacity': 1
           }
       });
@@ -363,10 +370,10 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             'case',
             ['boolean', ['feature-state', 'hover'], false],
             '#1E8DC1',
-            styles[filler]
+            styles['boundaryFill']
           ],
           'fill-opacity': .1,
-          'fill-outline-color': styles[texter]
+          'fill-outline-color': styles['boundaryFill']
         }
       }, 'boundary-layer-outline');
 
@@ -428,8 +435,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       // Change the cursor to a pointer when it enters a boundary feature
       map.getCanvas().style.cursor = 'pointer';
       if (e.features.length > 0) {
-        // check if the feature id > -1 because our feature ids start at 0
-        if (hoveredStateId > -1) {
+        if (hoveredStateId !== undefined) {
           // set the hover attribute to false with feature state
           map.setFeatureState({
             source: 'index-boundary-mvt',
@@ -455,8 +461,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     map.on('mouseleave', 'boundary-layer', function () {
       // Undo the cursor pointer when it leaves a boundary feature
       map.getCanvas().style.cursor = '';
-      // check if the feature id > -1 because our feature ids start at 0
-      if (hoveredStateId > -1) {
+      if (hoveredStateId !== undefined) {
         // set the hover attribute to false with feature state
         map.setFeatureState({
           source: 'index-boundary-mvt',
