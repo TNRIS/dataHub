@@ -79,24 +79,26 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
     // iterate layerRef for layers in map by areaType key
-    Object.keys(this.layerRef).map(layer => {
+    Object.keys(this.layerRef).forEach( layer => {
       // if iteration is looking at the clicked layer in the menu, turn that
       // layer's layer id's on. otherwise, turn the that layer's layer id's off
       if (layer === areaType) {
         // iterate layer id's for clicked areaType and toggle their visibility
-        this.layerRef[layer].map(layerName => {
-          return map.setLayoutProperty(layerName, 'visibility', 'visible');
+        this.layerRef[layer].forEach( layerName => {
+          map.setLayoutProperty(layerName, 'visibility', 'visible');
+          map.setLayoutProperty(layerName + '__outline', 'visibility', 'visible');
         }, this);
         // make the layer's menu button active by classname
-        return document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
+        document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
       }
       else {
         // iterate layer id's for clicked areaType and toggle their visibility
-        this.layerRef[layer].map(layerName => {
-          return map.setLayoutProperty(layerName, 'visibility', 'none');
+        this.layerRef[layer].forEach( layerName => {
+          map.setLayoutProperty(layerName, 'visibility', 'none');
+          map.setLayoutProperty(layerName + '__outline', 'visibility', 'none');
         }, this);
         // make the layer's menu button active by classname
-        return document.querySelector('#dld-' + layer).className = 'mdc-list-item';
+        document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
     }, this);
   }
@@ -454,7 +456,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
     const layerSourceName = areaType + '__area_type_source' + loop;
     const layerBaseName = areaType + '__area_type' + loop;
-    const layerHoverName = areaType + '__area_type_hover' + loop;
 
     // get the raster tiles from the carto api
     cartodb.Tiles.getTiles(layerData, function (result, error) {
@@ -500,7 +501,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'type': 'line',
             'source': layerSourceName,
             'source-layer': 'layer0',
-            'layout': {'visibility': 'visible'},
+            'layout': {'visibility': visibility},
             'interactive': true,
             'paint': {
               'line-color': styles['boundaryOutline'],
@@ -532,7 +533,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     });
 
     // add the layer id's to the areaType's array in the layerRef for toggling
-    this.layerRef[areaType].push(layerBaseName, layerHoverName);
+    this.layerRef[areaType].push(layerBaseName);
 
     // wire an on-click event to the area_type polygons to show a popup of
     // available resource downloads for clicked area
