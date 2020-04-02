@@ -4,9 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, enable the proper version of Node and NPM:
 
-### `nvm use 10` 
-
-Site builds successfully with **NodeJS v10.16.3** & **NPM v6.9** but fails under NodeJS until dependency updates occur. After enabling the proper node version, install dependencies:
+Site builds successfully with **NodeJS v12.13.0** & **NPM v6.12** but fails under NodeJS until dependency updates occur. After enabling the proper node version, install dependencies:
 
 ### `npm install`
 

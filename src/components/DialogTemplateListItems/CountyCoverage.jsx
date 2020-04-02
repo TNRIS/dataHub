@@ -151,7 +151,10 @@ export default class CountyCoverage extends React.Component {
 
   render() {
 
-    const downloadsDisabledNote = this.props.counties && this.props.template === 'tnris-download' ? (
+    const downloadsDisabledNote = (
+      this.props.template === 'tnris-download' ||
+      (this.props.template === 'historical-aerial' && this.props.historicalIndexUrl && this.props.historicalIndexUrl !== "")
+      ) ? (
       'Downloads have been disabled for smaller devices. Please use a device with a larger screen size to download data. '
     ) : "";
 

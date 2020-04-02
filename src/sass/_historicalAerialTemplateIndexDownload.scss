@@ -1,0 +1,80 @@
+/*
+styles for component: HistoricalAerialTemplateIndexDownload
+*/
+
+.historical-aerial-template-index-download {
+  position: relative;
+
+  button {
+    margin: 0;
+  }
+
+  #historical-index-download-map {
+    position: relative;
+    width: auto;
+    height: 62vh;
+    top: 0;
+
+    .mapboxgl-canvas {
+      height: 100% !important;
+    }
+
+    .mapboxgl-ctrl-icon {
+      padding: 0;
+    }
+
+    .mapboxgl-popup {
+        max-width: 400px;
+
+      .mapboxgl-popup-content {
+        ul {
+          list-style: none;
+          padding-inline-start: 0;
+        }
+      }
+    }
+  }
+
+  .tnris-download-menu {
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    padding: 3px;
+
+    &.hidden-layer-menu {
+      display: none;
+    }
+
+    .mdc-list-item {
+      margin: 3px 6px 3px 6px;
+      height: initial;
+      display: block;
+      text-align: center;
+    }
+
+    .mdc-list-item.mdc-list-item--activated {
+      background-color: $nest-text;
+      color: $main-background;
+    }
+  }
+
+  .historical-aerial-template-index-download__mobile {
+    background: $main-background;
+    color: $nest-text;
+    padding: 8px 12px 8px 12px;
+  }
+
+  .historical-aerial-template-index-download__loading {
+    overflow: hidden;
+
+    .holodeck-loading-image {
+      width: 100%;
+    }
+  }
+
+  .template-content-div-subheader {
+    color: $nest-text;
+    padding: 8px 0 8px 0;
+  }
+
+}

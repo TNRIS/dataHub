@@ -198,6 +198,56 @@ export default class Metadata extends React.Component {
       </li>
     ) : "";
 
+    // 
+    // Historical Aerials: Scan Status of Frames entity
+    // 
+    // start with logic, if historical-aerial template and fully scanned is true, label as complete;
+    // otherwise, assume in progress
+    const fullyScanned = this.props.collection.template === 'historical-aerial' && this.props.collection.fully_scanned ? (
+      <div className="mdc-chip" role="row">
+        <div className="mdc-chip__ripple"></div>
+        <i className="material-icons mdc-chip__icon mdc-chip__icon--leading">done</i>
+        <span role="gridcell">
+          <span role="button" className="mdc-chip__primary-action">
+            <span className="mdc-chip__text">Complete</span>
+          </span>
+        </span>
+      </div>
+    ) : (
+      <div className="mdc-chip" role="row">
+        <div className="mdc-chip__ripple"></div>
+        <i className="material-icons mdc-chip__icon mdc-chip__icon--leading">sync</i>
+        <span role="gridcell">
+          <span role="button" className="mdc-chip__primary-action">
+            <span className="mdc-chip__text">In Progress</span>
+          </span>
+        </span>
+      </div>
+    );
+    // overwrite/trump previous logic if photo_index_only true. this logic trumps b/c if only photo indexes,
+    // then there are no frames to be complete or scanning in progress. although this trumps regardless, the 
+    // situation logically would only be photo_index_only true when fully_scanned false b/c a collection
+    // cannot be fully scanned when there are no frames to scan
+    const fullyScannedFixed = this.props.collection.template === 'historical-aerial' && this.props.collection.photo_index_only ? (
+      <div className="mdc-chip" role="row">
+        <div className="mdc-chip__ripple"></div>
+        <i className="material-icons mdc-chip__icon mdc-chip__icon--leading">block</i>
+        <span role="gridcell">
+          <span role="button" className="mdc-chip__primary-action">
+            <span className="mdc-chip__text">No Single Frames Available</span>
+          </span>
+        </span>
+      </div>
+    ) : fullyScanned;
+    const frameScanStatus = this.props.collection.template === 'historical-aerial' ? (
+      <li className="mdc-list-item">
+        <span className="mdc-list-item__text">
+          {fullyScannedFixed}
+          <span className="mdc-list-item__secondary-text">Scan Status of Frames</span>
+        </span>
+      </li>
+    ) : "";
+
     // const coverageExtent = this.props.collection.template !== 'outside-entity' && this.props.collection.coverage_extent ? (
     //   <li className="mdc-list-item">
     //     <span className="mdc-list-item__text">
@@ -264,6 +314,7 @@ export default class Metadata extends React.Component {
 
           {mediaType}
           {generalScale}
+          {frameScanStatus}
         </ul>
       </div>
     )
