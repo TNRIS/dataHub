@@ -32,13 +32,11 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     // toggle between boundary and raster based on clicked menuItem
     if (menuItemId === 'boundary-layer') {
       map.setLayoutProperty('boundary-layer', 'visibility', 'visible');
-      map.setLayoutProperty('boundary-layer-hover', 'visibility', 'visible');
       map.setLayoutProperty('raster-layer', 'visibility', 'none');
       document.querySelector('#boundary-layer').className = 'mdc-list-item mdc-list-item--activated';
       document.querySelector('#raster-layer').className = 'mdc-list-item';
     } else {
       map.setLayoutProperty('boundary-layer', 'visibility', 'none');
-      map.setLayoutProperty('boundary-layer-hover', 'visibility', 'none');
       map.setLayoutProperty('raster-layer', 'visibility', 'visible');
       document.querySelector('#boundary-layer').className = 'mdc-list-item';
       document.querySelector('#raster-layer').className = 'mdc-list-item mdc-list-item--activated';
