@@ -110,7 +110,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         container: 'tnris-download-map', // container id
         style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
         center: [-99.341389, 31.330000],
-        zoom: 6.1
+        zoom: 6
     });
     this.map = map;
     // add regular out-of-the-box controls if they dont already exist

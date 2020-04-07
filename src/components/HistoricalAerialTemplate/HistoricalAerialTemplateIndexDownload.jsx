@@ -21,7 +21,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   }
 
   componentWillUnmount() {
-    this.map.remove();
+    if (this.map) {
+      this.map.remove();
+    }
   }
 
   toggleLayers (e, map, menuItemId) {
