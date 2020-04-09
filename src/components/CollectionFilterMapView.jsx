@@ -16,15 +16,19 @@ const cartodb = window.cartodb;
 export default class CollectionFilterMapView extends React.Component {
   constructor() {
     super();
-    this.state = {
-      countyNames: []
-    }
     this.getAreaTypeNames = this.getAreaTypeNames.bind(this);
     this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
+    this.handleResize = this.handleResize.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
+    const initDownload = window.innerWidth >= this.downloadBreakpoint ? true : false;
+    this.state = {
+      countyNames: [],
+      download: initDownload
+    }
   }
 
   componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
     window.scrollTo(0,0);
     this.getAreaTypeNames();
     if (document.querySelector('.county-select')) {
@@ -39,6 +43,19 @@ export default class CollectionFilterMapView extends React.Component {
         adapter.floatLabel(true);
         adapter.notchOutline(84.75);
       }
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize() {
+    if (window.innerWidth >= this.downloadBreakpoint) {
+      this.setState({download: true});
+    }
+    else {
+      this.setState({download:false});
     }
   }
 
@@ -97,7 +114,7 @@ export default class CollectionFilterMapView extends React.Component {
       return <option data-value={countyName} key={countyName}>{countyName}</option>;
     }));
 
-    const countySelector = window.innerWidth <= this.downloadBreakpoint ? "" : (
+    const countySelector = this.state.download ? (
       <div className="county-select__wrapper">
         <div className="mdc-select mdc-select--outlined county-select">
           <i className="mdc-select__dropdown-icon"></i>
@@ -119,7 +136,23 @@ export default class CollectionFilterMapView extends React.Component {
           </div>
         </div>
       </div>
+    ) : "";
+
+    const mobileNotice = (
+      <div id='collection-filter-map' className='tnris-download-template-download'>
+        <div className="tnris-download-template-download__mobile">
+          <p>
+            In consideration of user experience,
+            the filter by geography map has been <strong>disabled</strong> for small browser windows and mobile devices.
+          </p>
+          <p>
+            Please visit this page with a desktop computer or increase the browser window size and refresh
+            the page to use the filter by geography tool.
+          </p>
+        </div>
+      </div>
     );
+    const map = this.state.download ? <CollectionFilterMapContainer /> : mobileNotice;
 
     return (
       <div className="filter-map-view">
@@ -134,7 +167,7 @@ export default class CollectionFilterMapView extends React.Component {
             <BackButtonContainer />
           </section>
         </div>
-        <CollectionFilterMapContainer />
+        {map}
       </div>
     );
   }

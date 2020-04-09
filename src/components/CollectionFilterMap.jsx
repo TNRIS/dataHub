@@ -54,7 +54,7 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.view !== 'geoFilter') {
       this.props.setViewGeoFilter();
     }
-    if (window.innerWidth > this.downloadBreakpoint) {
+    if (window.innerWidth >= this.downloadBreakpoint) {
       this.createMap();
     }
   }
@@ -94,14 +94,6 @@ export default class CollectionFilterMap extends React.Component {
           )
         }
     }
-  }
-
-  componentWillUnmount() {
-    this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapSelectedAreaType("");
-    this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
-    this.props.setCollectionFilterMapZoom(5.3);
   }
 
   createMap() {
@@ -857,35 +849,17 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   render() {
-    if (window.innerWidth <= this.downloadBreakpoint) {
-      window.scrollTo(0,0);
-      return (
-        <div id='collection-filter-map' className='tnris-download-template-download'>
-          <div className="tnris-download-template-download__mobile">
-            <p>
-              In consideration of user experience,
-              the filter by geography map has been <strong>disabled</strong> for small browser windows and mobile devices.
-            </p>
-            <p>
-              Please visit this page with a desktop computer or increase the browser window size and refresh
-              the page to use the filter by geography tool.
-            </p>
-          </div>
-        </div>
-      )
-    } else {
-      return (
-        <div className='collection-filter-map-component'>
-          <div id='collection-filter-map'></div>
-          <button
-            id='map-filter-button'
-            className='map-filter-button mdc-fab mdc-fab--extended mdc-fab--exited'
-            onClick={this.handleFilterButtonClick}>
-            {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
-          </button>
-          <CollectionFilterMapInstructions />
-        </div>
-      );
-    }
+    return (
+      <div className='collection-filter-map-component'>
+        <div id='collection-filter-map'></div>
+        <button
+          id='map-filter-button'
+          className='map-filter-button mdc-fab mdc-fab--extended mdc-fab--exited'
+          onClick={this.handleFilterButtonClick}>
+          {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
+        </button>
+        <CollectionFilterMapInstructions />
+      </div>
+    );
   }
 }
