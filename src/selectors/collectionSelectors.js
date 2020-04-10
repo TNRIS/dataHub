@@ -45,7 +45,10 @@ export const getServiceIds = createSelector(
     if (collections.result) {
       collections.result.map(collectionId => {
         if (serviceIds.indexOf(collectionId) < 0) {
-          if (collections.entities.collectionsById[collectionId].wms_link) {
+          if (
+            collections.entities.collectionsById[collectionId].wms_link || 
+            collections.entities.collectionsById[collectionId].index_service_url
+            ) {
             serviceIds.push(collectionId);
           }
         }
