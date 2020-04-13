@@ -23,6 +23,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
+      this.createPreviewLayer = this.createPreviewLayer.bind(this);
       this.createLayers = this.createLayers.bind(this);
       this.toggleLayers = this.toggleLayers.bind(this);
       this.layerRef = {};
@@ -64,15 +65,16 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   toggleLayers (e, map, areaType) {
+    console.log(areaType, this.layerRef);
     // if popup is open, close it
     if (document.querySelector('.mapboxgl-popup')) {
       document.querySelector('.mapboxgl-popup').remove();
     }
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
-    if (this.props.collectionName.includes('NAIP') && areaType === 'qquad') {
+    if (this.props.collection.name.includes('NAIP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
-    else if (this.props.collectionName.includes('TOP') && areaType === 'qquad') {
+    else if (this.props.collection.name.includes('TOP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
     else {
@@ -101,6 +103,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
     }, this);
+    // special handling for preview layer
+    if (areaType === 'preview') {
+      map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
+      document.querySelector('#dld-preview').className = 'mdc-list-item mdc-list-item--activated';
+    }
+    else {
+      map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
+      document.querySelector('#dld-preview').className = 'mdc-list-item';
+    }
   }
 
   createMap() {
@@ -318,6 +329,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     } else if (areaTypesAry.includes('quad')) {
       startLayer = 'quad';
     }
+    // add wms preview option to array if wms_link present
+    if (this.props.collection.wms_link && this.props.collection.wms_link !== "") {
+      areaTypesAry.push('preview');
+    }
 
     // areaTypes length in state turns on display of layer menu if more than 1 layer
     if (areaTypesAry.length !== this.state.areaTypesLength) {
@@ -328,10 +343,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
     // set initial minZoom
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
-    if (this.props.collectionName.includes('NAIP') && startLayer === 'qquad') {
+    if (this.props.collection.name.includes('NAIP') && startLayer === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
-    else if (this.props.collectionName.includes('TOP') && startLayer === 'qquad') {
+    else if (this.props.collection.name.includes('TOP') && startLayer === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
     else {
@@ -356,7 +371,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         menuItems.removeChild(menuItems.firstChild);
       }
     }
-
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
     areaTypesAry.map(areaType => {
@@ -366,6 +380,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside the api response with all available resources (downloads)
       // for this areaType
       const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
+      console.log(areaType);
       // create the layer control in the DOM
       var link = document.createElement('a');
       link.href = '#';
@@ -407,9 +422,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
       // get total number of resources available for download
       const total = areasList.length;
+      // if the preview layer, we'll use a separate function to add the wms service
+      // otherwise, use the total areas count to add interactive download layer(s)
+      if (areaType === 'preview') {
+        this.createPreviewLayer(map, this.props.collection.wms_link);
+      }
       // if < 2000 downloads, we know the map can perform so we'll just get them
       // all at once
-      if (total < 2000) {
+      else if (total < 2000) {
         const allAreasString = areasList.join("','");
         const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
         this.createLayers(allAreasQuery, map, "0", areaType, visibility);
@@ -434,6 +454,30 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       }
       return areaType;
     }, this);
+  }
+
+  createPreviewLayer(map, wms_link) {
+    // get capabilities url for ESRI AGS services
+    // ?service=WMS&request=getcapabilities
+    console.log('creating preview layer');
+    console.log(wms_link);
+    // const url = wms_link + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&SRS=EPSG:3857&transparent=true&width=256&height=256&layers=0';
+    // ESRI AGS service query. different from mapserver insofar as query "?" instead
+    // of addition "&", also requires styles to be declared and layer chosen by #
+    const url = wms_link + '?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&SRS=EPSG:3857&styles=default&width=256&height=256&layers=0';
+    setTimeout(function () {
+      map.addSource(
+        'wms-preview',
+        { type: 'raster', tiles: [url], tileSize: 256 }
+      );
+      map.addLayer({
+        id: 'wms-preview-layer',
+        type: 'raster',
+        source: 'wms-preview',
+        'layout': {'visibility': 'none'}
+      });
+      // this.layerRef['preview'].push(layerBaseName);
+    }, 500);
   }
 
   createLayers(query, map, loop, areaType, visibility) {
@@ -464,15 +508,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           .replace(/.png/, '.mvt');
       });
 
-    setTimeout(function () {
-      // use the tiles from the response to add a source to the map
-      map.addSource(layerSourceName, {
-        'type': 'vector',
-        'tiles': areaTiles,
-        'promoteId': 'objectid'
-      });
+      setTimeout(function () {
+        // use the tiles from the response to add a source to the map
+        map.addSource(layerSourceName, {
+          'type': 'vector',
+          'tiles': areaTiles,
+          'promoteId': 'objectid'
+        });
 
-      /// add the area_type outline hover layer
+        /// add the area_type outline hover layer
         map.addLayer({
             id: layerBaseName + '__outline-hover',
             'type': 'line',
