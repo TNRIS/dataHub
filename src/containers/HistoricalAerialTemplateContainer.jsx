@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 
-import TnrisDownloadTemplate from '../components/TnrisDownloadTemplate/TnrisDownloadTemplate'
+import HistoricalAerialTemplate from '../components/HistoricalAerialTemplate/HistoricalAerialTemplate'
 
 import {collectionActions} from '../actions'
 
@@ -9,17 +9,14 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchCollectionResources: (collectionId) => {
-    dispatch(collectionActions.fetchCollectionResources(collectionId))
-  },
   clearSelectedCollection: () => {
     dispatch(collectionActions.clearSelectedCollection());
   },
 })
 
-const TnrisDownloadTemplateContainer = connect(
+const HistoricalAerialTemplateContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(TnrisDownloadTemplate);
+)(HistoricalAerialTemplate);
 
-export default TnrisDownloadTemplateContainer;
+export default HistoricalAerialTemplateContainer;
