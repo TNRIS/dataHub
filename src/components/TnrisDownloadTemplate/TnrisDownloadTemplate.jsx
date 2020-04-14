@@ -39,6 +39,10 @@ export default class TnrisDownloadTemplate extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearSelectedCollection();
+  }
+
   setTemplateView(viewString) {
     this.setState({view: viewString});
     let tabIndex;

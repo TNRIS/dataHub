@@ -28,6 +28,10 @@ export default class HistoricalAerialTemplate extends React.Component {
     window.scrollTo(0,0);
   }
 
+  componentWillUnmount() {
+    this.props.clearSelectedCollection();
+  }
+
   setTemplateView(viewString) {
     this.setState({view: viewString});
     let tabIndex;

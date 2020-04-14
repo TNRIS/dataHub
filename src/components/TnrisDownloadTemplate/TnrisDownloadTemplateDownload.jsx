@@ -20,7 +20,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         resourceLength: null,
         areaTypesLength: 1
       };
-
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
       this.createPreviewLayer = this.createPreviewLayer.bind(this);
@@ -65,7 +64,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   toggleLayers (e, map, areaType) {
-    console.log(areaType, this.layerRef);
     // if popup is open, close it
     if (document.querySelector('.mapboxgl-popup')) {
       document.querySelector('.mapboxgl-popup').remove();
@@ -90,6 +88,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           map.setLayoutProperty(layerName, 'visibility', 'visible');
           map.setLayoutProperty(layerName + '__outline', 'visibility', 'visible');
         }, this);
+        // special map handling for preview layer since it has a single layerName
+        // which is different from the other layers and not present in this.layerRef
+        if (layer === 'preview') {
+          map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
+        }
         // make the layer's menu button active by classname
         document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
       }
@@ -99,19 +102,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           map.setLayoutProperty(layerName, 'visibility', 'none');
           map.setLayoutProperty(layerName + '__outline', 'visibility', 'none');
         }, this);
+        // special map handling for preview layer since it has a single layerName
+        // which is different from the other layers and not present in this.layerRef
+        if (layer === 'preview') {
+          map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
+        }
         // make the layer's menu button active by classname
         document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
     }, this);
-    // special handling for preview layer
-    if (areaType === 'preview') {
-      map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
-      document.querySelector('#dld-preview').className = 'mdc-list-item mdc-list-item--activated';
-    }
-    else {
-      map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
-      document.querySelector('#dld-preview').className = 'mdc-list-item';
-    }
   }
 
   createMap() {
@@ -380,7 +379,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside the api response with all available resources (downloads)
       // for this areaType
       const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
-      console.log(areaType);
       // create the layer control in the DOM
       var link = document.createElement('a');
       link.href = '#';
@@ -457,11 +455,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   createPreviewLayer(map, wms_link) {
-    // get capabilities url for ESRI AGS services
-    // ?service=WMS&request=getcapabilities
-    console.log('creating preview layer');
-    console.log(wms_link);
-    // const url = wms_link + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&SRS=EPSG:3857&transparent=true&width=256&height=256&layers=0';
+    // get capabilities url for ESRI AGS services append: ?service=WMS&request=getcapabilities
     // ESRI AGS service query. different from mapserver insofar as query "?" instead
     // of addition "&", also requires styles to be declared and layer chosen by #
     const url = wms_link + '?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&SRS=EPSG:3857&styles=default&width=256&height=256&layers=0';
