@@ -220,6 +220,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           source: 'satellite-basemap',
           'layout': {'visibility': 'none'}
         }, 'tunnel_service_case');
+        // add next to the tunnel_service_case layer so roads and other layers
+        // draw on top of imagery; this order may change depending on preference
       });
 
       map.addSource("county-centroid", {
@@ -338,28 +340,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       title: 'Download Area Selector'
     });
 
-    //
-    // START BASEMAP CONTROL
-    //
-    // add control to map
-    const basemapMenu = new ButtonControl({
-      id: 'basemap-menu',
-      className: 'tnris-basemap-menu',
-      title: 'Basemap Selector'
-    });
-    if (!document.querySelector('.tnris-download-menu')) {
-      map.addControl(basemapMenu, 'bottom-left');
-    }
-    const basemapItems = document.querySelector('#basemap-menu');
-    // add hidden satellite layer
-    map.on('load', () => {
-      // ugh
-    });
-    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapItems);
-    //
-    // END BASEMAP CONTROL
-    //
-
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
     // for faster initial load
@@ -399,24 +379,34 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
 
-    // add custom control to map; only add download area
-    // menu control if areaTypesAry.length is greater than
-    // one and the control doesn't already exist in the Dom
-    if (areaTypesAry.length > 1) {
-      if (!document.querySelector('.tnris-download-menu')) {
-        map.addControl(ctrlMenu, 'top-right');
-      }
+    // add custom control to map
+    if (!document.querySelector('.tnris-download-menu')) {
+      map.addControl(ctrlMenu, 'top-right');
     }
 
     // add custom controls to map
-    const menuItems = document.querySelector('#download-menu');
-
+    const ctrlMenuNode = document.querySelector('#download-menu');
     // reset layer menu in case of component update
-    if (menuItems) {
-      while (menuItems.firstChild) {
-        menuItems.removeChild(menuItems.firstChild);
+    if (ctrlMenuNode) {
+      while (ctrlMenuNode.firstChild) {
+        ctrlMenuNode.removeChild(ctrlMenuNode.firstChild);
       }
     }
+    // add control containers
+    const basemapSelectorContainer = document.createElement('div');
+    basemapSelectorContainer.id = 'basemap-selector-container';
+    ctrlMenuNode.appendChild(basemapSelectorContainer);
+    // add basemap selector component to container
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
+    // layerSelectorContainer
+    // only add download layers container if areaTypesAry.length
+    // is greater than one (multiple layers exist)
+    if (areaTypesAry.length > 1) {
+      const layerSelectorContainer = document.createElement('div');
+      layerSelectorContainer.id = 'layer-selector-container';
+      ctrlMenuNode.appendChild(layerSelectorContainer);
+    }
+
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
     areaTypesAry.map(areaType => {
@@ -463,7 +453,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       };
 
       // add areaType layer to layer menu
-      if (menuItems) {menuItems.appendChild(link);}
+      if (document.querySelector('#layer-selector-container')) {document.querySelector('#layer-selector-container').appendChild(link);}
 
       // get total number of resources available for download
       const total = areasList.length;

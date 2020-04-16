@@ -40,6 +40,7 @@ styles for component: TnrisDownloadTemplateDownload
     height: auto;
     min-height: 30px;
     padding: 3px;
+    cursor: initial;
 
     &.hidden-layer-menu {
       display: none;
@@ -56,37 +57,30 @@ styles for component: TnrisDownloadTemplateDownload
       background-color: $nest-text;
       color: $main-background;
     }
-  }
 
-  .mapboxgl-ctrl-bottom-left {
-    .mapboxgl-ctrl.mapboxgl-ctrl-group {
-      // background-color: rgba(0, 0, 0, 0);
+    .mdc-form-field {
+      .mdc-switch:not(.mdc-switch--disabled) {
+        @include mdc-switch-toggled-on-color($primary-color);
+        @include mdc-switch-toggled-on-track-color($primary-color);
+        @include mdc-switch-toggled-on-thumb-color($primary-color);
+        @include mdc-switch-toggled-on-ripple-color($primary-color);
+      }
 
-      .tnris-basemap-menu {
-        width: 100%;
-        height: auto;
-        min-height: 30px;
-        padding: 3px;
-        cursor: initial;
-        
-        .mdc-form-field {
-          .mdc-switch:not(.mdc-switch--disabled) {
-            @include mdc-switch-toggled-on-color($primary-color);
-            @include mdc-switch-toggled-on-track-color($primary-color);
-            @include mdc-switch-toggled-on-thumb-color($primary-color);
-            @include mdc-switch-toggled-on-ripple-color($primary-color);
-          }
+      .mdc-switch {
+        margin-right: 5px;
+        margin-left: 5px;
+      }
 
-          .mdc-switch {
-            margin-right: 5px;
-            margin-left: 5px;
-          }
+      label {
+        cursor: pointer;
+        padding-right: 3px;
 
-          label {
-            cursor: pointer;
-            color: $primary-color;
-            padding-right: 3px;
-          }
+        &.Default {
+          color: $nest-text;
+        }
+
+        &.Satellite {
+          color: $primary-color;
         }
       }
     }

@@ -12,8 +12,10 @@ export default class BasemapSelector extends React.Component {
     }
 
     componentDidMount() {
-        const basemapSwitch = new MDCSwitch(document.querySelector('.mdc-switch'));
-        basemapSwitch.checked = false;
+        if (document.querySelector('.mdc-switch')) {
+            const basemapSwitch = new MDCSwitch(document.querySelector('.mdc-switch'));
+            basemapSwitch.checked = false;
+        }
     }
 
     handleChange(event) {
@@ -28,22 +30,20 @@ export default class BasemapSelector extends React.Component {
 
     render() {
         return (
-            <div>
-                <div className="mdc-form-field">
-                    <div className="mdc-switch" id="basemap-selector-switch">
-                    <div className="mdc-switch__track"></div>
-                    <div className="mdc-switch__thumb-underlay">
-                        <div className="mdc-switch__thumb">
-                        <input type="checkbox"
-                                id="basemap-selector-input"
-                                className="mdc-switch__native-control"
-                                name="basemap-selector"
-                                onChange={this.handleChange} />
-                        </div>
+            <div className="mdc-form-field">
+                <div className="mdc-switch" id="basemap-selector-switch">
+                <div className="mdc-switch__track"></div>
+                <div className="mdc-switch__thumb-underlay">
+                    <div className="mdc-switch__thumb">
+                    <input type="checkbox"
+                            id="basemap-selector-input"
+                            className="mdc-switch__native-control"
+                            name="basemap-selector"
+                            onChange={this.handleChange} />
                     </div>
-                    </div>
-                    <label htmlFor="basemap-selector-input">{this.state.label}</label>
                 </div>
+                </div>
+                <label className={this.state.label} htmlFor="basemap-selector-input">{this.state.label}</label>
             </div>
         )
     }
