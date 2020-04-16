@@ -207,20 +207,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           },
           'filter': ['==', ['get', 'area_type'], 'quad']
         }, 'county-outline');
-
-        const satelliteUrl = 'https://webservices.tnris.org/arcgis/services/NAIP/NAIP18_NC_CIR_60cm/ImageServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=0';
-        map.addSource(
-          'satellite-basemap',
-          { type: 'raster', tiles: [satelliteUrl], tileSize: 256 }
-        );
-        map.addLayer({
-          id: 'satellite-basemap-layer',
-          type: 'raster',
-          source: 'satellite-basemap',
-          'layout': {'visibility': 'none'}
-        }, 'tunnel_service_case');
-        // add next to the tunnel_service_case layer so roads and other layers
-        // draw on top of imagery; this order may change depending on preference
       });
 
       map.addSource("county-centroid", {
@@ -382,8 +368,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (!document.querySelector('.tnris-download-menu')) {
       map.addControl(ctrlMenu, 'top-right');
     }
-
-    // add custom controls to map
     const ctrlMenuNode = document.querySelector('#download-menu');
     // reset layer menu in case of component update
     if (ctrlMenuNode) {
@@ -397,7 +381,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     ctrlMenuNode.appendChild(basemapSelectorContainer);
     // add basemap selector component to container
     ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
-    // layerSelectorContainer
     // only add download layers container if areaTypesAry.length
     // is greater than one (multiple layers exist)
     if (areaTypesAry.length > 1) {
@@ -451,8 +434,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this.toggleLayers(e, map, areaType);
       };
 
-      // add areaType layer to layer menu
-      if (document.querySelector('#layer-selector-container')) {document.querySelector('#layer-selector-container').appendChild(link);}
+      // if multiple layers exist, then the container exists so we can
+      // add areaType layer to layer selector container
+      if (document.querySelector('#layer-selector-container')) {
+        document.querySelector('#layer-selector-container').appendChild(link);
+      }
 
       // get total number of resources available for download
       const total = areasList.length;
@@ -506,7 +492,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         source: 'wms-preview',
         'layout': {'visibility': 'none'}
       });
-      // this.layerRef['preview'].push(layerBaseName);
     }, 500);
   }
 
