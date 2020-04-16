@@ -122,7 +122,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // adjust download areas sass to lighten color when satellite on
     // move adding of basemap source/layer into separated BasemapSelector component
     // pull out layer chooser into separate component
-    // move BasemapSelector into top right layer chooser
     // 
   }
 
