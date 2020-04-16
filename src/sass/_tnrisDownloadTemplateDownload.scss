@@ -58,6 +58,40 @@ styles for component: TnrisDownloadTemplateDownload
     }
   }
 
+  .mapboxgl-ctrl-bottom-left {
+    .mapboxgl-ctrl.mapboxgl-ctrl-group {
+      // background-color: rgba(0, 0, 0, 0);
+
+      .tnris-basemap-menu {
+        width: 100%;
+        height: auto;
+        min-height: 30px;
+        padding: 3px;
+        cursor: initial;
+        
+        .mdc-form-field {
+          .mdc-switch:not(.mdc-switch--disabled) {
+            @include mdc-switch-toggled-on-color($primary-color);
+            @include mdc-switch-toggled-on-track-color($primary-color);
+            @include mdc-switch-toggled-on-thumb-color($primary-color);
+            @include mdc-switch-toggled-on-ripple-color($primary-color);
+          }
+
+          .mdc-switch {
+            margin-right: 5px;
+            margin-left: 5px;
+          }
+
+          label {
+            cursor: pointer;
+            color: $primary-color;
+            padding-right: 3px;
+          }
+        }
+      }
+    }
+  }
+
   .tnris-download-template-download__mobile {
     background: $main-background;
     color: $nest-text;

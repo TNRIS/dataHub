@@ -1,5 +1,7 @@
 import React from 'react'
 import { GridLoader } from 'react-spinners'
+import ReactDOM from 'react-dom'
+import BasemapSelector from '../BasemapSelector'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -25,6 +27,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.createPreviewLayer = this.createPreviewLayer.bind(this);
       this.createLayers = this.createLayers.bind(this);
       this.toggleLayers = this.toggleLayers.bind(this);
+      this.toggleBasemaps = this.toggleBasemaps.bind(this);
       this.layerRef = {};
       this.stateMinZoom = 5;
       this.qquadMinZoom = 8;
@@ -113,6 +116,16 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     }, this);
   }
 
+  toggleBasemaps (e, map, visible) {
+    map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
+    // TO DO:
+    // adjust download areas sass to lighten color when satellite on
+    // move adding of basemap source/layer into separated BasemapSelector component
+    // pull out layer chooser into separate component
+    // move BasemapSelector into top right layer chooser
+    // 
+  }
+
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -195,6 +208,18 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           },
           'filter': ['==', ['get', 'area_type'], 'quad']
         }, 'county-outline');
+
+        const satelliteUrl = 'https://webservices.tnris.org/arcgis/services/NAIP/NAIP18_NC_CIR_60cm/ImageServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=0';
+        map.addSource(
+          'satellite-basemap',
+          { type: 'raster', tiles: [satelliteUrl], tileSize: 256 }
+        );
+        map.addLayer({
+          id: 'satellite-basemap-layer',
+          type: 'raster',
+          source: 'satellite-basemap',
+          'layout': {'visibility': 'none'}
+        }, 'tunnel_service_case');
       });
 
       map.addSource("county-centroid", {
@@ -313,6 +338,28 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       title: 'Download Area Selector'
     });
 
+    //
+    // START BASEMAP CONTROL
+    //
+    // add control to map
+    const basemapMenu = new ButtonControl({
+      id: 'basemap-menu',
+      className: 'tnris-basemap-menu',
+      title: 'Basemap Selector'
+    });
+    if (!document.querySelector('.tnris-download-menu')) {
+      map.addControl(basemapMenu, 'bottom-left');
+    }
+    const basemapItems = document.querySelector('#basemap-menu');
+    // add hidden satellite layer
+    map.on('load', () => {
+      // ugh
+    });
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapItems);
+    //
+    // END BASEMAP CONTROL
+    //
+
     const areaTypesAry = Object.keys(this.props.resourceAreaTypes).sort();
     // set the active areaType to be the one with the largest area polygons
     // for faster initial load
@@ -357,7 +404,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // one and the control doesn't already exist in the Dom
     if (areaTypesAry.length > 1) {
       if (!document.querySelector('.tnris-download-menu')) {
-        map.addControl(ctrlMenu, 'top-right')
+        map.addControl(ctrlMenu, 'top-right');
       }
     }
 
@@ -416,7 +463,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       };
 
       // add areaType layer to layer menu
-      if (menuItems) {menuItems.appendChild(link)};
+      if (menuItems) {menuItems.appendChild(link);}
 
       // get total number of resources available for download
       const total = areasList.length;
