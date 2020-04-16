@@ -120,7 +120,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
     // TO DO:
     // adjust download areas sass to lighten color when satellite on
-    // move adding of basemap source/layer into separated BasemapSelector component
     // pull out layer chooser into separate component
     // 
   }
