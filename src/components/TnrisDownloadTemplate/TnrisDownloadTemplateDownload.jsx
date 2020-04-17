@@ -118,10 +118,20 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
   toggleBasemaps (e, map, visible) {
     map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
-    // TO DO:
-    // adjust download areas sass to lighten color when satellite on
-    // pull out layer chooser into separate component
-    // 
+    const sfx = visible === 'visible' ? 'Satellite' : '';
+    const fillKey = 'boundaryFill' + sfx;
+    const outlineKey = 'boundaryOutline' + sfx;
+    Object.keys(this.layerRef).forEach( layer => {
+      this.layerRef[layer].forEach( layerName => {
+        map.setPaintProperty(layerName, 'fill-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[fillKey]
+        ]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', styles[outlineKey]);
+      }, this);
+    }, this);
   }
 
   createMap() {
