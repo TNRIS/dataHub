@@ -24,8 +24,6 @@ export default class BasemapSelector extends React.Component {
     }
 
     handleChange(event) {
-        event.preventDefault();
-        event.stopPropagation();
         this.props.handler(event, this.props.map, event.target.value);
     }
 
