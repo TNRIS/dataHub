@@ -1,4 +1,7 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
+import BasemapSelector from '../BasemapSelector'
+
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
 
@@ -14,6 +17,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     // bind our map builder functions
     this.createMap = this.createMap.bind(this);
     this.toggleLayers = this.toggleLayers.bind(this);
+    this.toggleBasemaps = this.toggleBasemaps.bind(this);
+    this.layerRef = {};
   }
 
   componentDidMount() {
@@ -34,15 +39,35 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     // toggle between boundary and raster based on clicked menuItem
     if (menuItemId === 'boundary-layer') {
       map.setLayoutProperty('boundary-layer', 'visibility', 'visible');
+      map.setLayoutProperty('boundary-layer__outline', 'visibility', 'visible');
       map.setLayoutProperty('raster-layer', 'visibility', 'none');
       document.querySelector('#boundary-layer').className = 'mdc-list-item mdc-list-item--activated';
       document.querySelector('#raster-layer').className = 'mdc-list-item';
     } else {
       map.setLayoutProperty('boundary-layer', 'visibility', 'none');
+      map.setLayoutProperty('boundary-layer__outline', 'visibility', 'none');
       map.setLayoutProperty('raster-layer', 'visibility', 'visible');
       document.querySelector('#boundary-layer').className = 'mdc-list-item';
       document.querySelector('#raster-layer').className = 'mdc-list-item mdc-list-item--activated';
     };
+  }
+
+  toggleBasemaps (e, map, visible) {
+    map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
+    const sfx = visible === 'visible' ? 'Satellite' : '';
+    const fillKey = 'boundaryFill' + sfx;
+    const outlineKey = 'boundaryOutline' + sfx;
+    Object.keys(this.layerRef).forEach( layer => {
+      this.layerRef[layer].forEach( layerName => {
+        map.setPaintProperty(layerName, 'fill-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[fillKey]
+        ]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', styles[outlineKey]);
+      }, this);
+    }, this);
   }
 
   createMap() {
@@ -102,17 +127,30 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       className: 'tnris-download-menu',
       title: 'Download Area Selector'
     });
+
+    // add custom control to map
     if (!document.querySelector('.tnris-download-menu')) {
       map.addControl(ctrlMenu, 'top-right')
     }
     // add custom controls to map
-    const menuItems = document.querySelector('#download-menu');
+    const ctrlMenuNode = document.querySelector('#download-menu');
     // reset layer menu in case of component update
-    if (menuItems) {
-      while (menuItems.firstChild) {
-        menuItems.removeChild(menuItems.firstChild);
+    if (ctrlMenuNode) {
+      while (ctrlMenuNode.firstChild) {
+        ctrlMenuNode.removeChild(ctrlMenuNode.firstChild);
       }
     }
+    // add control containers
+    const basemapSelectorContainer = document.createElement('div');
+    basemapSelectorContainer.id = 'basemap-selector-container';
+    ctrlMenuNode.appendChild(basemapSelectorContainer);
+    // add basemap selector component to container
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
+    
+    const layerSelectorContainer = document.createElement('div');
+    layerSelectorContainer.id = 'layer-selector-container';
+    ctrlMenuNode.appendChild(layerSelectorContainer);
+
     // add mvt layer to menu items. use layer 'id' for link 'id'
     var mvtMenuLink = document.createElement('a');
     mvtMenuLink.href = '#';
@@ -124,7 +162,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       e.stopPropagation();
       this.toggleLayers(e, map, 'boundary-layer');
     };
-    menuItems.appendChild(mvtMenuLink);
+    layerSelectorContainer.appendChild(mvtMenuLink);
     // add wms layer to menu items
     var wmsMenuLink = document.createElement('a');
     wmsMenuLink.href = '#';
@@ -136,7 +174,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       e.stopPropagation();
       this.toggleLayers(e, map, 'raster-layer');
     };
-    menuItems.appendChild(wmsMenuLink);
+    layerSelectorContainer.appendChild(wmsMenuLink);
     //
     // END LAYER CONTROL
     //
@@ -162,7 +200,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     const boundaryLayer = this.props.serviceLayer + '_index_index';
     const mvtUrl = this.props.indexUrl + '&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=all&map.imagetype=mvt';
     const wmsRasterUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=' + rasterLayer;
-
+    this.layerRef[boundaryLayer] = ['boundary-layer'];
     map.on('load', function() {
       //
       // START COUNTY AND QUAD REFERENCE LAYERS
@@ -322,7 +360,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
       // add the index sheets outline layer
       map.addLayer({
-          id: 'boundary-layer-outline',
+          id: 'boundary-layer__outline',
           'type': 'line',
           'source': 'index-boundary-mvt',
           'source-layer': boundaryLayer,
@@ -369,7 +407,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           'fill-opacity': .1,
           'fill-outline-color': styles['boundaryFill']
         }
-      }, 'boundary-layer-outline');
+      }, 'boundary-layer__outline');
 
       // use the wms url query on index service
       // to add a source to the map
