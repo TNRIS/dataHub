@@ -35,6 +35,8 @@ export default class BasemapSelector extends React.Component {
     }
 
     handleChange(event) {
+        event.preventDefault();
+        event.stopPropagation();
         const label = this.state.label === 'Default' ? 'Satellite' : 'Default';
         this.setState({
             label: label,

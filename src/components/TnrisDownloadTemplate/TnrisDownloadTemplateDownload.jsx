@@ -2,6 +2,7 @@ import React from 'react'
 import { GridLoader } from 'react-spinners'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
+import LayerSelector from '../LayerSelector'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -96,8 +97,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         if (layer === 'preview') {
           map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
         }
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
       }
       else {
         // iterate layer id's for clicked areaType and toggle their visibility
@@ -110,8 +109,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         if (layer === 'preview') {
           map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
         }
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
     }, this);
   }
@@ -390,12 +387,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     ctrlMenuNode.appendChild(basemapSelectorContainer);
     // add basemap selector component to container
     ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
-    // only add download layers container if areaTypesAry.length
+    // only add download layer selectors container if areaTypesAry.length
     // is greater than one (multiple layers exist)
     if (areaTypesAry.length > 1) {
       const layerSelectorContainer = document.createElement('div');
       layerSelectorContainer.id = 'layer-selector-container';
       ctrlMenuNode.appendChild(layerSelectorContainer);
+      // add basemap selector component to container
+      ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
     }
 
     // iterate our area_types so we can add them to different layers for
@@ -407,18 +406,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside the api response with all available resources (downloads)
       // for this areaType
       const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
-      // create the layer control in the DOM
-      var link = document.createElement('a');
-      link.href = '#';
-      link.id = 'dld-' + areaType;
-      link.textContent = areaType.toUpperCase();
-      // determine if it is the active layer. apply the correct classes and
-      // assign the visibility layoutProperty
-      let linkClass;
+
       let visibility;
       switch (areaType === startLayer) {
         case true:
-          linkClass = 'mdc-list-item mdc-list-item--activated';
           visibility = 'visible';
           // since this is our initial layer on display, we'll zoom to the bounds
           const areasString = areasList.join("','");
@@ -433,20 +424,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           });
           break;
         default:
-          linkClass = 'mdc-list-item';
           visibility = 'none';
-      }
-      link.className = linkClass;
-      link.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.toggleLayers(e, map, areaType);
-      };
-
-      // if multiple layers exist, then the container exists so we can
-      // add areaType layer to layer selector container
-      if (document.querySelector('#layer-selector-container')) {
-        document.querySelector('#layer-selector-container').appendChild(link);
       }
 
       // get total number of resources available for download
