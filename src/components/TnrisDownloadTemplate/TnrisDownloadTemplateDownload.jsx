@@ -126,7 +126,12 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           styles['selectedFeature'],
           styles[fillKey]
         ]);
-        map.setPaintProperty(layerName + '__outline', 'line-color', styles[outlineKey]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[outlineKey]
+        ]);
       }, this);
     }, this);
   }
@@ -393,7 +398,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       const layerSelectorContainer = document.createElement('div');
       layerSelectorContainer.id = 'layer-selector-container';
       ctrlMenuNode.appendChild(layerSelectorContainer);
-      // add basemap selector component to container
+      // add layer selector component to container
       ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
     }
 
@@ -518,22 +523,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           'promoteId': 'objectid'
         });
 
-        /// add the area_type outline hover layer
-        map.addLayer({
-            id: layerBaseName + '__outline-hover',
-            'type': 'line',
-            'source': layerSourceName,
-            'source-layer': 'layer0',
-            'layout': {'visibility': 'visible'},
-            'interactive': true,
-            'paint': {
-              'line-color': styles['selectedFeature'],
-              'line-width': 2.5,
-              'line-opacity': 1
-            },
-            'filter': ['==', 'area_type_name', '']
-        }, 'boundary_country_inner');
-
         // add the area_type outline layer
         map.addLayer({
             id: layerBaseName + '__outline',
@@ -543,11 +532,21 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'layout': {'visibility': visibility},
             'interactive': true,
             'paint': {
-              'line-color': styles['boundaryOutline'],
-              'line-width': 1.5,
+              'line-color': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                styles['selectedFeature'],
+                styles['boundaryOutline']
+              ],
+              'line-width': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                2.5,
+                1.5
+              ],
               'line-opacity': 1
             }
-        }, layerBaseName + '__outline-hover');
+        });
 
         // add the area_type polygon layer
         map.addLayer({
@@ -633,8 +632,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           hover: true
         });
       }
-      // set the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
     });
 
     // toggle the layer symbology when the cursor leaves a feature
@@ -652,8 +649,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         });
       }
       hoveredStateId = null;
-      // reset the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', '']);
     });
   }
 

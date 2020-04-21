@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
+import LayerSelector from '../LayerSelector'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -37,18 +38,14 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       document.querySelector('.mapboxgl-popup').remove();
     }
     // toggle between boundary and raster based on clicked menuItem
-    if (menuItemId === 'boundary-layer') {
-      map.setLayoutProperty('boundary-layer', 'visibility', 'visible');
-      map.setLayoutProperty('boundary-layer__outline', 'visibility', 'visible');
-      map.setLayoutProperty('raster-layer', 'visibility', 'none');
-      document.querySelector('#boundary-layer').className = 'mdc-list-item mdc-list-item--activated';
-      document.querySelector('#raster-layer').className = 'mdc-list-item';
+    if (menuItemId === 'index') {
+      map.setLayoutProperty('index', 'visibility', 'visible');
+      map.setLayoutProperty('index__outline', 'visibility', 'visible');
+      map.setLayoutProperty('preview', 'visibility', 'none');
     } else {
-      map.setLayoutProperty('boundary-layer', 'visibility', 'none');
-      map.setLayoutProperty('boundary-layer__outline', 'visibility', 'none');
-      map.setLayoutProperty('raster-layer', 'visibility', 'visible');
-      document.querySelector('#boundary-layer').className = 'mdc-list-item';
-      document.querySelector('#raster-layer').className = 'mdc-list-item mdc-list-item--activated';
+      map.setLayoutProperty('index', 'visibility', 'none');
+      map.setLayoutProperty('index__outline', 'visibility', 'none');
+      map.setLayoutProperty('preview', 'visibility', 'visible');
     };
   }
 
@@ -65,7 +62,12 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           styles['selectedFeature'],
           styles[fillKey]
         ]);
-        map.setPaintProperty(layerName + '__outline', 'line-color', styles[outlineKey]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[outlineKey]
+        ]);
       }, this);
     }, this);
   }
@@ -150,31 +152,10 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     const layerSelectorContainer = document.createElement('div');
     layerSelectorContainer.id = 'layer-selector-container';
     ctrlMenuNode.appendChild(layerSelectorContainer);
-
-    // add mvt layer to menu items. use layer 'id' for link 'id'
-    var mvtMenuLink = document.createElement('a');
-    mvtMenuLink.href = '#';
-    mvtMenuLink.id = 'boundary-layer';
-    mvtMenuLink.textContent = 'DOWNLOAD';
-    mvtMenuLink.className = 'mdc-list-item mdc-list-item--activated';
-    mvtMenuLink.onclick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.toggleLayers(e, map, 'boundary-layer');
-    };
-    layerSelectorContainer.appendChild(mvtMenuLink);
-    // add wms layer to menu items
-    var wmsMenuLink = document.createElement('a');
-    wmsMenuLink.href = '#';
-    wmsMenuLink.id = 'raster-layer';
-    wmsMenuLink.textContent = 'PREVIEW';
-    wmsMenuLink.className = 'mdc-list-item';
-    wmsMenuLink.onclick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.toggleLayers(e, map, 'raster-layer');
-    };
-    layerSelectorContainer.appendChild(wmsMenuLink);
+    // add layer selector component to container
+    const areaTypesAry = ['index', 'preview'];
+    const startLayer = 'index';
+    ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
     //
     // END LAYER CONTROL
     //
@@ -200,7 +181,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     const boundaryLayer = this.props.serviceLayer + '_index_index';
     const mvtUrl = this.props.indexUrl + '&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=all&map.imagetype=mvt';
     const wmsRasterUrl = this.props.indexUrl + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=' + rasterLayer;
-    this.layerRef[boundaryLayer] = ['boundary-layer'];
+    this.layerRef[boundaryLayer] = ['index'];
     map.on('load', function() {
       //
       // START COUNTY AND QUAD REFERENCE LAYERS
@@ -360,7 +341,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
       // add the index sheets outline layer
       map.addLayer({
-          id: 'boundary-layer__outline',
+          id: 'index__outline',
           'type': 'line',
           'source': 'index-boundary-mvt',
           'source-layer': boundaryLayer,
@@ -388,7 +369,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
       // add the index sheets polygon layer
       map.addLayer({
-        id: 'boundary-layer',
+        id: 'index',
         'type': 'fill',
         'source': 'index-boundary-mvt',
         'source-layer': boundaryLayer,
@@ -401,13 +382,13 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
           'fill-color': [
             'case',
             ['boolean', ['feature-state', 'hover'], false],
-            '#1E8DC1',
+            styles['selectedFeature'],
             styles['boundaryFill']
           ],
           'fill-opacity': .1,
           'fill-outline-color': styles['boundaryFill']
         }
-      }, 'boundary-layer__outline');
+      }, 'index__outline');
 
       // use the wms url query on index service
       // to add a source to the map
@@ -418,7 +399,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
       // add the index sheets raster layer
       map.addLayer({
-        id: 'raster-layer',
+        id: 'preview',
         type: 'raster',
         source: 'index-raster-wms',
         'layout': {'visibility': 'none'}
@@ -427,7 +408,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
     // wire the popup
     const popupTitle = this.props.popupTitle;
-    map.on('click', 'boundary-layer', function (e) {
+    map.on('click', 'index', function (e) {
       // since sheets can possibly overlap, order by sheet number
       function compare(a,b) {
         if (parseInt(a.properties.frame_num) < parseInt(b.properties.frame_num))
@@ -463,7 +444,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
 
     // toggle the layer symbology when the cursor enters a feature
     let hoveredStateId = null;
-    map.on('mousemove', 'boundary-layer', (e) => {
+    map.on('mousemove', 'index', (e) => {
       // Change the cursor to a pointer when it enters a boundary feature
       map.getCanvas().style.cursor = 'pointer';
       if (e.features.length > 0) {
@@ -490,7 +471,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     });
 
     // toggle the layer symbology when the cursor leaves a feature
-    map.on('mouseleave', 'boundary-layer', function () {
+    map.on('mouseleave', 'index', function () {
       // Undo the cursor pointer when it leaves a boundary feature
       map.getCanvas().style.cursor = '';
       if (hoveredStateId !== undefined) {

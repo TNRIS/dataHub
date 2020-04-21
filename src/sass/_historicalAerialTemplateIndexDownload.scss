@@ -46,18 +46,6 @@ styles for component: HistoricalAerialTemplateIndexDownload
       display: none;
     }
 
-    .mdc-list-item {
-      margin: 3px 6px 3px 6px;
-      height: initial;
-      display: block;
-      text-align: center;
-    }
-
-    .mdc-list-item.mdc-list-item--activated {
-      background-color: $nest-text;
-      color: $main-background;
-    }
-
     #basemap-selector-container {
       .mdc-form-field {
         padding-top: 5px;
@@ -86,23 +74,23 @@ styles for component: HistoricalAerialTemplateIndexDownload
       }
     }
 
-    // #layer-selector-container {
-    //   .mdc-form-field {
-    //     display: flex;
+    #layer-selector-container {
+      .mdc-form-field {
+        display: flex;
 
-    //     @include mdc-radio-ink-color($primary-color);
-    //     @include mdc-radio-checked-stroke-color($primary-color);
-    //     @include mdc-radio-focus-indicator-color($primary-color);
+        @include mdc-radio-ink-color($primary-color);
+        @include mdc-radio-checked-stroke-color($primary-color);
+        @include mdc-radio-focus-indicator-color($primary-color);
 
-    //     .mdc-radio {
-    //       padding: 4px;
-    //     }
+        .mdc-radio {
+          padding: 4px;
+        }
 
-    //     label {
-    //       cursor: pointer;
-    //     }
-    //   }
-    // }
+        label {
+          cursor: pointer;
+        }
+      }
+    }
   }
 
   .historical-aerial-template-index-download__mobile {
