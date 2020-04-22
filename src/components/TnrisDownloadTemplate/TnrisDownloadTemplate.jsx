@@ -39,6 +39,10 @@ export default class TnrisDownloadTemplate extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearSelectedCollection();
+  }
+
   setTemplateView(viewString) {
     this.setState({view: viewString});
     let tabIndex;
@@ -46,7 +50,7 @@ export default class TnrisDownloadTemplate extends React.Component {
       case 'details':
         tabIndex = 0;
         break;
-      case 'preview':
+      case 'images':
         tabIndex = 1;
         break;
       case 'order':
@@ -73,7 +77,7 @@ export default class TnrisDownloadTemplate extends React.Component {
       case 'details':
         showComponent = <TnrisDownloadTemplateDetails collection={this.props.collection} />
         break;
-      case 'preview':
+      case 'images':
         showComponent = (
           <Images
             thumbnail={this.props.collection.thumbnail_image}
@@ -149,9 +153,9 @@ export default class TnrisDownloadTemplate extends React.Component {
                           role="tab"
                           aria-selected="false"
                           tabIndex="-1"
-                          onClick={() => this.setTemplateView("preview")}
-                          title="Preview">
-                          <span className="mdc-tab__content">preview</span>
+                          onClick={() => this.setTemplateView("images")}
+                          title="Images">
+                          <span className="mdc-tab__content">images</span>
                           <span className="mdc-tab-indicator">
                             <span
                               className="mdc-tab-indicator__content mdc-tab-indicator__content--underline">
@@ -210,8 +214,8 @@ export default class TnrisDownloadTemplate extends React.Component {
                     <div className={this.state.view === 'details' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                       onClick={() => this.setTemplateView("details")}>Details
                     </div>
-                    <div className={this.state.view === 'preview' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
-                      onClick={() => this.setTemplateView("preview")}>Preview
+                    <div className={this.state.view === 'images' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
+                      onClick={() => this.setTemplateView("images")}>Images
                     </div>
                     <div className={this.state.view === 'order' ? 'mdc-list-item  mdc-list-item--activated' : 'mdc-list-item'}
                       onClick={() => this.setTemplateView("order")}>Order

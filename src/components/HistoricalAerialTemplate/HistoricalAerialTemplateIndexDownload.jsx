@@ -21,7 +21,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   }
 
   componentWillUnmount() {
-    this.map.remove();
+    if (this.map) {
+      this.map.remove();
+    }
   }
 
   toggleLayers (e, map, menuItemId) {
@@ -54,16 +56,10 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       minZoom: 5
     });
     this.map = map;
-    // add regular out-of-the-box controls if they dont already exist
-    // prevents stacking/duplicating controls on component update
-    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
-      map.addControl(new mapboxgl.NavigationControl({
-          showCompass: false
-      }), 'top-left');
-    }
-    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
-      map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
-    }
+    map.addControl(new mapboxgl.NavigationControl({
+        showCompass: false
+    }), 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
     //
     // START LAYER CONTROL
     //
