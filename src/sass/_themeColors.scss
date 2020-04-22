@@ -44,6 +44,7 @@ $error-text: #af0000;
 $success-text: #00870b;
 
 $skin-primary: $nest-text;
+$filter-highlighter: initial;
 
 $footer-light: #444;
 $footer-dark: #222;
@@ -99,6 +100,7 @@ When adding new themes you will also need to update:
   $success-text: #00870b;
 
   $skin-primary: lightgray;
+  $filter-highlighter: $nest-text;
 
   $footer-light: #444;
   $footer-dark: #222;
@@ -254,6 +256,7 @@ When adding new themes you will also need to update:
   $success-text: #00870b;
 
   $skin-primary: lightgray;
+  $filter-highlighter: lightgray;
 
   $footer-light: #444;
   $footer-dark: #222;
