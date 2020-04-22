@@ -1,4 +1,6 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
+import BasemapSelector from './BasemapSelector'
 import CollectionFilterMapInstructions from './CollectionFilterMapInstructions'
 
 import mapboxgl from 'mapbox-gl';
@@ -42,12 +44,12 @@ export default class CollectionFilterMap extends React.Component {
     this.moveToSelectedMapFeature = this.moveToSelectedMapFeature.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
     this.getAreaTypeGeoJson = this.getAreaTypeGeoJson.bind(this);
+    this.toggleBasemaps = this.toggleBasemaps.bind(this);
     // below commented out till we can verify dynamic labels work again
     // this.dynamicLabels = this.dynamicLabels.bind(this);
     // this.groupBy = this.groupBy.bind(this);
     // this.getVisualCenter = this.getVisualCenter.bind(this);
     // this.cleanArray = this.cleanArray.bind(this);
-
   }
 
   componentDidMount() {
@@ -94,6 +96,10 @@ export default class CollectionFilterMap extends React.Component {
           )
         }
     }
+  }
+
+  toggleBasemaps (e, map, visible) {
+    map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
   }
 
   createMap() {
@@ -156,10 +162,14 @@ export default class CollectionFilterMap extends React.Component {
     // Instantiate the custom navigation control and add it to our map
     const navigateToExtentControl = new NavigateToExtentControl();
     map.addControl(navigateToExtentControl, 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
 
     // set true to turn on tile boundaires for debugging
     // map.showTileBoundaries = true;
 
+    //
+    // START COUNTY AND QUAD REFERENCE LAYERS
+    //
     map.on('load', () => {
       // define area type layers and add to the map
       const areaTypeLayerData = {
@@ -379,7 +389,95 @@ export default class CollectionFilterMap extends React.Component {
           }
         }, "county-outline");
       });
-    })
+    });
+    //
+    // END COUNTY AND QUAD REFERENCE LAYER
+    //
+
+    //
+    // START BASEMAP SELECTOR & INSTRUCTIONS BUTTONS
+    //
+    // class for custom map controls used below
+    // *** event handler is commented out but might be useful for future new controls ***
+    class ButtonControl {
+      constructor({
+        id = "",
+        className = "",
+        title = ""
+        // eventHandler = ""
+      }) {
+        this._id = id;
+        this._className = className;
+        this._title = title;
+        // this._eventHandler = eventHandler;
+      }
+      onAdd(map){
+        this._btn = document.createElement("button");
+        this._btn.id = this._id;
+        this._btn.className = this._className;
+        this._btn.type = "button";
+        this._btn.title = this._title;
+        // this._btn.onclick = this._eventHandler;
+
+        this._container = document.createElement("div");
+        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+        this._container.appendChild(this._btn);
+
+        return this._container;
+      }
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    // custom control variable
+    const ctrlMenu = new ButtonControl({
+      id: 'basemap-menu',
+      className: 'tnris-basemap-menu',
+      title: 'Basemap Selector'
+    });
+    // add custom control to map
+    if (!document.querySelector('.tnris-basemap-menu')) {
+      map.addControl(ctrlMenu, 'top-right');
+    }
+    const ctrlMenuNode = document.querySelector('#basemap-menu');
+    // reset layer menu in case of component update
+    if (ctrlMenuNode) {
+      while (ctrlMenuNode.firstChild) {
+        ctrlMenuNode.removeChild(ctrlMenuNode.firstChild);
+      }
+    }
+    // add control containers
+    const basemapSelectorContainer = document.createElement('div');
+    basemapSelectorContainer.id = 'basemap-selector-container';
+    ctrlMenuNode.appendChild(basemapSelectorContainer);
+    // add basemap selector component to container
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
+    
+    // custom control variable
+    const instrMenu = new ButtonControl({
+      id: 'instruction-menu',
+      className: 'tnris-instruction-menu',
+      title: 'Instructions'
+    });
+    // add custom control to map
+    if (!document.querySelector('.tnris-instruction-menu')) {
+      map.addControl(instrMenu, 'top-right');
+    }
+    const instrMenuNode = document.querySelector('#instruction-menu');
+    // reset instruction menu in case of component update
+    if (instrMenuNode) {
+      while (instrMenuNode.firstChild) {
+        instrMenuNode.removeChild(instrMenuNode.firstChild);
+      }
+    }
+    const instructionsContainer = document.createElement('div');
+    instructionsContainer.id = 'instructions-container';
+    instrMenuNode.appendChild(instructionsContainer);
+    // add instructions component to container
+    ReactDOM.render(<CollectionFilterMapInstructions />, instructionsContainer);
+    //
+    // END BASEMAP SELECTOR & INSTRUCTIONS BUTTONS
+    //
 
     // create the draw control and define its functionality
     // update the mapbox draw modes with the rectangle mode
@@ -858,7 +956,6 @@ export default class CollectionFilterMap extends React.Component {
           onClick={this.handleFilterButtonClick}>
           {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
         </button>
-        <CollectionFilterMapInstructions />
       </div>
     );
   }
