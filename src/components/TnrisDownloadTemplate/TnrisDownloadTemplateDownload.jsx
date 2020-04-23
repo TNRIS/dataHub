@@ -75,12 +75,33 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
     if (this.props.collection.name.includes('NAIP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     else if (this.props.collection.name.includes('TOP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     else {
       map.setMinZoom(this.stateMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.stateMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     // iterate layerRef for layers in map by areaType key
     Object.keys(this.layerRef).forEach( layer => {
