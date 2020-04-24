@@ -52,7 +52,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       }
     }
 
-    if (this.props.selectedCollectionResources.result && this.props.selectedCollectionResources.result.length === 0) {
+    if (this.props.selectedCollectionResources.result
+        && this.props.selectedCollectionResources.result.length === 0
+        && (this.state.resourceLength !== 0)) {
       this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
   }
