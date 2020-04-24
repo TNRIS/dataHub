@@ -12,6 +12,9 @@ const mapDispatchToProps = (dispatch) => ({
   fetchCollectionResources: (collectionId) => {
     dispatch(collectionActions.fetchCollectionResources(collectionId))
   },
+  clearSelectedCollection: () => {
+    dispatch(collectionActions.clearSelectedCollection());
+  },
 })
 
 const TnrisDownloadTemplateContainer = connect(
