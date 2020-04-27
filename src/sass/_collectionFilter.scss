@@ -24,10 +24,6 @@ styles for component: CollectionFilter
       overflow: hidden;
       color: $nest-text;
 
-      &:before, &:after {
-        background-color: rgba(0, 0, 0, 0.18);
-      }
-
       i {
         color: $nest-text-subtle;
       }
@@ -49,7 +45,7 @@ styles for component: CollectionFilter
 
     .mdc-list-item--activated {
       color: $primary-color;
-      // background-color: $secondary-color;
+      background-color: $filter-highlighter;
     }
   }
 }

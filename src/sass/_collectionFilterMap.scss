@@ -24,7 +24,7 @@
     -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     cursor: default !important;
-}
+  }
 
   .map-filter-button {
     position: absolute;
@@ -33,39 +33,79 @@
     background-color: $secondary-color;
   }
 
-  #collection-filter-map-instructions {
-    background: $main-background;
-    color: $nest-text;
-    position: absolute;
-    z-index: 2;
-    top: 120px;
-    right: 10px;
-    border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.4);
-    padding: 6px;
-    max-width: 80vw;
-    cursor: pointer;
+  .tnris-basemap-menu {
+    min-width: 108px;
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    padding: 3px;
+    cursor: initial;
 
-    .close-icon {
-      cursor: pointer;
-      float: right;
-      font-size: 12px;
+    #basemap-selector-container {
+      .mdc-form-field {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        text-align: right;
 
-      &:hover {
-        background-color: #ccc;
+        .mdc-switch:not(.mdc-switch--disabled) {
+          @include mdc-switch-toggled-on-color($primary-color);
+          @include mdc-switch-toggled-on-track-color($primary-color);
+          @include mdc-switch-toggled-on-thumb-color($primary-color);
+          @include mdc-switch-toggled-on-ripple-color($primary-color);
+        }
+  
+        .mdc-switch {
+          margin-right: 5px;
+          margin-left: 5px;
+        }
+  
+        label {
+          cursor: pointer;
+          padding-right: 3px;
+  
+          &.Satellite {
+            color: $primary-color;
+          }
+        }
       }
     }
+  }
 
-    div.instruction-paragraph {
-      margin-top: 3px;
-      margin-bottom: 3px;
+  .tnris-instruction-menu {
+    min-width: 108px;
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    padding: 3px;
+    cursor: initial;
 
-      #instruction-polygon-icon {
-        height: 18px;
-        width: 20px;
-        margin-top: 2px;
-        display: inline-flex;
-        vertical-align: text-top;
+    #instructions-container {
+      #collection-filter-map-instructions {
+        max-width: 80vw;
+        cursor: pointer;
+
+        .close-icon {
+          cursor: pointer;
+          float: right;
+          font-size: 12px;
+
+          &:hover {
+            background-color: #ccc;
+          }
+        }
+
+        div.instruction-paragraph {
+          margin-top: 3px;
+          margin-bottom: 3px;
+
+          #instruction-polygon-icon {
+            height: 18px;
+            width: 20px;
+            margin-top: 2px;
+            display: inline-flex;
+            vertical-align: text-top;
+          }
+        }
       }
     }
   }

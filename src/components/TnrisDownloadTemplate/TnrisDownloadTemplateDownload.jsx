@@ -1,5 +1,8 @@
 import React from 'react'
 import { GridLoader } from 'react-spinners'
+import ReactDOM from 'react-dom'
+import BasemapSelector from '../BasemapSelector'
+import LayerSelector from '../LayerSelector'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -25,6 +28,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       this.createPreviewLayer = this.createPreviewLayer.bind(this);
       this.createLayers = this.createLayers.bind(this);
       this.toggleLayers = this.toggleLayers.bind(this);
+      this.toggleBasemaps = this.toggleBasemaps.bind(this);
       this.layerRef = {};
       this.stateMinZoom = 5;
       this.qquadMinZoom = 8;
@@ -73,12 +77,33 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
     if (this.props.collection.name.includes('NAIP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     else if (this.props.collection.name.includes('TOP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     else {
       map.setMinZoom(this.stateMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.stateMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     // iterate layerRef for layers in map by areaType key
     Object.keys(this.layerRef).forEach( layer => {
@@ -95,8 +120,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         if (layer === 'preview') {
           map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
         }
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
       }
       else {
         // iterate layer id's for clicked areaType and toggle their visibility
@@ -109,9 +132,30 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         if (layer === 'preview') {
           map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
         }
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item';
       }
+    }, this);
+  }
+
+  toggleBasemaps (e, map, visible) {
+    map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
+    const sfx = visible === 'visible' ? 'Satellite' : '';
+    const fillKey = 'boundaryFill' + sfx;
+    const outlineKey = 'boundaryOutline' + sfx;
+    Object.keys(this.layerRef).forEach( layer => {
+      this.layerRef[layer].forEach( layerName => {
+        map.setPaintProperty(layerName, 'fill-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[fillKey]
+        ]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[outlineKey]
+        ]);
+      }, this);
     }, this);
   }
 
@@ -354,24 +398,33 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       map.setMinZoom(this.stateMinZoom);
     }
 
-    // add custom control to map; only add download area
-    // menu control if areaTypesAry.length is greater than
-    // one and the control doesn't already exist in the Dom
-    if (areaTypesAry.length > 1) {
-      if (!document.querySelector('.tnris-download-menu')) {
-        map.addControl(ctrlMenu, 'top-right')
-      }
+    // add custom control to map
+    if (!document.querySelector('.tnris-download-menu')) {
+      map.addControl(ctrlMenu, 'top-right');
     }
-
-    // add custom controls to map
-    const menuItems = document.querySelector('#download-menu');
-
+    const ctrlMenuNode = document.querySelector('#download-menu');
     // reset layer menu in case of component update
-    if (menuItems) {
-      while (menuItems.firstChild) {
-        menuItems.removeChild(menuItems.firstChild);
+    if (ctrlMenuNode) {
+      while (ctrlMenuNode.firstChild) {
+        ctrlMenuNode.removeChild(ctrlMenuNode.firstChild);
       }
     }
+    // add control containers
+    const basemapSelectorContainer = document.createElement('div');
+    basemapSelectorContainer.id = 'basemap-selector-container';
+    ctrlMenuNode.appendChild(basemapSelectorContainer);
+    // add basemap selector component to container
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
+    // only add download layer selectors container if areaTypesAry.length
+    // is greater than one (multiple layers exist)
+    if (areaTypesAry.length > 1) {
+      const layerSelectorContainer = document.createElement('div');
+      layerSelectorContainer.id = 'layer-selector-container';
+      ctrlMenuNode.appendChild(layerSelectorContainer);
+      // add layer selector component to container
+      ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
+    }
+
     // iterate our area_types so we can add them to different layers for
     // layer control in the map and prevent overlap of area polygons
     areaTypesAry.map(areaType => {
@@ -381,18 +434,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside the api response with all available resources (downloads)
       // for this areaType
       const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
-      // create the layer control in the DOM
-      var link = document.createElement('a');
-      link.href = '#';
-      link.id = 'dld-' + areaType;
-      link.textContent = areaType.toUpperCase();
-      // determine if it is the active layer. apply the correct classes and
-      // assign the visibility layoutProperty
-      let linkClass;
+
       let visibility;
       switch (areaType === startLayer) {
         case true:
-          linkClass = 'mdc-list-item mdc-list-item--activated';
           visibility = 'visible';
           // since this is our initial layer on display, we'll zoom to the bounds
           const areasString = areasList.join("','");
@@ -407,18 +452,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           });
           break;
         default:
-          linkClass = 'mdc-list-item';
           visibility = 'none';
       }
-      link.className = linkClass;
-      link.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.toggleLayers(e, map, areaType);
-      };
-
-      // add areaType layer to layer menu
-      if (menuItems) {menuItems.appendChild(link)};
 
       // get total number of resources available for download
       const total = areasList.length;
@@ -472,7 +507,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         source: 'wms-preview',
         'layout': {'visibility': 'none'}
       });
-      // this.layerRef['preview'].push(layerBaseName);
     }, 500);
   }
 
@@ -512,22 +546,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           'promoteId': 'objectid'
         });
 
-        /// add the area_type outline hover layer
-        map.addLayer({
-            id: layerBaseName + '__outline-hover',
-            'type': 'line',
-            'source': layerSourceName,
-            'source-layer': 'layer0',
-            'layout': {'visibility': 'visible'},
-            'interactive': true,
-            'paint': {
-              'line-color': styles['selectedFeature'],
-              'line-width': 2.5,
-              'line-opacity': 1
-            },
-            'filter': ['==', 'area_type_name', '']
-        }, 'boundary_country_inner');
-
         // add the area_type outline layer
         map.addLayer({
             id: layerBaseName + '__outline',
@@ -537,11 +555,21 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'layout': {'visibility': visibility},
             'interactive': true,
             'paint': {
-              'line-color': styles['boundaryOutline'],
-              'line-width': 1.5,
+              'line-color': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                styles['selectedFeature'],
+                styles['boundaryOutline']
+              ],
+              'line-width': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                2.5,
+                1.5
+              ],
               'line-opacity': 1
             }
-        }, layerBaseName + '__outline-hover');
+        });
 
         // add the area_type polygon layer
         map.addLayer({
@@ -627,8 +655,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           hover: true
         });
       }
-      // set the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
     });
 
     // toggle the layer symbology when the cursor leaves a feature
@@ -646,8 +672,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         });
       }
       hoveredStateId = null;
-      // reset the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', '']);
     });
   }
 
