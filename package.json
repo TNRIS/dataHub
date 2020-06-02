@@ -43,18 +43,18 @@
     "connected-react-router": "^6.8.0",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
-    "downshift": "^5.1.0",
+    "downshift": "^5.4.2",
     "elasticlunr": "^0.9.5",
     "fs-extra": "9.0.0",
-    "mapbox-gl": "^1.9.1",
+    "mapbox-gl": "^1.10.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "normalizr": "^3.6.0",
     "object-assign": "4.1.1",
-    "polylabel": "^1.0.2",
+    "polylabel": "^1.0.5",
     "promise": "^8.1.0",
     "prop-types": "^15.7.2",
     "raf": "3.4.1",
-    "rc-slider": "^9.2.4",
+    "rc-slider": "^9.3.0",
     "react": "^16.13.1",
     "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",
@@ -62,15 +62,15 @@
     "react-google-recaptcha": "^2.0.1",
     "react-notification-badge": "^1.5.1",
     "react-redux": "^7.2.0",
-    "react-responsive-carousel": "^3.2.4",
-    "react-router-dom": "^5.1.2",
+    "react-responsive-carousel": "^3.2.7",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "react-share": "^4.1.0",
-    "react-spinners": "^0.8.1",
+    "react-spinners": "^0.8.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "resolve": "1.15.1",
+    "resolve": "^1.17.0",
     "turf-extent": "^1.0.4",
     "wellknown": "^0.5.0",
     "whatwg-fetch": "3.0.0"
@@ -98,6 +98,6 @@
     ]
   },
   "devDependencies": {
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.14.1"
   }
 }
