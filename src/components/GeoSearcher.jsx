@@ -1,6 +1,7 @@
 import React from 'react';
 import Downshift from 'downshift';
 import axios from 'axios';
+import { MDCTextField } from '@material/textfield'
 
 export default class GeoSearcher extends React.Component {
   constructor(props) {
@@ -9,6 +10,11 @@ export default class GeoSearcher extends React.Component {
       features: [],
       inputValue: ''
     }
+  }
+
+  componentDidMount() {
+    this.searchField = new MDCTextField(document.querySelector('.geo-search-component'));
+    this.searchFieldInput = document.querySelector('.mdc-text-field__input');
   }
   
   // onChange method for the input field
@@ -30,46 +36,46 @@ export default class GeoSearcher extends React.Component {
 
   render() {
     return (
-      <div className='geoSearcher'>
-        <Downshift
-        onChange={ this.props.handleGeoSearcherChange }
-        itemToString={ item => (item ? item.value : '')}
+      <Downshift
+      onChange={ this.props.handleGeoSearcherChange }
+      itemToString={ item => (item ? item.value : '')}
+      >
+      {({
+        selectedItem,
+        getInputProps,
+        getItemProps,
+        highlightedIndex,
+        isOpen,
+        inputValue,
+        getLabelProps,
+        getRootProps,
+        getMenuProps,
+      }) => (
+        <div
+          className={`geo-search-component mdc-text-field
+            mdc-text-field--fullwidth mdc-text-field--with-leading-icon
+            mdc-text-field--with-trailing-icon mdc-menu-surface--anchor`}
+          // style={ {display: 'inline-block'} }
+          { ...getRootProps({}, {suppressRefError: true}) }
         >
-        {({
-          selectedItem,
-          getInputProps,
-          getItemProps,
-          highlightedIndex,
-          isOpen,
-          inputValue,
-          getLabelProps,
-          getRootProps,
-          getMenuProps,
-        }) => (
-          <div className='downshift'>
-          <div
-            style={ {display: 'inline-block'} }
-            { ...getRootProps({}, {suppressRefError: true}) }
-          >
-            <input
-            className='downshift-input'
-            {...getInputProps({
-              placeholder: "Search Texas",
-              onChange: this.inputOnChange,
-              value: this.state.inputValue
-            })}
-            />
-          </div>
+          <i id="search-icon" className="material-icons mdc-text-field__icon">search</i>
+          <input
+          className={"geo-search-input downshift-input mdc-text-field__input"}
+          {...getInputProps({
+            placeholder: "Search Texas",
+            onChange: this.inputOnChange,
+            value: this.state.inputValue
+          })}
+          />
+          {isOpen && this.state.features !== undefined && this.state.features.length !== 0 ?
           <ul
-            className="downshift-dropdown"
+            className="suggestion-list downshift-dropdown mdc-list"
             { ...getMenuProps() }
-            style={ {listStyle: 'none'} }
           >
-            {isOpen ?
-            this.state.features
+            {this.state.features
               .map((item, index) => (
               <li
-                className="dropdown-item"
+                className="dropdown-item mdc-list-item"
                 { ...getItemProps({ key: index, index, item }) }
                 style={{
                 backgroundColor: highlightedIndex === index ?
@@ -79,13 +85,11 @@ export default class GeoSearcher extends React.Component {
                 }}>
                 { item.properties.display_name }
               </li>
-              ))
-            : null}
-          </ul>
-          </div>
-        )}
-        </Downshift>
-      </div>
+              ))}
+            </ul> : null}
+        </div>
+      )}
+      </Downshift>
     )
   }
 }

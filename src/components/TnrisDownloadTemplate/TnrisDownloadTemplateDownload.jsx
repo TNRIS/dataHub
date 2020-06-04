@@ -808,8 +808,8 @@ handleGeoSearcherChange = (selectedFeature) => {
         <div className='template-content-div-subheader mdc-typography--headline7'>
           Click a polygon in the map to download available data.
         </div>
-        <GeoSearcher handleGeoSearcherChange={ this.handleGeoSearcherChange } />
         <div id='tnris-download-map'></div>
+        <GeoSearcher handleGeoSearcherChange={ this.handleGeoSearcherChange } />
       </div>
     );
   }
