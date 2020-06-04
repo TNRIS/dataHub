@@ -3,6 +3,7 @@ import { GridLoader } from 'react-spinners'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
 import LayerSelector from '../LayerSelector'
+import GeoSearcher from '../GeoSearcher'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -64,8 +65,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.map) {
-      this.map.remove();
+    if (this._map) {
+      this._map.remove();
     }
   }
 
@@ -159,6 +160,99 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     }, this);
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  getGeoSearcherLayerProps = (featureType) => {
+  if (featureType === 'Point' || featureType === 'MultiPoint') {
+    return {
+      'type': 'circle',
+      'paint': {
+        'circle-radius': 8,
+        'circle-color': '#f08',
+        'circle-opacity': 0.3
+      }
+    };
+  } else if (
+    featureType === 'Polygon' || featureType === 'MultiPolygon') {
+      return {
+        'type': 'line',
+        'paint': {
+          'line-color': '#f08',
+          'line-width': 2,
+          'line-opacity': 0.3
+        // 'type': 'fill',
+        // 'paint': {
+        //   'fill-color': '#f08',
+        //   'fill-opacity': 0.05,
+        //   'fill-outline-color': '#f08'
+        }             
+      };
+  } else if (
+    featureType === 'LineString' || featureType === 'MultiLinestring') {
+      return {
+        'type': 'line',
+        'paint': {
+          'line-color': '#f08',
+          'line-width': 6,
+          'line-opacity': 0.3
+        }
+      };
+  }
+}
+
+addGeoSearcherLayer = (selectedFeature) => {
+  this._map.addLayer({
+    'id': 'selected-feature',
+    'type': this.getGeoSearcherLayerProps(
+      selectedFeature.geometry.type).type,
+    'source': 'selected-feature',
+    'paint': this.getGeoSearcherLayerProps(
+      selectedFeature.geometry.type).paint
+  }, 'quad-outline');
+}
+
+handleGeoSearcherChange = (selectedFeature) => {
+  if (selectedFeature !== null) {
+
+    const selectedFeatureSource = this._map.getSource(
+      'selected-feature');
+    
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [
+            selectedFeature
+          ]
+        }
+      });
+    } else {
+      selectedFeatureSource.setData({
+        'type': 'FeatureCollection',
+        'features': [
+          selectedFeature
+        ]
+      });
+    }
+
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+
+    if (typeof selectedFeatureLayer === 'undefined') {
+      this.addGeoSearcherLayer(selectedFeature);
+    } else {
+      this._map.removeLayer('selected-feature');
+      this.addGeoSearcherLayer(selectedFeature);
+    }
+
+
+    this._map.fitBounds(
+      selectedFeature.bbox,
+      {padding: {top: 50, bottom:50, left: 50, right: 50}}
+    );
+  }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -168,7 +262,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         center: [-99.341389, 31.330000],
         zoom: 6
     });
-    this.map = map;
+    this._map = map;
     map.addControl(new mapboxgl.NavigationControl({
       showCompass: false
     }), 'top-left');
@@ -224,7 +318,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'line-opacity': .2
           },
           'filter': ['==', ['get', 'area_type'], 'county']
-        });
+        }, 'quad-label');
 
         // Add the quad outlines to the map
         map.addLayer({
@@ -714,6 +808,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         <div className='template-content-div-subheader mdc-typography--headline7'>
           Click a polygon in the map to download available data.
         </div>
+        <GeoSearcher handleGeoSearcherChange={ this.handleGeoSearcherChange } />
         <div id='tnris-download-map'></div>
       </div>
     );
