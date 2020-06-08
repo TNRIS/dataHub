@@ -9,14 +9,15 @@ styles for component: GeoSearcher
 
     .geo-search-input {
         background-color: $main-background;
+        // border: none !important;
     }
 }
 
 .geo-search-component {
     z-index: 2;
-    width: 30%;
+    width: 35%;
     position: absolute;
-    top: 0;
+    top: 13px;
     right: 0;
     // left: 50%;
     // margin-left: -15%;
@@ -48,12 +49,17 @@ styles for component: GeoSearcher
         border-bottom: 0;
         color: $skin-primary;
         caret-color: $skin-primary;
+
+        // border-width: 2px !important;
+        // border-style: solid !important;
+        // border-color: #d3d3d3 !important;
     }
 
     .suggestion-list {
         background-color: $main-background;
         border-top: 1px solid $header-border;
         box-shadow: inherit;
+        padding: 0;
 
         // @media (max-width: $breakpoint-phone) {
         //   width: 145%;

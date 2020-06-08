@@ -14,11 +14,11 @@ export default class GeoSearcher extends React.Component {
 
   componentDidMount() {
     this.searchField = new MDCTextField(document.querySelector('.geo-search-component'));
-    this.searchFieldInput = document.querySelector('.mdc-text-field__input');
+    this.searchFieldInput = document.querySelector('.geo-search-input');
   }
   
   // onChange method for the input field
-  inputOnChange = event => { 
+  inputOnChange = event => {
     this.setState({ inputValue: event.target.value });
     // fetch features from the api after input change      
     this.fetchFeatures(event.target.value)
@@ -32,6 +32,21 @@ export default class GeoSearcher extends React.Component {
     axios.get(geocodeUrl).then(response => {
       this.setState({ features: response.data.features })
     })
+  }
+
+  // clears the search input and resets the local state
+  handleClearSearch = () => {
+      this.setState({inputValue: ''});
+      this.fetchFeatures('');
+      this.props.removeGeoSearcherLayer();
+      // this.searchFieldInput.focus();
+  }
+
+  handleKeyDown = event => {
+    if (event.keyCode === 27 && !this.state.inputValue) {
+      this.props.removeGeoSearcherLayer();
+      this.searchFieldInput.blur();
+    }
   }
 
   render() {
@@ -62,11 +77,20 @@ export default class GeoSearcher extends React.Component {
           <input
           className={"geo-search-input downshift-input mdc-text-field__input"}
           {...getInputProps({
+            value: this.state.inputValue,
             placeholder: "Search Texas",
             onChange: this.inputOnChange,
-            value: this.state.inputValue
+            onKeyDown: this.handleKeyDown
           })}
           />
+          {this.state.inputValue ?
+              <button
+                id='clear-icon'
+                className="clear-button mdc-top-app-bar__action-item material-icons mdc-icon-button mdc-text-field__icon"
+                tabIndex="3"
+                onClick={this.handleClearSearch}>
+                clear
+              </button> : ''}
           {isOpen && this.state.features !== undefined && this.state.features.length !== 0 ?
           <ul
             className="suggestion-list downshift-dropdown mdc-list"

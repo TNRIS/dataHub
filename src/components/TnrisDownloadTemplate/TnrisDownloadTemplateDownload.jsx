@@ -210,6 +210,13 @@ addGeoSearcherLayer = (selectedFeature) => {
   }, 'quad-outline');
 }
 
+removeGeoSearcherLayer = () => {
+  const selectedFeatureLayer = this._map.getLayer('selected-feature');
+  if (typeof selectedFeatureLayer !== 'undefined') {
+    this._map.removeLayer('selected-feature');
+  }
+}
+
 handleGeoSearcherChange = (selectedFeature) => {
   if (selectedFeature !== null) {
 
@@ -809,7 +816,9 @@ handleGeoSearcherChange = (selectedFeature) => {
           Click a polygon in the map to download available data.
         </div>
         <div id='tnris-download-map'></div>
-        <GeoSearcher handleGeoSearcherChange={ this.handleGeoSearcherChange } />
+        <GeoSearcher
+          handleGeoSearcherChange={ this.handleGeoSearcherChange }
+          removeGeoSearcherLayer={ this.removeGeoSearcherLayer } />
       </div>
     );
   }

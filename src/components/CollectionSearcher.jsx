@@ -189,7 +189,7 @@ export default class CollectionSearcher extends React.Component {
                 value: this.state.searchFieldValue,
                 placeholder: "Search",
                 onChange: this.handleInputChange,
-                onKeyDown: event => this.handleKeyDown(event)
+                onKeyDown: this.handleKeyDown
             })}>
             </input>
             {this.props.collectionSearchSuggestionsQuery ?
