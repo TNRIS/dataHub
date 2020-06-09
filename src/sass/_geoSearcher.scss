@@ -3,79 +3,84 @@ styles for component: GeoSearcher
 */
 
 .geo-search-component:focus-within {
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px,
-      rgba(0, 0, 0, 0.14) 0px 8px 10px 1px,
-      rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
 
-    .geo-search-input {
-        background-color: $main-background;
-        // border: none !important;
-    }
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px 0px;
+
+  .geo-search-input {
+    background-color: $main-background;
+    // border: 1px solid $header-border;
+    // border-bottom: none;
+  }
+
+  .suggestion-list {
+    border: 1px solid $header-border;
+    border-bottom: none;
+  }
 }
 
 .geo-search-component {
-    z-index: 2;
-    width: 35%;
-    position: absolute;
-    top: 13px;
-    right: 0;
-    // left: 50%;
-    // margin-left: -15%;
-    margin-right: 10px;
-    // padding-top: .2em;
-    // padding-bottom: .2em;
-    overflow: unset;
+  z-index: 2;
+  width: 35%;
+  position: absolute;
+  top: 13px;
+  right: 0;
+  margin-right: 10px;
+  overflow: unset;
 
-    @media (min-width: $breakpoint-phone) and (max-width: $breakpoint-desktop) {
-        width: 40%;
-        margin-left: -20%;
-    }
+  @media (min-width: $breakpoint-phone) and (max-width: $breakpoint-desktop) {
+      width: 40%;
+      margin-left: -20%;
+  }
 
-    @media (max-width: $breakpoint-phone) {
-        width: 100%;
-        position: relative;
-        left: 0;
-        margin-left: 0;
-        margin-right: 12px;
-    }
+  @media (max-width: $breakpoint-phone) {
+      width: 100%;
+      position: relative;
+      left: 0;
+      margin-left: 0;
+      margin-right: 12px;
+  }
 
-    .material-icons.mdc-text-field__icon {
-        color: $skin-primary;
-    }
+  .material-icons.mdc-text-field__icon {
+      color: $skin-primary;
+  }
 
-    .geo-search-input {
-        background-color: $search-background;
-        padding: 5px 60px 5px 50px !important;
-        border-bottom: 0;
-        color: $skin-primary;
-        caret-color: $skin-primary;
+  .geo-search-input {
+      // background-color: $search-background;
+      padding: 5px 60px 5px 50px !important;
+      border-bottom: 0;
+      color: $skin-primary;
+      caret-color: $skin-primary;
 
-        // border-width: 2px !important;
-        // border-style: solid !important;
-        // border-color: #d3d3d3 !important;
-    }
+      border: 1px solid $header-border !important;
+  }
 
-    .suggestion-list {
-        background-color: $main-background;
-        border-top: 1px solid $header-border;
-        box-shadow: inherit;
-        padding: 0;
+  .geo-search-input:hover {
+    // border-bottom-color: rgba(0, 0, 0, 0.42) !important;
+    border-bottom-color: $header-border !important;
+  }
 
-        // @media (max-width: $breakpoint-phone) {
-        //   width: 145%;
-        // }
+  .suggestion-list {
+      background-color: $main-background;
+      border-top: 1px solid $header-border;
+      box-shadow: inherit;
+      padding: 0;
 
-        li {
-            color: $skin-primary;
-            background-color: $main-background !important;
-        }
+      // @media (max-width: $breakpoint-phone) {
+      //   width: 145%;
+      // }
 
-        li[aria-selected="true"] {
-            background-color: rgba(0, 0, 0, 0.1) !important;
-        }
-    }
+      li {
+          color: $skin-primary;
+          background-color: $main-background !important;
+          border: none;
+      }
 
-    .suggestion-list:hover {
-        cursor: pointer;
-    }
+      li[aria-selected="true"] {
+          background-color: rgba(0, 0, 0, 0.1) !important;
+      }
+  }
+
+  .suggestion-list:hover {
+      cursor: pointer;
+  }
 }

@@ -161,6 +161,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // returns layer properties based on feature type for the
+  // geosearcher 'selected-feature' layer
   getGeoSearcherLayerProps = (featureType) => {
   if (featureType === 'Point' || featureType === 'MultiPoint') {
     return {
@@ -199,6 +201,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 }
 
+// adds a layer to the map when a feature is selected in GeoSearcher
 addGeoSearcherLayer = (selectedFeature) => {
   this._map.addLayer({
     'id': 'selected-feature',
@@ -210,6 +213,8 @@ addGeoSearcherLayer = (selectedFeature) => {
   }, 'quad-outline');
 }
 
+// removes the 'selected-feature' layer if the GeoSearcher
+// input is cleared
 removeGeoSearcherLayer = () => {
   const selectedFeatureLayer = this._map.getLayer('selected-feature');
   if (typeof selectedFeatureLayer !== 'undefined') {
@@ -217,6 +222,8 @@ removeGeoSearcherLayer = () => {
   }
 }
 
+// adds the GeoSearcher's 'selected-feature' layer to the map
+// and moves the map to show the feature
 handleGeoSearcherChange = (selectedFeature) => {
   if (selectedFeature !== null) {
 
@@ -274,6 +281,7 @@ handleGeoSearcherChange = (selectedFeature) => {
       showCompass: false
     }), 'top-left');
     map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
+    
     //
     // START COUNTY AND QUAD REFERENCE LAYERS
     //

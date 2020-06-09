@@ -213,9 +213,7 @@ export default class CollectionSearcher extends React.Component {
                         index,
                         key: index
                       })}
-                            style={{
-                              backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
-                            }}>
+                    >
                       {item}
                     </li>
                   )}

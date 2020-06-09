@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
 import LayerSelector from '../LayerSelector'
+import GeoSearcher from '../GeoSearcher'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -27,8 +28,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   }
 
   componentWillUnmount() {
-    if (this.map) {
-      this.map.remove();
+    if (this._map) {
+      this._map.remove();
     }
   }
 
@@ -72,6 +73,113 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     }, this);
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // returns layer properties based on feature type for the
+  // geosearcher 'selected-feature' layer
+  getGeoSearcherLayerProps = (featureType) => {
+    if (featureType === 'Point' || featureType === 'MultiPoint') {
+      return {
+        'type': 'circle',
+        'paint': {
+          'circle-radius': 8,
+          'circle-color': '#f08',
+          'circle-opacity': 0.3
+        }
+      };
+    } else if (
+      featureType === 'Polygon' || featureType === 'MultiPolygon') {
+        return {
+          'type': 'line',
+          'paint': {
+            'line-color': '#f08',
+            'line-width': 2,
+            'line-opacity': 0.3
+          // 'type': 'fill',
+          // 'paint': {
+          //   'fill-color': '#f08',
+          //   'fill-opacity': 0.05,
+          //   'fill-outline-color': '#f08'
+          }             
+        };
+    } else if (
+      featureType === 'LineString' || featureType === 'MultiLinestring') {
+        return {
+          'type': 'line',
+          'paint': {
+            'line-color': '#f08',
+            'line-width': 6,
+            'line-opacity': 0.3
+          }
+        };
+    }
+  }
+  
+  // adds a layer to the map when a feature is selected in GeoSearcher
+  addGeoSearcherLayer = (selectedFeature) => {
+    this._map.addLayer({
+      'id': 'selected-feature',
+      'type': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).type,
+      'source': 'selected-feature',
+      'paint': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).paint
+    }, 'quad-outline');
+  }
+  
+  // removes the 'selected-feature' layer if the GeoSearcher
+  // input is cleared
+  removeGeoSearcherLayer = () => {
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+    if (typeof selectedFeatureLayer !== 'undefined') {
+      this._map.removeLayer('selected-feature');
+    }
+  }
+  
+  // adds the GeoSearcher's 'selected-feature' layer to the map
+  // and moves the map to show the feature
+  handleGeoSearcherChange = (selectedFeature) => {
+    if (selectedFeature !== null) {
+  
+      const selectedFeatureSource = this._map.getSource(
+        'selected-feature');
+      
+      if (typeof selectedFeatureSource === 'undefined') {
+        this._map.addSource('selected-feature', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': [
+              selectedFeature
+            ]
+          }
+        });
+      } else {
+        selectedFeatureSource.setData({
+          'type': 'FeatureCollection',
+          'features': [
+            selectedFeature
+          ]
+        });
+      }
+  
+      const selectedFeatureLayer = this._map.getLayer('selected-feature');
+  
+      if (typeof selectedFeatureLayer === 'undefined') {
+        this.addGeoSearcherLayer(selectedFeature);
+      } else {
+        this._map.removeLayer('selected-feature');
+        this.addGeoSearcherLayer(selectedFeature);
+      }
+  
+  
+      this._map.fitBounds(
+        selectedFeature.bbox,
+        {padding: {top: 50, bottom:50, left: 50, right: 50}}
+      );
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -82,7 +190,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       zoom: 4,
       minZoom: 5
     });
-    this.map = map;
+    this._map = map;
     map.addControl(new mapboxgl.NavigationControl({
         showCompass: false
     }), 'top-left');
@@ -498,6 +606,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         Click a polygon in the map to download available index.
         </div>
         <div id='historical-index-download-map'></div>
+        <GeoSearcher
+          handleGeoSearcherChange={ this.handleGeoSearcherChange }
+          removeGeoSearcherLayer={ this.removeGeoSearcherLayer } />
       </div>
     )
   }
