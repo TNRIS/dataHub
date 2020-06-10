@@ -187,7 +187,7 @@ export default class CollectionSearcher extends React.Component {
               tabIndex="3"
               {...getInputProps({
                 value: this.state.searchFieldValue,
-                placeholder: "Search",
+                placeholder: "Search the Catalog",
                 onChange: this.handleInputChange,
                 onKeyDown: this.handleKeyDown
             })}>

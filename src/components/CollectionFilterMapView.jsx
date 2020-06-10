@@ -1,10 +1,8 @@
 import React from 'react'
-
-import {MDCSelect} from '@material/select';
-
+import {MDCSelect} from '@material/select'
 import CollectionFilterMapContainer from '../containers/CollectionFilterMapContainer';
-
 import BackButtonContainer from '../containers/BackButtonContainer'
+
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss'
@@ -163,7 +161,8 @@ export default class CollectionFilterMapView extends React.Component {
             </h2>
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-            {countySelector}
+            {/* {countySelector} */}
+            
             <BackButtonContainer />
           </section>
         </div>

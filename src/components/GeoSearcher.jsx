@@ -96,7 +96,7 @@ export default class GeoSearcher extends React.Component {
           className={"geo-search-input downshift-input mdc-text-field__input"}
           {...getInputProps({
             value: this.state.inputValue,
-            placeholder: "Search Texas",
+            placeholder: "Search for Places in Texas",
             onChange: this.inputOnChange,
             onKeyDown: this.handleKeyDown
           })}

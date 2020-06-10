@@ -4,23 +4,28 @@ styles for component: GeoSearcher
 
 .geo-search-component:focus-within {
 
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px 0px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 7px -1px;
 
   .geo-search-input {
     background-color: $main-background;
-    // border: 1px solid $header-border;
-    // border-bottom: none;
+    border: 1px solid $header-border;
   }
 
   .suggestion-list {
-    border: 1px solid $header-border;
     border-bottom: none;
   }
 }
 
+.collection-filter-map-component > .geo-search-component {
+  top: 42px;
+  left: 50%;
+  margin-left: -15%;
+  margin-right: auto;
+}
+
 .geo-search-component {
   z-index: 2;
-  width: 35%;
+  width: 30%;
   position: absolute;
   top: 13px;
   right: 0;
@@ -45,39 +50,38 @@ styles for component: GeoSearcher
   }
 
   .geo-search-input {
-      // background-color: $search-background;
+      background-color: $search-background;
       padding: 5px 60px 5px 50px !important;
-      border-bottom: 0;
+      border-bottom: none !important;
       color: $skin-primary;
       caret-color: $skin-primary;
-
-      border: 1px solid $header-border !important;
+      // border: 1px solid $header-border !important;
   }
 
-  .geo-search-input:hover {
-    // border-bottom-color: rgba(0, 0, 0, 0.42) !important;
-    border-bottom-color: $header-border !important;
-  }
+  // .geo-search-input:hover {
+  //   border-bottom-color: rgba(0, 0, 0, 0.42) !important;
+  //   // border-bottom-color: $header-border !important;
+  // }
 
   .suggestion-list {
-      background-color: $main-background;
-      border-top: 1px solid $header-border;
-      box-shadow: inherit;
-      padding: 0;
+    background-color: $main-background;
+    border: 1px solid $header-border;
+    box-shadow: inherit;
+    padding: 0;
 
-      // @media (max-width: $breakpoint-phone) {
-      //   width: 145%;
-      // }
+    // @media (max-width: $breakpoint-phone) {
+    //   width: 145%;
+    // }
 
-      li {
-          color: $skin-primary;
-          background-color: $main-background !important;
-          border: none;
-      }
+    li {
+      color: $skin-primary;
+      background-color: $main-background !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-      li[aria-selected="true"] {
-          background-color: rgba(0, 0, 0, 0.1) !important;
-      }
+    li[aria-selected="true"] {
+      background-color: rgba(0, 0, 0, 0.1) !important;
+    }
   }
 
   .suggestion-list:hover {

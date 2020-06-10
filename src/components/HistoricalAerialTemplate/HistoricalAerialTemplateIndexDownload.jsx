@@ -94,11 +94,6 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
             'line-color': '#f08',
             'line-width': 2,
             'line-opacity': 0.3
-          // 'type': 'fill',
-          // 'paint': {
-          //   'fill-color': '#f08',
-          //   'fill-opacity': 0.05,
-          //   'fill-outline-color': '#f08'
           }             
         };
     } else if (

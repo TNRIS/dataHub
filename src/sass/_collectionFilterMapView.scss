@@ -5,48 +5,52 @@ styles for component: CollectionFilterMapView
 .filter-map-view {
   height: 80vh;
 
-  .mdc-top-app-bar__title {
-    font-family: 'Roboto Condensed', sans-serif;
-    font-size: 1.7rem;
-    color: $nest-text;
-    padding: 0;
-  }
+  .mdc-top-app-bar__row {
+    height: 70px;
 
-  .county-select__wrapper {
-    padding-right: 50px;
-    margin-top: 15px;
-
-    .mdc-select {
-      @include mdc-select-ink-color($nest-text);
-      @include mdc-select-outline-color($nest-text);
-      @include mdc-select-label-color($nest-text);
-
-      select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        color: $nest-text;
-
-        option:not([disabled]) {
-          color: black;
-        }
-
-        option {
-          color: $nest-text !important;
-          background-color: $main-background;
-        }
-      }
-
-      select::-ms-expand {
-        display: none;
-      }
+    .mdc-top-app-bar__title {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 1.7rem;
+      color: $nest-text;
+      padding: 0;
     }
-    
-    .mdc-notched-outline {
-      padding: 1px 0px 1px 0px;
 
-      .mdc-notched-outline__leading, .mdc-notched-outline__trailing {
-        border-radius: unset;
+    .county-select__wrapper {
+      padding-right: 50px;
+      margin-top: 15px;
+
+      .mdc-select {
+        @include mdc-select-ink-color($nest-text);
+        @include mdc-select-outline-color($nest-text);
+        @include mdc-select-label-color($nest-text);
+
+        select {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          color: $nest-text;
+
+          option:not([disabled]) {
+            color: black;
+          }
+
+          option {
+            color: $nest-text !important;
+            background-color: $main-background;
+          }
+        }
+
+        select::-ms-expand {
+          display: none;
+        }
+      }
+      
+      .mdc-notched-outline {
+        padding: 1px 0px 1px 0px;
+
+        .mdc-notched-outline__leading, .mdc-notched-outline__trailing {
+          border-radius: unset;
+        }
       }
     }
   }

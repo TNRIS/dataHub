@@ -2,12 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from './BasemapSelector'
 import CollectionFilterMapInstructions from './CollectionFilterMapInstructions'
+import GeoSearcher from './GeoSearcher'
 
-import mapboxgl from 'mapbox-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import turfExtent from 'turf-extent';
+import mapboxgl from 'mapbox-gl'
+import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
+import turfExtent from 'turf-extent'
 import styles from '../sass/index.scss'
 // below commented out till we verify dynamic labels work again
 // import intersect from '@turf/intersect';
@@ -101,6 +102,119 @@ export default class CollectionFilterMap extends React.Component {
   toggleBasemaps (e, map, visible) {
     map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // returns layer properties based on feature type for the
+  // geosearcher 'selected-feature' layer
+  getGeoSearcherLayerProps = (featureType) => {
+    if (featureType === 'Point' || featureType === 'MultiPoint') {
+      return {
+        'type': 'circle',
+        'paint': {
+          'circle-radius': 8,
+          'circle-color': '#f08',
+          'circle-opacity': 0.3
+        }
+      };
+    } else if (
+      featureType === 'Polygon' || featureType === 'MultiPolygon') {
+        return {
+          'type': 'fill',
+          'paint': {
+            'fill-color': '#f08',
+            'fill-opacity': 0.2,
+            'fill-outline-color': '#f08'
+          // 'type': 'line',
+          // 'paint': {
+          //   'line-color': '#f08',
+          //   'line-width': 3,
+          //   'line-opacity': 0.6
+            // 'line-color': styles['selectedFeature'],
+            // 'line-width': 3,
+            // 'line-opacity': 1
+          }             
+        };
+    } else if (
+      featureType === 'LineString' || featureType === 'MultiLinestring') {
+        return {
+          'type': 'line',
+          'paint': {
+            // 'line-color': '#f08',
+            // 'line-width': 6,
+            // 'line-opacity': 0.3
+            'line-color': styles['selectedFeature'],
+            'line-width': 3,
+            'line-opacity': 1
+          }
+        };
+    }
+  }
+  
+  // adds a layer to the map when a feature is selected in GeoSearcher
+  addGeoSearcherLayer = (selectedFeature) => {
+    this._map.addLayer({
+      'id': 'selected-feature',
+      'type': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).type,
+      'source': 'selected-feature',
+      'paint': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).paint
+    }, 'quad-outline');
+  }
+  
+  // removes the 'selected-feature' layer if the GeoSearcher
+  // input is cleared
+  removeGeoSearcherLayer = () => {
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+    if (typeof selectedFeatureLayer !== 'undefined') {
+      this._map.removeLayer('selected-feature');
+    }
+  }
+  
+  // adds the GeoSearcher's 'selected-feature' layer to the map
+  // and moves the map to show the feature
+  handleGeoSearcherChange = (selectedFeature) => {
+    if (selectedFeature !== null) {
+  
+      const selectedFeatureSource = this._map.getSource(
+        'selected-feature');
+      
+      if (typeof selectedFeatureSource === 'undefined') {
+        this._map.addSource('selected-feature', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': [
+              selectedFeature
+            ]
+          }
+        });
+      } else {
+        selectedFeatureSource.setData({
+          'type': 'FeatureCollection',
+          'features': [
+            selectedFeature
+          ]
+        });
+      }
+  
+      const selectedFeatureLayer = this._map.getLayer('selected-feature');
+  
+      if (typeof selectedFeatureLayer === 'undefined') {
+        this.addGeoSearcherLayer(selectedFeature);
+      } else {
+        this._map.removeLayer('selected-feature');
+        this.addGeoSearcherLayer(selectedFeature);
+      }
+  
+  
+      this._map.fitBounds(
+        selectedFeature.bbox,
+        {padding: {top: 50, bottom:50, left: 50, right: 50}}
+      );
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   createMap() {
     // define mapbox map
@@ -956,6 +1070,9 @@ export default class CollectionFilterMap extends React.Component {
           onClick={this.handleFilterButtonClick}>
           {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
         </button>
+        <GeoSearcher
+          handleGeoSearcherChange={ this.handleGeoSearcherChange }
+          removeGeoSearcherLayer={ this.removeGeoSearcherLayer } />
       </div>
     );
   }
