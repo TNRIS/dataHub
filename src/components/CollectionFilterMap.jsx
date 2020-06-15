@@ -174,6 +174,7 @@ export default class CollectionFilterMap extends React.Component {
   // adds the GeoSearcher's 'selected-feature' layer to the map
   // and moves the map to show the feature
   handleGeoSearcherChange = (selectedFeature) => {
+    console.log(selectedFeature)
     if (selectedFeature !== null) {
   
       const selectedFeatureSource = this._map.getSource(
@@ -208,10 +209,11 @@ export default class CollectionFilterMap extends React.Component {
       }
   
   
-      this._map.fitBounds(
-        selectedFeature.bbox,
-        {padding: {top: 50, bottom:50, left: 50, right: 50}}
-      );
+      // this._map.fitBounds(
+      //   selectedFeature.bbox,
+      //   {padding: 80}
+      // );
+      this.getExtentIntersectedCollectionIds(this, 'osm', selectedFeature)
     }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -681,14 +683,25 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('draw.create', (e) => {
-      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0].geometry);
-      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+      console.log(e)
+      // get the draw feature's geojson object
+      const aoi = e.features[0]
+      // add the feature's bounding box to the geojson object
+      aoi.bbox = turfExtent(aoi.geometry)
+
+      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0])
+      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited')
     })
 
     this._map.on('draw.update', (e) => {
+      // get the draw feature's geojson object
+      const aoi = e.features[0]
+      // add the feature's bounding box to the geojson object
+      aoi.bbox = turfExtent(aoi.geometry)
+
       this.props.setCollectionFilterMapAoi({});
       this.props.setCollectionFilterMapFilter([]);
-      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0].geometry);
+      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0]);
     })
 
     this._map.on('draw.delete', (e) => {
@@ -1011,27 +1024,68 @@ export default class CollectionFilterMap extends React.Component {
     })
   }
 
+  // moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson) {
+  //   this.getExtentIntersectedCollectionIds(this, areaType, areaTypeGeoJson);
+  //   this._map.setFilter(
+  //     'area-type-outline-selected',
+  //     [
+  //       "all",
+  //       ["==", "area_type", areaType],
+  //       ["==", "area_type_name", areaTypeName]
+  //     ]
+  //   );
+  //   document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+  //   this.props.setCollectionFilterMapMoveMap(false);
+  // }
+
+  // getExtentIntersectedCollectionIds(_this, aoiType, aoi) {
+  //   // get the bounds from the aoi and query carto
+  //   // to find the area_type polygons that intersect this mbr
+  //   // and return the collection_ids associated with those areas
+  //   let bounds = turfExtent(aoi); // get the bounds with turf.js
+  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
+  //   let query = `SELECT
+  //                  areas_view.collections
+  //                FROM
+  //                  area_type, areas_view
+  //                WHERE
+  //                  area_type.area_type_id = areas_view.area_type_id
+  //                AND
+  //                  area_type.the_geom && ST_MakeEnvelope(
+  //                    ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+
+  //   sql.execute(query).done(function(data) {
+  //     // set up the array of collection_id arrays from the returned
+  //     // query object
+  //     let collectionIds = data.rows.map(function (obj) {
+  //       return obj.collections.split(",");
+  //     });
+  //     // combine all collection_id arrays into a single array of unique ids
+  //     let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+  //     _this.setState({
+  //       mapFilteredCollectionIds: uniqueCollectionIds
+  //     });
+  //     _this._map.fitBounds(bounds, {padding: 80});
+  //     _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
+  //   }).error(function(errors) {
+  //     // errors contains a list of errors
+  //     console.log("errors:" + errors);
+  //   })
+  // }
+
   moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson) {
-    this.getExtentIntersectedCollectionIds(this, areaType, areaTypeGeoJson);
-    this._map.setFilter(
-      'area-type-outline-selected',
-      [
-        "all",
-        ["==", "area_type", areaType],
-        ["==", "area_type_name", areaTypeName]
-      ]
-    );
-    document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-    this.props.setCollectionFilterMapMoveMap(false);
+    
+    // document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
+    // this.props.setCollectionFilterMapMoveMap(false);
   }
 
-  getExtentIntersectedCollectionIds(_this, aoiType, aoi) {
+  getExtentIntersectedCollectionIds = (_this, aoiType, aoi) => {
     // get the bounds from the aoi and query carto
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
-    let bounds = turfExtent(aoi); // get the bounds with turf.js
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT
+    const bounds = aoi.bbox
+    const sql = new cartodb.SQL({user: 'tnris-flood'})
+    const query = `SELECT
                    areas_view.collections
                  FROM
                    area_type, areas_view
@@ -1039,28 +1093,29 @@ export default class CollectionFilterMap extends React.Component {
                    area_type.area_type_id = areas_view.area_type_id
                  AND
                    area_type.the_geom && ST_MakeEnvelope(
-                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
+                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`
 
     sql.execute(query).done(function(data) {
       // set up the array of collection_id arrays from the returned
       // query object
-      let collectionIds = data.rows.map(function (obj) {
-        return obj.collections.split(",");
-      });
+      const collectionIds = data.rows.map(function (obj) {
+        return obj.collections.split(",")
+      })
       // combine all collection_id arrays into a single array of unique ids
-      let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
+      const uniqueCollectionIds = [...new Set([].concat(...collectionIds))]
       _this.setState({
         mapFilteredCollectionIds: uniqueCollectionIds
-      });
-      _this._map.fitBounds(bounds, {padding: 80});
-      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
+      })
+      _this._map.fitBounds(bounds, {padding: 80})
+      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi})
     }).error(function(errors) {
       // errors contains a list of errors
-      console.log("errors:" + errors);
+      console.log("errors:" + errors)
     })
   }
 
   render() {
+    console.log(this.props)
     return (
       <div className='collection-filter-map-component'>
         <div id='collection-filter-map'></div>
