@@ -1,6 +1,7 @@
 import React from 'react'
 import { matchPath } from 'react-router-dom'
 import turfExtent from 'turf-extent'
+import axios from 'axios'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -14,7 +15,6 @@ export default class CollectionFilter extends React.Component {
     this.showGeoFilter = this.showGeoFilter.bind(this);
     this.handleKeySetFilter = this.handleKeySetFilter.bind(this);
     this.handleSetGeoFilter = this.handleSetGeoFilter.bind(this);
-    this.getAreaTypeGeoJson = this.getAreaTypeGeoJson.bind(this);
   }
 
   componentDidMount () {
@@ -46,14 +46,15 @@ export default class CollectionFilter extends React.Component {
         }
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
+          console.log('found geo filter')
           // check if the filter is a user defined polygon or
-          // if it is a county filter
+          // if it is a geocoder feature filter
           if (allFilters.geo.hasOwnProperty('coordinates')) {
             this.handleSetGeoFilter(this, 'draw', allFilters.geo);
-          } else if (allFilters.geo.hasOwnProperty('county')) {
-            // set the filter map aoi, selected area type,
-            // selected area type name, aand selected area type geojson
-            this.getAreaTypeGeoJson('county', allFilters.geo.county);
+          } else if (allFilters.geo.hasOwnProperty('osm')) {
+            // call the fetchFeatures method which will then
+            // set the filter
+            this.fetchFeatures(allFilters.geo.osm)
           }
         }
       } catch (e) {
@@ -97,41 +98,14 @@ export default class CollectionFilter extends React.Component {
     })
   }
 
-  // Gets the selected area_type geometry as geojson from
-  // carto and sets this in the app state. We'll also set the
-  // selected area_type and area_type_name in the app state
-  // for use in the geo filter. This method willl then call
-  // the method that sets the geofilter property, "handleSetGeoFilter".
-  getAreaTypeGeoJson(areaType, areaTypeName) {
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT row_to_json(fc)
-                 FROM (
-                   SELECT
-                     'FeatureCollection' AS "type",
-                     array_to_json(array_agg(f)) AS "features"
-                   FROM (
-                     SELECT
-                       'Feature' AS "type",
-                         ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-                         (
-                           SELECT json_strip_nulls(row_to_json(t))
-                           FROM (
-                             SELECT
-                               area_type.area_type_name
-                           ) t
-                           ) AS "properties"
-                     FROM area_type
-                     WHERE
-                       area_type.area_type_name = '${areaTypeName}' AND
-                       area_type.area_type = '${areaType}'
-                   ) as f
-                 ) as fc`;
-
-    sql.execute(query).done( (data) => {
-      let areaTypeGeoJson = data.rows[0].row_to_json;
-      this.props.setCollectionFilterMapSelectedAreaType(areaType);
-      this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
-      this.handleSetGeoFilter(this, areaType, areaTypeGeoJson);
+  // fetch features from the geocoder api
+  fetchFeatures = feature => {    
+    const geocodeUrl = `https://nominatim.tnris.org/search/\
+      ${feature}?format=geojson&polygon_geojson=1`;
+    // ajax request to retrieve the features
+    axios.get(geocodeUrl).then(response => {
+      // response returns an array and we want the first item
+      this.handleSetGeoFilter(this, 'osm', response.data.features[0])
     })
   }
 

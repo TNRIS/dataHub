@@ -65,20 +65,21 @@ export default class CollectionFilterMap extends React.Component {
   componentDidUpdate() {
     console.log('updated')
     // Disable user interaction if a filter has been set
-    const mapElement = document.querySelector('.mapboxgl-canvas');
-    const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
-    const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
-    if (this.props.collectionFilterMapFilter.length > 0) {
-      mapElement.classList.add('disabled-map');
-      mapControls.forEach((mapControl) => {
-        mapControl.disabled = true;
-        mapControl.classList.add('disabled-button');
-      })
-      drawControls.forEach((drawControl) => {
-        drawControl.disabled = true;
-        drawControl.classList.add('disabled-button');
-      })
-    }
+    // const mapElement = document.querySelector('.mapboxgl-canvas');
+    // const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
+    // const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    // if (this.props.collectionFilterMapFilter.length > 0) {
+    //   mapElement.classList.add('disabled-map');
+    //   mapControls.forEach((mapControl) => {
+    //     mapControl.disabled = true;
+    //     mapControl.classList.add('disabled-button');
+    //   })
+    //   drawControls.forEach((drawControl) => {
+    //     drawControl.disabled = true;
+    //     drawControl.classList.add('disabled-button');
+    //   })
+    // }
+
     // if (this.props.collectionFilterMapSelectedAreaType &&
     //   this.props.collectionFilterMapMoveMap) {
     //     // Check if there is an aoi drawn on the map. If so,
@@ -102,8 +103,8 @@ export default class CollectionFilterMap extends React.Component {
 
   componentWillUnmount() {
     this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapSelectedAreaType("");
-    this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    // this.props.setCollectionFilterMapSelectedAreaType("");
+    // this.props.setCollectionFilterMapSelectedAreaTypeName("");
     this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     this.props.setCollectionFilterMapZoom(5.3);
   }
@@ -120,9 +121,9 @@ export default class CollectionFilterMap extends React.Component {
       return {
         'type': 'circle',
         'paint': {
-          'circle-radius': 8,
-          'circle-color': '#f08',
-          'circle-opacity': 0.3
+          'circle-radius': 9,
+          'circle-color': styles['selectedFeatureOSM'],
+          'circle-opacity': 0.5
         }
       };
     } else if (
@@ -130,17 +131,9 @@ export default class CollectionFilterMap extends React.Component {
         return {
           'type': 'fill',
           'paint': {
-            'fill-color': '#f08',
+            'fill-color': styles['selectedFeatureOSM'],
             'fill-opacity': 0.2,
-            'fill-outline-color': '#f08'
-          // 'type': 'line',
-          // 'paint': {
-          //   'line-color': '#f08',
-          //   'line-width': 3,
-          //   'line-opacity': 0.6
-            // 'line-color': styles['selectedFeature'],
-            // 'line-width': 3,
-            // 'line-opacity': 1
+            'fill-outline-color': styles['selectedFeatureOSM']
           }             
         };
     } else if (
@@ -148,12 +141,9 @@ export default class CollectionFilterMap extends React.Component {
         return {
           'type': 'line',
           'paint': {
-            // 'line-color': '#f08',
-            // 'line-width': 6,
-            // 'line-opacity': 0.3
-            'line-color': styles['selectedFeature'],
-            'line-width': 3,
-            'line-opacity': 1
+            'line-color': styles['selectedFeatureOSM'],
+            'line-width': 5,
+            'line-opacity': 0.5
           }
         };
     }
@@ -186,9 +176,6 @@ export default class CollectionFilterMap extends React.Component {
   
   // adds the selected feature layer to the map
   addGeoSearcherLayer = (selectedFeature) => {
-    // get the selected feature layer from the map
-    const selectedFeatureLayer = this._map.getLayer('selected-feature');
-    console.log(selectedFeatureLayer)
     // selected feature layer definition
     const layerObject = {
       'id': 'selected-feature',
@@ -199,18 +186,19 @@ export default class CollectionFilterMap extends React.Component {
         selectedFeature.geometry.type).paint
     }
   
+    // check for the selected feature source
+    // before adding the layer
     if (this._map.getSource('selected-feature')) {
-      if (this._map.getLayer('quad-outline')) {
         // check if the selected feature layer is in the map
         // and add it. if not remove the layer
         // and add a new one.
+        const selectedFeatureLayer = this._map.getLayer('selected-feature');
         if (typeof selectedFeatureLayer === 'undefined') {
-          this._map.addLayer(layerObject, 'quad-outline')
+          this._map.addLayer(layerObject, 'boundary_country_inner')
         } else {
           this._map.removeLayer('selected-feature');
-          this._map.addLayer(layerObject, 'quad-outline')
+          this._map.addLayer(layerObject, 'boundary_country_inner')
         }
-      }
     }
   }
   
@@ -229,6 +217,7 @@ export default class CollectionFilterMap extends React.Component {
       this.addGeoSearcherSource(selectedFeature)
       this.addGeoSearcherLayer(selectedFeature)
       this.getExtentIntersectedCollectionIds(this, 'osm', selectedFeature)
+      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited')
     }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,24 +329,24 @@ export default class CollectionFilterMap extends React.Component {
         // Add the area type selected outline layer to the map.
         // This layer is used to highlight te outline of the user
         // selected area type.
-        map.addLayer({
-          'id': 'area-type-outline-selected',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 2,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': styles['selectedFeature'],
-            'line-width': 3,
-            'line-opacity': 1
-          },
-          'filter': [
-            "all",
-            ["==", ["get", "area_type"], ""],
-            ["==", ["get", "area_type_name"], ""]
-            ]
-        }, 'boundary_country_inner');
+        // map.addLayer({
+        //   'id': 'area-type-outline-selected',
+        //   'type': 'line',
+        //   'source': 'area-type-source',
+        //   'source-layer': 'layer0',
+        //   'minzoom': 2,
+        //   'maxzoom': 24,
+        //   'paint': {
+        //     'line-color': styles['selectedFeature'],
+        //     'line-width': 3,
+        //     'line-opacity': 1
+        //   },
+        //   'filter': [
+        //     "all",
+        //     ["==", ["get", "area_type"], ""],
+        //     ["==", ["get", "area_type_name"], ""]
+        //     ]
+        // }, 'boundary_country_inner');
 
         // Add the county outlines to the map
         map.addLayer({
@@ -373,7 +362,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-opacity': .4
           },
           'filter': ["==", ["get", "area_type"], "county"]
-        }, 'area-type-outline-selected');
+        }, 'boundary_country_inner');
 
         // Add the quad outlines to the map
         map.addLayer({
@@ -627,8 +616,8 @@ export default class CollectionFilterMap extends React.Component {
             ['!=', 'mode', 'static']
           ],
           'paint': {
-            'fill-color': styles['selectedFeature'],
-            'fill-outline-color': styles['selectedFeature'],
+            'fill-color': styles['selectedFeatureOSM'],
+            'fill-outline-color': styles['selectedFeatureOSM'],
             'fill-opacity': 0
           }
         },
@@ -639,8 +628,8 @@ export default class CollectionFilterMap extends React.Component {
             ['==', '$type', 'Polygon']
           ],
           'paint': {
-            'fill-color': styles['selectedFeature'],
-            'fill-outline-color': styles['selectedFeature'],
+            'fill-color': styles['selectedFeatureOSM'],
+            'fill-outline-color': styles['selectedFeatureOSM'],
             'fill-opacity': 0.2
           }
         },
@@ -656,7 +645,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': styles['selectedFeature'],
+            'line-color': styles['selectedFeatureOSM'],
             'line-width': 3
           }
         },
@@ -671,7 +660,7 @@ export default class CollectionFilterMap extends React.Component {
             'line-join': 'round'
           },
           'paint': {
-            'line-color': styles['selectedFeature'],
+            'line-color': styles['selectedFeatureOSM'],
             'line-dasharray': [0.2, 2],
             'line-width': 2
           }
@@ -684,7 +673,7 @@ export default class CollectionFilterMap extends React.Component {
     // If there are previously drawn features on the map, delete them.
     // We do this so there is only one aoi polygon in the map at a time.
     this._map.on('draw.modechange', (e) => {
-      if (this.props.collectionFilterMapSelectedAreaType) {
+      if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
         this.resetTheMap();
       }
       if (e.mode === 'draw_polygon') {
@@ -739,30 +728,18 @@ export default class CollectionFilterMap extends React.Component {
     // add it to the map and fit the map's bounds to the
     // aoi extent.
     this._map.on('load', () => {
-      if (this.props.collectionFilterMapFilter.length > 0) {
-        
-      }
-
       if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
         if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
           console.log('trying to add the drawing')
           this._draw.add(this.props.collectionFilterMapAoi.payload);
-        } 
-        
-        // else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
-        //   this._map.on('sourcedata', () => {
-        //     this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload)
-        //     // this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload)
-        //   })
-        // } 
-        
-        else {
-          // this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload)
-          // this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload)
+        } else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
+            console.log('trying to add the osm feature')
+            this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload)
+            this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload)
         }
         this._map.fitBounds(turfExtent(
           this.props.collectionFilterMapAoi.payload
-        ), {padding: 100});
+        ), {padding: 80});
         document.getElementById(
           'map-filter-button'
         ).classList.remove('mdc-fab--exited');
@@ -921,10 +898,11 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setCollectionFilterMapAoi({});
     this.props.setCollectionFilterMapFilter([]);
     this._draw.deleteAll();
-    if (this.props.collectionFilterMapSelectedAreaType) {
-      this.props.setCollectionFilterMapSelectedAreaType("");
-      this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    }
+    this.removeGeoSearcherLayer();
+    // if (this.props.collectionFilterMapSelectedAreaType) {
+    //   this.props.setCollectionFilterMapSelectedAreaType("");
+    //   this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    // }
     // Enable user interaction once the filter has been cleared
     const mapElement = document.querySelector('.mapboxgl-canvas');
     const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
@@ -954,12 +932,12 @@ export default class CollectionFilterMap extends React.Component {
     if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
       filterObj = {
         ...prevFilter,
-        geo: this.props.collectionFilterMapAoi.payload
+        geo: this.props.collectionFilterMapAoi.payload.geometry
       };
     } else {
       filterObj = {
         ...prevFilter,
-        geo: {'county': this.props.collectionFilterMapSelectedAreaTypeName}
+        geo: {'osm': this.props.collectionFilterMapAoi.payload.properties.display_name}
       };
     }
 

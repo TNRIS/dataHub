@@ -1,5 +1,5 @@
 import React from 'react'
-import {MDCSelect} from '@material/select'
+// import {MDCSelect} from '@material/select'
 import CollectionFilterMapContainer from '../containers/CollectionFilterMapContainer';
 import BackButtonContainer from '../containers/BackButtonContainer'
 
@@ -9,13 +9,13 @@ import breakpoints from '../sass/_breakpoints.scss'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
-const cartodb = window.cartodb;
+// const cartodb = window.cartodb;
 
 export default class CollectionFilterMapView extends React.Component {
   constructor() {
     super();
-    this.getAreaTypeNames = this.getAreaTypeNames.bind(this);
-    this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
+    // this.getAreaTypeNames = this.getAreaTypeNames.bind(this);
+    // this.handleChangeCountyName = this.handleChangeCountyName.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
     const initDownload = window.innerWidth >= this.downloadBreakpoint ? true : false;
@@ -28,20 +28,20 @@ export default class CollectionFilterMapView extends React.Component {
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
     window.scrollTo(0,0);
-    this.getAreaTypeNames();
-    if (document.querySelector('.county-select')) {
-      const countySelect = new MDCSelect(document.querySelector('.county-select'));
-      // float the label above the select element if there
-      // is an area type selected on render.
-      if (
-        this.props.collectionFilterMapSelectedAreaTypeName &&
-        this.props.collectionFilterMapSelectedAreaType === "county"
-      ) {
-        let adapter = countySelect.foundation_.adapter_;
-        adapter.floatLabel(true);
-        adapter.notchOutline(84.75);
-      }
-    }
+    // this.getAreaTypeNames();
+    // if (document.querySelector('.county-select')) {
+    //   const countySelect = new MDCSelect(document.querySelector('.county-select'));
+    //   // float the label above the select element if there
+    //   // is an area type selected on render.
+    //   if (
+    //     this.props.collectionFilterMapSelectedAreaTypeName &&
+    //     this.props.collectionFilterMapSelectedAreaType === "county"
+    //   ) {
+    //     let adapter = countySelect.foundation_.adapter_;
+    //     adapter.floatLabel(true);
+    //     adapter.notchOutline(84.75);
+    //   }
+    // }
   }
 
   componentWillUnmount() {
@@ -58,52 +58,52 @@ export default class CollectionFilterMapView extends React.Component {
   }
 
   componentDidUpdate() {
-    if (document.querySelector('.county-select')) {
-      const countySelect = new MDCSelect(document.querySelector('.county-select'));
-      // Disable the select if a map filter is set. Reenable
-      // when the filter is cleared.
-      if (this.props.collectionFilterMapFilter.length > 0) {
-        countySelect.disabled = true;
-      } else {
-        countySelect.disabled = false;
-      }
-    }
+    // if (document.querySelector('.county-select')) {
+    //   const countySelect = new MDCSelect(document.querySelector('.county-select'));
+    //   // Disable the select if a map filter is set. Reenable
+    //   // when the filter is cleared.
+    //   if (this.props.collectionFilterMapFilter.length > 0) {
+    //     countySelect.disabled = true;
+    //   } else {
+    //     countySelect.disabled = false;
+    //   }
+    // }
   }
 
-  getAreaTypeNames() {
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT
-                   areas_view.area_type_name, areas_view.area_type
-                 FROM
-                   areas_view
-                 WHERE
-                   areas_view.area_type IN ('county', 'quad')
-                 ORDER BY
-                   areas_view.area_type, areas_view.area_type_name;`
+  // getAreaTypeNames() {
+  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
+  //   let query = `SELECT
+  //                  areas_view.area_type_name, areas_view.area_type
+  //                FROM
+  //                  areas_view
+  //                WHERE
+  //                  areas_view.area_type IN ('county', 'quad')
+  //                ORDER BY
+  //                  areas_view.area_type, areas_view.area_type_name;`
 
-    sql.execute(query).done( (data) => {
-      let counties = [];
-      data.rows.map(row => {
-        if (row["area_type"] === "county") {
-          counties.push(row["area_type_name"]);
-        }
-        return row
-      });
-      this.setState({countyNames: counties})
-      return counties
-    }).error(function(errors) {
-      // errors contains a list of errors
-      console.log("errors:" + errors);
-    })
-  }
+  //   sql.execute(query).done( (data) => {
+  //     let counties = [];
+  //     data.rows.map(row => {
+  //       if (row["area_type"] === "county") {
+  //         counties.push(row["area_type_name"]);
+  //       }
+  //       return row
+  //     });
+  //     this.setState({countyNames: counties})
+  //     return counties
+  //   }).error(function(errors) {
+  //     // errors contains a list of errors
+  //     console.log("errors:" + errors);
+  //   })
+  // }
 
-  handleChangeCountyName(event) {
-    let areaType = event.target.id.split("-")[0];
-    let areaTypeName = event.target.value;
-    this.props.setCollectionFilterMapSelectedAreaType(areaType);
-    this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
-    this.props.setCollectionFilterMapMoveMap(true);
-  }
+  // handleChangeCountyName(event) {
+  //   let areaType = event.target.id.split("-")[0];
+  //   let areaTypeName = event.target.value;
+  //   this.props.setCollectionFilterMapSelectedAreaType(areaType);
+  //   this.props.setCollectionFilterMapSelectedAreaTypeName(areaTypeName);
+  //   this.props.setCollectionFilterMapMoveMap(true);
+  // }
 
   render() {
     let countyNameOptions = [
@@ -112,29 +112,29 @@ export default class CollectionFilterMapView extends React.Component {
       return <option data-value={countyName} key={countyName}>{countyName}</option>;
     }));
 
-    const countySelector = this.state.download ? (
-      <div className="county-select__wrapper">
-        <div className="mdc-select mdc-select--outlined county-select">
-          <i className="mdc-select__dropdown-icon"></i>
-          <select className="mdc-select__native-control"
-            id="county-select"
-            value={
-              this.props.collectionFilterMapSelectedAreaTypeName ?
-              this.props.collectionFilterMapSelectedAreaTypeName : ""}
-            onChange={this.handleChangeCountyName}
-            ref="countySelect">
-            {countyNameOptions}
-          </select>
-          <div className="mdc-notched-outline">
-            <div className="mdc-notched-outline__leading"></div>
-            <div className="mdc-notched-outline__notch">
-              <label className="mdc-floating-label">Select a County</label>
-            </div>
-            <div className="mdc-notched-outline__trailing"></div>
-          </div>
-        </div>
-      </div>
-    ) : "";
+    // const countySelector = this.state.download ? (
+    //   <div className="county-select__wrapper">
+    //     <div className="mdc-select mdc-select--outlined county-select">
+    //       <i className="mdc-select__dropdown-icon"></i>
+    //       <select className="mdc-select__native-control"
+    //         id="county-select"
+    //         value={
+    //           this.props.collectionFilterMapSelectedAreaTypeName ?
+    //           this.props.collectionFilterMapSelectedAreaTypeName : ""}
+    //         onChange={this.handleChangeCountyName}
+    //         ref="countySelect">
+    //         {countyNameOptions}
+    //       </select>
+    //       <div className="mdc-notched-outline">
+    //         <div className="mdc-notched-outline__leading"></div>
+    //         <div className="mdc-notched-outline__notch">
+    //           <label className="mdc-floating-label">Select a County</label>
+    //         </div>
+    //         <div className="mdc-notched-outline__trailing"></div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // ) : "";
 
     const mobileNotice = (
       <div id='collection-filter-map' className='tnris-download-template-download'>

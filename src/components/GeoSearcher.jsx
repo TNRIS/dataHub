@@ -37,7 +37,7 @@ export default class GeoSearcher extends React.Component {
     this.fetchFeatures(event.target.value)
   }
   
-  // fetches the features from the geocoder api
+  // fetch features from the geocoder api
   fetchFeatures = feature => {    
     const geocodeUrl = `https://nominatim.tnris.org/search/\
       ${feature}?format=geojson&polygon_geojson=1`;
