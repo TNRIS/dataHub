@@ -6,6 +6,7 @@ import * as collectionSearcherActions from './collectionSearcherActions';
 import * as collectionSorterActions from './collectionSorterActions';
 import * as collectionTimesliderActions from './collectionTimesliderActions';
 import * as colorThemeActions from './colorThemeActions';
+import * as geoSearcherActions from './geoSearcherActions';
 import * as contactActions from './contactActions';
 import * as orderCartActions from './orderCartActions';
 import * as resourceActions from './resourceActions';
@@ -22,6 +23,7 @@ export {
   collectionTimesliderActions,
   colorThemeActions,
   contactActions,
+  geoSearcherActions,
   orderCartActions,
   resourceActions,
   toolDrawerActions,

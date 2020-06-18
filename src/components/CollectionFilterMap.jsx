@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from './BasemapSelector'
 import CollectionFilterMapInstructions from './CollectionFilterMapInstructions'
-import GeoSearcher from './GeoSearcher'
+import GeoSearcherContainer from '../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
@@ -618,7 +618,7 @@ export default class CollectionFilterMap extends React.Component {
           'paint': {
             'fill-color': styles['selectedFeatureOSM'],
             'fill-outline-color': styles['selectedFeatureOSM'],
-            'fill-opacity': 0
+            'fill-opacity': 0,
           }
         },
         {
@@ -630,7 +630,7 @@ export default class CollectionFilterMap extends React.Component {
           'paint': {
             'fill-color': styles['selectedFeatureOSM'],
             'fill-outline-color': styles['selectedFeatureOSM'],
-            'fill-opacity': 0.2
+            'fill-opacity': 0.2,
           }
         },
         {
@@ -646,7 +646,8 @@ export default class CollectionFilterMap extends React.Component {
           },
           'paint': {
             'line-color': styles['selectedFeatureOSM'],
-            'line-width': 3
+            'line-width': 3,
+            'line-opacity': 0.5,
           }
         },
         {
@@ -662,7 +663,8 @@ export default class CollectionFilterMap extends React.Component {
           'paint': {
             'line-color': styles['selectedFeatureOSM'],
             'line-dasharray': [0.2, 2],
-            'line-width': 2
+            'line-width': 3,
+            'line-opacity': 0.5,
           }
         }
       ]
@@ -1097,9 +1099,9 @@ export default class CollectionFilterMap extends React.Component {
           onClick={this.handleFilterButtonClick}>
           {this.props.collectionFilterMapFilter.length > 0 ? 'clear map filter' : 'set map filter'}
         </button>
-        <GeoSearcher
+        <GeoSearcherContainer
           handleGeoSearcherChange={ this.handleGeoSearcherChange }
-          removeGeoSearcherLayer={ this.removeGeoSearcherLayer } />
+          resetTheMap={ this.resetTheMap } />
       </div>
     );
   }

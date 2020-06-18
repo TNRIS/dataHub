@@ -4,6 +4,7 @@ import { withRouter } from 'react-router'
 import {
   catalogActions,
   collectionFilterMapActions,
+  geoSearcherActions,
   urlTrackerActions
 } from '../actions';
 import { getAllResources
@@ -25,6 +26,7 @@ const mapStateToProps = state => ({
     state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionFilterMapSelectedAreaTypeName:
     state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
+    geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
   view: state.catalog.view,
@@ -60,6 +62,9 @@ const mapDispatchToProps = dispatch => ({
         collectionFilterMapSelectedAreaTypeName
       )
     );
+  },
+  setGeoSearcherInputValue: (geoSearcherInputValue) => {
+    dispatch(geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue))
   },
   setUrl: (newUrl, history) => {
     dispatch(urlTrackerActions.setUrl(newUrl, history))

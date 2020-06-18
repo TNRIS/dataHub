@@ -7,8 +7,7 @@ export default class GeoSearcher extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      features: [],
-      inputValue: ''
+      features: []
     }
   }
 
@@ -19,12 +18,16 @@ export default class GeoSearcher extends React.Component {
     );
     this.searchFieldInput = document.querySelector('.geo-search-input');
   }
+
+  componentDidUpdate() {
+    console.log('geosearcher updated')
+  }
   
   // onChange method for the downshift component
   downshiftOnChange = selectedItem => {
     if (selectedItem !== null) {
-      this.setState({ inputValue: selectedItem.properties.display_name });
-      // send the selected feature and update the map
+      this.props.setGeoSearcherInputValue(selectedItem.properties.display_name)
+      // send the selected feature and update to the map
       this.props.handleGeoSearcherChange(selectedItem);
       this.searchFieldInput.blur();
     }
@@ -32,7 +35,7 @@ export default class GeoSearcher extends React.Component {
   
   // onChange method for the input field
   inputOnChange = event => {
-    this.setState({ inputValue: event.target.value });
+    this.props.setGeoSearcherInputValue(event.target.value)
     // fetch features from the api after input change      
     this.fetchFeatures(event.target.value)
   }
@@ -49,21 +52,22 @@ export default class GeoSearcher extends React.Component {
 
   // clears the search input and resets the local state
   handleClearSearch = () => {
-      this.setState({inputValue: ''});
+      this.props.setGeoSearcherInputValue('')
       this.fetchFeatures('');
-      this.props.removeGeoSearcherLayer();
+      this.props.resetTheMap();
       this.searchFieldInput.focus();
   }
 
   // keyDown that watches for the escape keypress
   handleKeyDown = event => {
-    if (event.keyCode === 27 && !this.state.inputValue) {
-      this.props.removeGeoSearcherLayer();
+    if (event.keyCode === 27 && !this.props.geoSearcherInputValue) {
+      this.props.resetTheMap();
       this.searchFieldInput.blur();
     }
   }
 
   render() {
+    console.log(this.props)
     return (
       <Downshift
       onChange={ this.downshiftOnChange }
@@ -95,13 +99,13 @@ export default class GeoSearcher extends React.Component {
           <input
           className={"geo-search-input downshift-input mdc-text-field__input"}
           {...getInputProps({
-            value: this.state.inputValue,
+            value: this.props.geoSearcherInputValue,
             placeholder: "Search for Places in Texas",
             onChange: this.inputOnChange,
             onKeyDown: this.handleKeyDown
           })}
           />
-          {this.state.inputValue ?
+          {this.props.geoSearcherInputValue ?
               <button
                 id='clear-icon'
                 className={`clear-button mdc-top-app-bar__action-item

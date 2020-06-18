@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
 import LayerSelector from '../LayerSelector'
-import GeoSearcher from '../GeoSearcher'
+import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
@@ -601,9 +601,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         Click a polygon in the map to download available index.
         </div>
         <div id='historical-index-download-map'></div>
-        <GeoSearcher
+        <GeoSearcherContainer
           handleGeoSearcherChange={ this.handleGeoSearcherChange }
-          removeGeoSearcherLayer={ this.removeGeoSearcherLayer } />
+          resetTheMap={ this.removeGeoSearcherLayer } />
       </div>
     )
   }

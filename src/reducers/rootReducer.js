@@ -10,6 +10,7 @@ import collectionSorter from './collectionSorterReducer';
 import collectionTimeslider from './collectionTimesliderReducer';
 import colorTheme from './colorThemeReducer';
 import contact from './contactReducer';
+import geoSearcher from './geoSearcherReducer';
 import orderCart from './orderCartReducer';
 import resources from './resourceReducer';
 import toolDrawer from './toolDrawerReducer';
@@ -26,6 +27,7 @@ const rootReducer = (history) => combineReducers({
   collectionTimeslider,
   colorTheme,
   contact,
+  geoSearcher,
   orderCart,
   resources,
   toolDrawer,
