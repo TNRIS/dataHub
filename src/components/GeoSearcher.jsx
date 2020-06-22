@@ -17,10 +17,22 @@ export default class GeoSearcher extends React.Component {
       document.querySelector('.geo-search-component')
     );
     this.searchFieldInput = document.querySelector('.geo-search-input');
+    
+    // disable the search component if a geo filter is set
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      this.searchField.disabled = true;
+    } else {
+      this.searchField.disabled = false;
+    }
   }
 
   componentDidUpdate() {
-    console.log('geosearcher updated')
+    // disable the search component if a geo filter is set
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      this.searchField.disabled = true;
+    } else {
+      this.searchField.disabled = false;
+    }
   }
   
   // onChange method for the downshift component
@@ -52,7 +64,7 @@ export default class GeoSearcher extends React.Component {
 
   // clears the search input and resets the local state
   handleClearSearch = () => {
-      this.props.setGeoSearcherInputValue('')
+      // this.props.setGeoSearcherInputValue('')
       this.fetchFeatures('');
       this.props.resetTheMap();
       this.searchFieldInput.focus();
@@ -67,7 +79,6 @@ export default class GeoSearcher extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     return (
       <Downshift
       onChange={ this.downshiftOnChange }

@@ -63,7 +63,7 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log('updated')
+    this.disableUserInteraction();
     // Disable user interaction if a filter has been set
     // const mapElement = document.querySelector('.mapboxgl-canvas');
     // const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
@@ -102,9 +102,11 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   componentWillUnmount() {
+    // On close, clear the GeoSearcher input
+    // value and the filter map aoi
+    this.props.setGeoSearcherInputValue('')
     this.props.setCollectionFilterMapAoi({});
-    // this.props.setCollectionFilterMapSelectedAreaType("");
-    // this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    // reset the map zoom and center for the next reload
     this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     this.props.setCollectionFilterMapZoom(5.3);
   }
@@ -184,7 +186,7 @@ export default class CollectionFilterMap extends React.Component {
       'source': 'selected-feature',
       'paint': this.getGeoSearcherLayerProps(
         selectedFeature.geometry.type).paint
-    }
+    };
   
     // check for the selected feature source
     // before adding the layer
@@ -199,7 +201,7 @@ export default class CollectionFilterMap extends React.Component {
           this._map.removeLayer('selected-feature');
           this._map.addLayer(layerObject, 'boundary_country_inner')
         }
-    }
+    };
   }
   
   // removes the 'selected-feature' layer from the map
@@ -210,14 +212,26 @@ export default class CollectionFilterMap extends React.Component {
     }
   }
   
-  // adds the GeoSearcher's 'selected-feature' layer to the map
-  // and moves the map to show the feature
+  // adds the GeoSearcher's 'selected-feature' layer to the map,
+  // moves the map to show the feature, and sets the aoi in the app state
   handleGeoSearcherChange = (selectedFeature) => {
     if (selectedFeature !== null) {
+      if (this.props.collectionFilterMapFilter.length > 0) {
+        this.props.setCollectionFilterMapFilter([])
+      }
+      // check if there is a user defined polygon in the map
+      // and remove it before continuing
+      const features = this._draw.getAll();
+      console.log(features.features.length)
+      if (features.features.length > 0) {
+        this._draw.deleteAll()
+      }
       this.addGeoSearcherSource(selectedFeature)
       this.addGeoSearcherLayer(selectedFeature)
       this.getExtentIntersectedCollectionIds(this, 'osm', selectedFeature)
-      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited')
+      document.getElementById(
+        'map-filter-button'
+      ).classList.remove('mdc-fab--exited')
     }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -518,7 +532,8 @@ export default class CollectionFilterMap extends React.Component {
     // START BASEMAP SELECTOR & INSTRUCTIONS BUTTONS
     //
     // class for custom map controls used below
-    // *** event handler is commented out but might be useful for future new controls ***
+    // *** event handler is commented out but might be
+    // useful for future new controls ***
     class ButtonControl {
       constructor({
         id = "",
@@ -675,15 +690,20 @@ export default class CollectionFilterMap extends React.Component {
     // If there are previously drawn features on the map, delete them.
     // We do this so there is only one aoi polygon in the map at a time.
     this._map.on('draw.modechange', (e) => {
+      // remove any GeoSearcher features in the map
       if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
         this.resetTheMap();
       }
       if (e.mode === 'draw_polygon') {
         this._draw.changeMode('draw_rectangle');
-        let features = this._draw.getAll();
+        const features = this._draw.getAll();
         if (features.features.length > 1) {
           this._draw.delete(features.features[0].id);
-          this.resetTheMap();
+          this.props.setCollectionFilterMapAoi({});
+          this.props.setCollectionFilterMapFilter([]);
+          document.getElementById(
+            'map-filter-button'
+          ).classList.add('mdc-fab--exited');
         }
       }
     })
@@ -695,7 +715,9 @@ export default class CollectionFilterMap extends React.Component {
       aoi.bbox = turfExtent(aoi.geometry)
 
       this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0])
-      document.getElementById('map-filter-button').classList.remove('mdc-fab--exited')
+      document.getElementById(
+        'map-filter-button'
+      ).classList.remove('mdc-fab--exited')
     })
 
     this._map.on('draw.update', (e) => {
@@ -705,7 +727,6 @@ export default class CollectionFilterMap extends React.Component {
       // add the feature's bounding box to the geojson object
       aoi.bbox = turfExtent(aoi.geometry)
 
-      // this.props.setCollectionFilterMapAoi({});
       this.props.setCollectionFilterMapFilter([]);
       this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0]);
     })
@@ -893,22 +914,12 @@ export default class CollectionFilterMap extends React.Component {
   //   return [meanLng, meanLat];
   // }
 
-  resetTheMap() {
-    // resets the map filter and aoi objects to empty, enables user
-    // interaction controls, and hides the map filter button till
-    // it is needed again
-    this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapFilter([]);
-    this._draw.deleteAll();
-    this.removeGeoSearcherLayer();
-    // if (this.props.collectionFilterMapSelectedAreaType) {
-    //   this.props.setCollectionFilterMapSelectedAreaType("");
-    //   this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    // }
-    // Enable user interaction once the filter has been cleared
+  enableUserInteraction = () => {
     const mapElement = document.querySelector('.mapboxgl-canvas');
     const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
     const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    const basemapMenu = document.querySelector('.tnris-basemap-menu');
+    const mdcSwitch = document.querySelector('.mdc-switch');
     mapElement.classList.remove('disabled-map');
     mapControls.forEach((mapControl) => {
       mapControl.disabled = false;
@@ -918,7 +929,59 @@ export default class CollectionFilterMap extends React.Component {
       drawControl.disabled = false;
       drawControl.classList.remove('disabled-button');
     })
+    basemapMenu.classList.remove('disabled-button');
+    mdcSwitch.classList.remove('mdc-switch--disabled');
+  }
 
+  disableUserInteraction = () => {
+    const mapElement = document.querySelector('.mapboxgl-canvas');
+    const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
+    const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    const basemapMenu = document.querySelector('.tnris-basemap-menu');
+    const mdcSwitch = document.querySelector('.mdc-switch');
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      mapElement.classList.add('disabled-map');
+      mapControls.forEach((mapControl) => {
+        mapControl.disabled = true;
+        mapControl.classList.add('disabled-button');
+      })
+      drawControls.forEach((drawControl) => {
+        drawControl.disabled = true;
+        drawControl.classList.add('disabled-button');
+      })
+      basemapMenu.classList.add('disabled-button');
+      mdcSwitch.classList.add('mdc-switch--disabled');
+    }
+  }
+  
+  resetTheMap() {
+    // resets the map filter and aoi objects to empty, enables user
+    // interaction controls, and hides the map filter button till
+    // it is needed again
+    this.props.setCollectionFilterMapAoi({});
+    this.props.setCollectionFilterMapFilter([]);
+    this.props.setGeoSearcherInputValue('');
+    this._draw.deleteAll();
+    this.removeGeoSearcherLayer();
+
+    // if (this.props.collectionFilterMapSelectedAreaType) {
+    //   this.props.setCollectionFilterMapSelectedAreaType("");
+    //   this.props.setCollectionFilterMapSelectedAreaTypeName("");
+    // }
+    // Enable user interaction once the filter has been cleared
+    // const mapElement = document.querySelector('.mapboxgl-canvas');
+    // const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
+    // const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    // mapElement.classList.remove('disabled-map');
+    // mapControls.forEach((mapControl) => {
+    //   mapControl.disabled = false;
+    //   mapControl.classList.remove('disabled-button');
+    // })
+    // drawControls.forEach((drawControl) => {
+    //   drawControl.disabled = false;
+    //   drawControl.classList.remove('disabled-button');
+    // })
+    this.enableUserInteraction();
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
   }
 
@@ -939,7 +1002,9 @@ export default class CollectionFilterMap extends React.Component {
     } else {
       filterObj = {
         ...prevFilter,
-        geo: {'osm': this.props.collectionFilterMapAoi.payload.properties.display_name}
+        geo: {
+          'osm': this.props.collectionFilterMapAoi.payload.properties.display_name
+        }
       };
     }
 
@@ -1084,12 +1149,11 @@ export default class CollectionFilterMap extends React.Component {
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi})
     }).error(function(errors) {
       // errors contains a list of errors
-      console.log("errors:" + errors)
+      console.log("errors:" + errors);
     })
   }
 
   render() {
-    console.log(this.props)
     return (
       <div className='collection-filter-map-component'>
         <div id='collection-filter-map'></div>

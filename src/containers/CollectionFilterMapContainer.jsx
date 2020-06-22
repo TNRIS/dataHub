@@ -26,7 +26,7 @@ const mapStateToProps = state => ({
     state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionFilterMapSelectedAreaTypeName:
     state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
-    geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
+  geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
   theme: state.colorTheme.theme,
   catalogFilterUrl: state.urlTracker.catalogFilterUrl,
   view: state.catalog.view,

@@ -46,14 +46,15 @@ export default class CollectionFilter extends React.Component {
         }
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
-          console.log('found geo filter')
+          console.log(allFilters.geo)
           // check if the filter is a user defined polygon or
           // if it is a geocoder feature filter
           if (allFilters.geo.hasOwnProperty('coordinates')) {
             this.handleSetGeoFilter(this, 'draw', allFilters.geo);
           } else if (allFilters.geo.hasOwnProperty('osm')) {
-            // call the fetchFeatures method which will then
-            // set the filter
+            // clear the GeoSearcher input value and call the
+            // fetchFeatures method to set the filter
+            this.props.setGeoSearcherInputValue(allFilters.geo.osm)
             this.fetchFeatures(allFilters.geo.osm)
           }
         }
@@ -105,6 +106,7 @@ export default class CollectionFilter extends React.Component {
     // ajax request to retrieve the features
     axios.get(geocodeUrl).then(response => {
       // response returns an array and we want the first item
+      console.log(feature)
       this.handleSetGeoFilter(this, 'osm', response.data.features[0])
     })
   }
@@ -135,6 +137,7 @@ export default class CollectionFilter extends React.Component {
       let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
       _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
+      console.log(aoi)
     }).error(function(errors) {
       // errors contains a list of errors
       console.log("errors:" + errors);
@@ -218,6 +221,7 @@ export default class CollectionFilter extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     const filterSet = "mdc-list-item filter-list-title mdc-list-item--activated";
 
     const filterNotSet = "mdc-list-item filter-list-title";

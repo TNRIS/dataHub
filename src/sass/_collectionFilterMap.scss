@@ -24,14 +24,24 @@
     -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     cursor: default !important;
+
+    label {
+      pointer-events: none;
+    }
+  }
+
+  .disabled-button:focus {
+    box-shadow: none;
+  }
+
+  .disabled-button:hover {
+    background-color: unset !important;
   }
 
   .map-filter-button {
     position: absolute;
     right: 46%;
     top: 115px;
-    // right: 100px;
-    // bottom: 100px;
     background-color: $secondary-color;
   }
 

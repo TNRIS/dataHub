@@ -5,6 +5,7 @@ import {
   catalogActions,
   collectionFilterActions,
   collectionFilterMapActions,
+  geoSearcherActions,
   urlTrackerActions
 } from '../actions'
 
@@ -14,12 +15,14 @@ import { getCollectionFilterChoices } from '../selectors/collectionSelectors'
 const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,
   collectionFilterChoices: getCollectionFilterChoices(state),
+  collectionFilterMapAoi: state.collectionFilterMap.collectionFilterMapAoi,
   collectionFilterMapFilter:
     state.collectionFilterMap.collectionFilterMapFilter,
   collectionFilterMapSelectedAreaType:
     state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionFilterMapSelectedAreaTypeName:
     state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
+  geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
   view: state.catalog.view
 });
 
@@ -55,6 +58,9 @@ const mapDispatchToProps = dispatch => ({
         collectionFilterMapSelectedAreaTypeName
       )
     );
+  },
+  setGeoSearcherInputValue: (geoSearcherInputValue) => {
+    dispatch(geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue))
   },
   setViewGeoFilter: () => {
     dispatch(catalogActions.setViewGeoFilter());
