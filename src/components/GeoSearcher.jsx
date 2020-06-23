@@ -38,7 +38,7 @@ export default class GeoSearcher extends React.Component {
   // onChange method for the downshift component
   downshiftOnChange = selectedItem => {
     if (selectedItem !== null) {
-      this.props.setGeoSearcherInputValue(selectedItem.properties.display_name)
+      this.props.setGeoSearcherInputValue(selectedItem.properties.display_name);
       // send the selected feature and update to the map
       this.props.handleGeoSearcherChange(selectedItem);
       this.searchFieldInput.blur();
@@ -47,9 +47,9 @@ export default class GeoSearcher extends React.Component {
   
   // onChange method for the input field
   inputOnChange = event => {
-    this.props.setGeoSearcherInputValue(event.target.value)
+    this.props.setGeoSearcherInputValue(event.target.value);
     // fetch features from the api after input change      
-    this.fetchFeatures(event.target.value)
+    this.fetchFeatures(event.target.value);
   }
   
   // fetch features from the geocoder api
@@ -58,15 +58,15 @@ export default class GeoSearcher extends React.Component {
       ${feature}?format=geojson&polygon_geojson=1`;
     // ajax request to retrieve the features
     axios.get(geocodeUrl).then(response => {
-      this.setState({ features: response.data.features })
+      this.setState({ features: response.data.features });
     })
   }
 
   // clears the search input and resets the local state
   handleClearSearch = () => {
       // this.props.setGeoSearcherInputValue('')
-      this.fetchFeatures('');
       this.props.resetTheMap();
+      this.fetchFeatures('');
       this.searchFieldInput.focus();
   }
 

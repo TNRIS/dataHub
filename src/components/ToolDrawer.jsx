@@ -4,13 +4,11 @@ import { MDCDrawer } from "@material/drawer"
 import CollectionFilterContainer from '../containers/CollectionFilterContainer'
 import CollectionSorterContainer from '../containers/CollectionSorterContainer'
 import CollectionTimesliderContainer from '../containers/CollectionTimesliderContainer'
+import ThemeChooserContainer from '../containers/ThemeChooserContainer'
 
 import ShareButtons from './DialogTemplateListItems/ShareButtons'
 
-import ThemeChooserContainer from '../containers/ThemeChooserContainer'
-
 export default class ToolDrawer extends React.Component {
-
   constructor(props) {
       super(props);
       this.clearAllFilters = this.clearAllFilters.bind(this);
@@ -25,13 +23,10 @@ export default class ToolDrawer extends React.Component {
     this.props.setCollectionFilter({});
     this.props.setCollectionFilterMapAoi({});
     this.props.setCollectionFilterMapFilter([]);
-    if (this.props.collectionFilterMapSelectedAreaType) {
-      this.props.setCollectionFilterMapSelectedAreaType("");
-      this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    }
     this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
     this.props.setCollectionFilterMapZoom(5.3);
     this.props.setCollectionTimeslider(this.props.collectionTimesliderRange);
+    this.props.setGeoSearcherInputValue('');
     this.props.setUrl('/');
     this.props.logFilterChange('/');
   }

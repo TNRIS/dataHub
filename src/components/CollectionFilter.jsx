@@ -137,7 +137,6 @@ export default class CollectionFilter extends React.Component {
       let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
       _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
-      console.log(aoi)
     }).error(function(errors) {
       // errors contains a list of errors
       console.log("errors:" + errors);

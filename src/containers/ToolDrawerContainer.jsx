@@ -6,6 +6,7 @@ import {
   collectionFilterMapActions,
   collectionSorterActions,
   collectionTimesliderActions,
+  geoSearcherActions,
   urlTrackerActions
 } from '../actions'
 
@@ -17,8 +18,6 @@ const mapStateToProps = (state) => ({
   collectionFilter: state.collectionFilter.collectionFilter,
   collectionFilterMapFilter:
     state.collectionFilterMap.collectionFilterMapFilter,
-  collectionFilterMapSelectedAreaType:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
   collectionTimesliderRange: getCollectionTimesliderRange(state),
   toolDrawerStatus: state.toolDrawer.toolDrawerStatus,
   toolDrawerVariant: state.toolDrawer.toolDrawerVariant
@@ -32,36 +31,47 @@ const mapDispatchToProps = dispatch => ({
     dispatch(collectionFilterActions.setCollectionFilter(collectionFilter));
   },
   setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
-  },
-  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
-  },
-  setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapFilter(collectionFilterMapFilter));
-  },
-  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
-  },
-  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
-        collectionFilterMapSelectedAreaType
+      collectionFilterMapActions.setCollectionFilterMapAoi(
+        collectionFilterMapAoi
       )
     );
   },
-  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
-        collectionFilterMapSelectedAreaTypeName
+      collectionFilterMapActions.setCollectionFilterMapCenter(
+        collectionFilterMapCenter
+      )
+    );
+  },
+  setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapFilter(
+        collectionFilterMapFilter
+      )
+    );
+  },
+  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapZoom(
+        collectionFilterMapZoom
       )
     );
   },
   setCollectionTimeslider: (collectionTimeslider) => {
-    dispatch(collectionTimesliderActions.setCollectionTimeslider(collectionTimeslider));
+    dispatch(
+      collectionTimesliderActions.setCollectionTimeslider(
+        collectionTimeslider
+      )
+    );
+  },
+  setGeoSearcherInputValue: (geoSearcherInputValue) => {
+    dispatch(
+      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+    );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history))
+    dispatch(urlTrackerActions.setUrl(newUrl, history));
   },
   logFilterChange: (url) => {
     dispatch(urlTrackerActions.logFilterChange(url));

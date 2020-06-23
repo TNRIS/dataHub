@@ -7,8 +7,8 @@ import {
   geoSearcherActions,
   urlTrackerActions
 } from '../actions';
-import { getAllResources
-       } from '../selectors/resourceSelectors';
+
+import { getAllResources } from '../selectors/resourceSelectors';
 import CollectionFilterMap from '../components/CollectionFilterMap';
 
 const mapStateToProps = state => ({
@@ -35,19 +35,39 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapAoi(
+        collectionFilterMapAoi
+      )
+    );
   },
   setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapCenter(
+        collectionFilterMapCenter
+      )
+    );
   },
   setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapFilter(collectionFilterMapFilter));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapFilter(
+        collectionFilterMapFilter
+      )
+    );
   },
   setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapZoom(
+        collectionFilterMapZoom
+      )
+    );
   },
   setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapMoveMap(
+        collectionFilterMapMoveMap
+      )
+    );
   },
   setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
     dispatch(
@@ -64,10 +84,12 @@ const mapDispatchToProps = dispatch => ({
     );
   },
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
-    dispatch(geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue))
+    dispatch(
+      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+    );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history))
+    dispatch(urlTrackerActions.setUrl(newUrl, history));
   },
   logFilterChange: (url) => {
     dispatch(urlTrackerActions.logFilterChange(url));

@@ -6,7 +6,9 @@ import LayerSelector from '../LayerSelector'
 import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
+import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
 import styles from '../../sass/index.scss'
+import turfExtent from 'turf-extent'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss'
@@ -68,6 +70,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     if (this._map) {
       this._map.remove();
     }
+    // clear the GeoSearcher input when the map is closed
+    this.props.setGeoSearcherInputValue('');
   }
 
   toggleLayers (e, map, areaType) {
@@ -164,66 +168,42 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   // returns layer properties based on feature type for the
   // geosearcher 'selected-feature' layer
   getGeoSearcherLayerProps = (featureType) => {
-  if (featureType === 'Point' || featureType === 'MultiPoint') {
-    return {
-      'type': 'circle',
-      'paint': {
-        'circle-radius': 8,
-        'circle-color': '#f08',
-        'circle-opacity': 0.3
-      }
-    };
-  } else if (
-    featureType === 'Polygon' || featureType === 'MultiPolygon') {
+    if (featureType === 'Point' || featureType === 'MultiPoint') {
       return {
-        'type': 'line',
+        'type': 'circle',
         'paint': {
-          'line-color': '#f08',
-          'line-width': 2,
-          'line-opacity': 0.3
-        }             
-      };
-  } else if (
-    featureType === 'LineString' || featureType === 'MultiLinestring') {
-      return {
-        'type': 'line',
-        'paint': {
-          'line-color': '#f08',
-          'line-width': 6,
-          'line-opacity': 0.3
+          'circle-radius': 9,
+          'circle-color': styles['selectedFeatureOSM'],
+          'circle-opacity': 0.5
         }
       };
+    } else if (
+      featureType === 'Polygon' || featureType === 'MultiPolygon') {
+        return {
+          'type': 'fill',
+          'paint': {
+            'fill-color': styles['selectedFeatureOSM'],
+            'fill-opacity': 0.2,
+            'fill-outline-color': styles['selectedFeatureOSM']
+          }             
+        };
+    } else if (
+      featureType === 'LineString' || featureType === 'MultiLinestring') {
+        return {
+          'type': 'line',
+          'paint': {
+            'line-color': styles['selectedFeatureOSM'],
+            'line-width': 5,
+            'line-opacity': 0.5
+          }
+        };
+    }
   }
-}
 
-// adds a layer to the map when a feature is selected in GeoSearcher
-addGeoSearcherLayer = (selectedFeature) => {
-  this._map.addLayer({
-    'id': 'selected-feature',
-    'type': this.getGeoSearcherLayerProps(
-      selectedFeature.geometry.type).type,
-    'source': 'selected-feature',
-    'paint': this.getGeoSearcherLayerProps(
-      selectedFeature.geometry.type).paint
-  }, 'quad-outline');
-}
-
-// removes the 'selected-feature' layer if the GeoSearcher
-// input is cleared
-removeGeoSearcherLayer = () => {
-  const selectedFeatureLayer = this._map.getLayer('selected-feature');
-  if (typeof selectedFeatureLayer !== 'undefined') {
-    this._map.removeLayer('selected-feature');
-  }
-}
-
-// adds the GeoSearcher's 'selected-feature' layer to the map
-// and moves the map to show the feature
-handleGeoSearcherChange = (selectedFeature) => {
-  if (selectedFeature !== null) {
-
-    const selectedFeatureSource = this._map.getSource(
-      'selected-feature');
+  // adds the selected feature source data to the map
+  // if aoiType is set to 'osm'
+  addGeoSearcherSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
     
     if (typeof selectedFeatureSource === 'undefined') {
       this._map.addSource('selected-feature', {
@@ -243,24 +223,99 @@ handleGeoSearcherChange = (selectedFeature) => {
         ]
       });
     }
-
-    const selectedFeatureLayer = this._map.getLayer('selected-feature');
-
-    if (typeof selectedFeatureLayer === 'undefined') {
-      this.addGeoSearcherLayer(selectedFeature);
-    } else {
-      this._map.removeLayer('selected-feature');
-      this.addGeoSearcherLayer(selectedFeature);
-    }
-
-
-    this._map.fitBounds(
-      selectedFeature.bbox,
-      {padding: {top: 50, bottom:50, left: 50, right: 50}}
-    );
   }
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  // adds the selected feature layer to the map if
+  // aoiType is set to 'osm'
+  addGeoSearcherLayer = (selectedFeature) => {
+    // selected feature layer definition
+    const layerObject = {
+      'id': 'selected-feature',
+      'type': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).type,
+      'source': 'selected-feature',
+      'paint': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).paint
+    };
+  
+    // check for the selected feature source
+    // before adding the layer
+    if (this._map.getSource('selected-feature')) {
+        // check if the selected feature layer is in the map
+        // and add it if not. if it is remove the layer
+        // and add a new one.
+        const selectedFeatureLayer = this._map.getLayer('selected-feature');
+        if (typeof selectedFeatureLayer === 'undefined') {
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        } else {
+          this._map.removeLayer('selected-feature');
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        }
+    };
+  }
+
+  // adds slected feature draw source data to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': this.props.collectionFilterMapAoi.payload
+          }]
+        }
+      });
+    }
+  }
+  
+  // adds selected feature draw layer to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawLayer = () => {
+    if (this._map.getSource('selected-feature')) {
+      const selectedFeatureLayer = this._map.getLayer('selected-feature');
+          if (typeof selectedFeatureLayer === 'undefined') {
+            this._map.addLayer({
+              'id': 'selected-feature',
+              'type': 'line',
+              'source': 'selected-feature',
+              'paint': {
+                'line-color': styles['selectedFeatureOSM'],
+                'line-width': 3,
+                'line-opacity': 0.5
+              }
+            }, 'boundary_country_inner');
+          }
+    }
+  }
+
+  // clear the input and remove the 'selected-feature' layer
+  // if the GeoSearcher input is cleared
+  removeGeoSearcherLayer = () => {
+    this.props.setGeoSearcherInputValue('');
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+    if (typeof selectedFeatureLayer !== 'undefined') {
+      this._map.removeLayer('selected-feature');
+    }
+  }
+
+  // adds the GeoSearcher's 'selected-feature' layer to the map
+  // and moves the map to show the feature
+  handleGeoSearcherChange = (selectedFeature) => {
+    if (selectedFeature !== null) {
+      this.addGeoSearcherSource(selectedFeature);
+      this.addGeoSearcherLayer(selectedFeature);
+
+      this._map.fitBounds(
+        selectedFeature.bbox,
+        {padding: 80}
+      );
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   createMap() {
     // define mapbox map
@@ -543,17 +598,22 @@ handleGeoSearcherChange = (selectedFeature) => {
       switch (areaType === startLayer) {
         case true:
           visibility = 'visible';
-          // since this is our initial layer on display, we'll zoom to the bounds
-          const areasString = areasList.join("','");
-          const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
-          const sql = new cartodb.SQL({ user: 'tnris-flood' });
-          sql.getBounds(boundsQuery).done(function(bounds) {
-            // set map to extent of download areas
-            map.fitBounds(
-              [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
-              {padding: 20}
-            );
-          });
+          // Check if an aoi has been set in the geo filter
+          // and overide the below fitBounds call if it has.
+          // The map will fit to the bounds of the aoi instead.
+          if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
+            // since this is our initial layer on display, we'll zoom to the bounds
+            const areasString = areasList.join("','");
+            const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
+            const sql = new cartodb.SQL({ user: 'tnris-flood' });
+            sql.getBounds(boundsQuery).done(function(bounds) {
+              // set map to extent of download areas
+              map.fitBounds(
+                [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
+                {padding: 20}
+              );
+            });
+          }
           break;
         default:
           visibility = 'none';
@@ -593,6 +653,25 @@ handleGeoSearcherChange = (selectedFeature) => {
       }
       return areaType;
     }, this);
+
+    // if a geo filter aoi is set in the app's state on map load,
+    // add it to the map and fit the map's bounds to the extent
+    this._map.on('load', () => {
+      if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+        if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+          // add the draw aoi source and layer to the map
+          this.addMapboxDrawSource(this.props.collectionFilterMapAoi.payload);
+          this.addMapboxDrawLayer();
+        } else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
+            // add the GeoSearcher aoi source and layer to the map
+            this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
+            this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
+        }
+        this._map.fitBounds(turfExtent(
+          this.props.collectionFilterMapAoi.payload
+        ), {padding: 80});
+      }
+    })
   }
 
   createPreviewLayer(map, wms_link) {
@@ -780,6 +859,7 @@ handleGeoSearcherChange = (selectedFeature) => {
   }
 
   render() {
+    console.log(this.props);
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (
       <div className='sweet-loading-animation'>
@@ -790,7 +870,13 @@ handleGeoSearcherChange = (selectedFeature) => {
           loading={true}
         />
       </div>
-      );
+    );
+
+    const geoSearcher = (
+      <GeoSearcherContainer
+        handleGeoSearcherChange={ this.handleGeoSearcherChange }
+        resetTheMap={ this.removeGeoSearcherLayer } />
+    );
 
     if (errorResources) {
       return <div>Error! {errorResources.message}</div>;
@@ -819,9 +905,8 @@ handleGeoSearcherChange = (selectedFeature) => {
           Click a polygon in the map to download available data.
         </div>
         <div id='tnris-download-map'></div>
-        <GeoSearcherContainer
-          handleGeoSearcherChange={ this.handleGeoSearcherChange }
-          resetTheMap={ this.removeGeoSearcherLayer } />
+        {Object.keys(this.props.collectionFilterMapAoi).length > 0 ?
+         '' : geoSearcher}
       </div>
     );
   }
