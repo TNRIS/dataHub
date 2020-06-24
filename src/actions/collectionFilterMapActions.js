@@ -2,10 +2,7 @@ import {
   SET_COLLECTION_FILTER_MAP_AOI,
   SET_COLLECTION_FILTER_MAP_CENTER,
   SET_COLLECTION_FILTER_MAP_FILTER,
-  SET_COLLECTION_FILTER_MAP_ZOOM,
-  SET_COLLECTION_FILTER_MAP_MOVE_MAP,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
-  SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME
+  SET_COLLECTION_FILTER_MAP_ZOOM
 } from '../constants/collectionFilterMapActionTypes';
 
 export const setCollectionFilterMapAoi = (collectionFilterMapAoi) => {
@@ -40,33 +37,6 @@ export const setCollectionFilterMapZoom = (collectionFilterMapZoom) => {
     dispatch({
       type: SET_COLLECTION_FILTER_MAP_ZOOM,
       payload: { collectionFilterMapZoom }
-    })
-  }
-};
-
-export const setCollectionFilterMapMoveMap = (collectionFilterMapMoveMap) => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_COLLECTION_FILTER_MAP_MOVE_MAP,
-      payload: { collectionFilterMapMoveMap }
-    })
-  }
-};
-
-export const setCollectionFilterMapSelectedAreaType = (collectionFilterMapSelectedAreaType) => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE,
-      payload: { collectionFilterMapSelectedAreaType }
-    })
-  }
-};
-
-export const setCollectionFilterMapSelectedAreaTypeName = (collectionFilterMapSelectedAreaTypeName) => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_COLLECTION_FILTER_MAP_SELECTED_AREA_TYPE_NAME,
-      payload: { collectionFilterMapSelectedAreaTypeName }
     })
   }
 };

@@ -20,17 +20,16 @@ const mapStateToProps = state => ({
     state.collectionFilterMap.collectionFilterMapFilter,
   collectionFilterMapZoom:
     state.collectionFilterMap.collectionFilterMapZoom,
-  collectionFilterMapMoveMap:
-    state.collectionFilterMap.collectionFilterMapMoveMap,
-  collectionFilterMapSelectedAreaType:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
-  collectionFilterMapSelectedAreaTypeName:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
-  geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
-  theme: state.colorTheme.theme,
-  catalogFilterUrl: state.urlTracker.catalogFilterUrl,
-  view: state.catalog.view,
-  resources: getAllResources(state)
+  geoSearcherInputValue:
+    state.geoSearcher.geoSearcherInputValue,
+  theme:
+    state.colorTheme.theme,
+  catalogFilterUrl:
+    state.urlTracker.catalogFilterUrl,
+  view:
+    state.catalog.view,
+  resources:
+    getAllResources(state)
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -59,27 +58,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       collectionFilterMapActions.setCollectionFilterMapZoom(
         collectionFilterMapZoom
-      )
-    );
-  },
-  setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
-    dispatch(
-      collectionFilterMapActions.setCollectionFilterMapMoveMap(
-        collectionFilterMapMoveMap
-      )
-    );
-  },
-  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
-    dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
-        collectionFilterMapSelectedAreaType
-      )
-    );
-  },
-  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
-    dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
-        collectionFilterMapSelectedAreaTypeName
       )
     );
   },

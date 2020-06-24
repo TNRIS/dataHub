@@ -6,7 +6,6 @@ import LayerSelector from '../LayerSelector'
 import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
-import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
 import styles from '../../sass/index.scss'
 import turfExtent from 'turf-extent'
 

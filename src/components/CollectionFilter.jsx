@@ -9,8 +9,8 @@ const cartodb = window.cartodb;
 export default class CollectionFilter extends React.Component {
   constructor(props) {
     super(props);
-    this.handleOpenFilterMenu = this.handleOpenFilterMenu.bind(this);
-    this.handleSetFilter = this.handleSetFilter.bind(this);
+    this.openFilterMenu = this.openFilterMenu.bind(this);
+    this.setFilter = this.setFilter.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.showGeoFilter = this.showGeoFilter.bind(this);
     this.handleKeySetFilter = this.handleKeySetFilter.bind(this);
@@ -37,7 +37,9 @@ export default class CollectionFilter extends React.Component {
               const hashId = '#' + id;
               if (document.querySelector(hashId)) {
                 document.querySelector(hashId).checked = true;
-                document.querySelector(`${hashId}-label`).classList.add('filter-active');
+                document.querySelector(
+                  `${hashId}-label`
+                ).classList.add('filter-active');
               }
               return hashId;
             });
@@ -46,7 +48,6 @@ export default class CollectionFilter extends React.Component {
         }
         // fourth, apply geo to store and component if present
         if (Object.keys(allFilters).includes('geo')) {
-          console.log(allFilters.geo)
           // check if the filter is a user defined polygon or
           // if it is a geocoder feature filter
           if (allFilters.geo.hasOwnProperty('coordinates')) {
@@ -106,7 +107,6 @@ export default class CollectionFilter extends React.Component {
     // ajax request to retrieve the features
     axios.get(geocodeUrl).then(response => {
       // response returns an array and we want the first item
-      console.log(feature)
       this.handleSetGeoFilter(this, 'osm', response.data.features[0])
     })
   }
@@ -143,7 +143,7 @@ export default class CollectionFilter extends React.Component {
     })
   }
 
-  handleOpenFilterMenu(e) {
+  openFilterMenu(e) {
     let filterName = e.target.id.split('-')[0];
     let filterListElement = document.getElementById(`${filterName}-list`);
     let filterListTitleIcon = document.getElementById(`${filterName}-expansion-icon`);
@@ -157,7 +157,7 @@ export default class CollectionFilter extends React.Component {
       filterListTitleIcon.innerHTML = 'expand_more';
   }
 
-  handleSetFilter(target) {
+  setFilter(target) {
     let currentFilters = {...this.props.collectionFilter};
 
     if (target.checked) {
@@ -199,7 +199,7 @@ export default class CollectionFilter extends React.Component {
   handleKeyPress (e) {
     if (e.keyCode === 13 || e.keyCode === 32) {
       if (e.target.id !== 'filter-map-button') {
-        this.handleOpenFilterMenu(e);
+        this.openFilterMenu(e);
       }
       else {
         this.showGeoFilter();
@@ -210,7 +210,7 @@ export default class CollectionFilter extends React.Component {
   handleKeySetFilter (e) {
     if (e.keyCode === 13 || e.keyCode === 32) {
       e.target.checked = !e.target.checked;
-      this.handleSetFilter(e.target);
+      this.setFilter(e.target);
     }
   }
 
@@ -220,7 +220,6 @@ export default class CollectionFilter extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     const filterSet = "mdc-list-item filter-list-title mdc-list-item--activated";
 
     const filterNotSet = "mdc-list-item filter-list-title";
@@ -233,7 +232,7 @@ export default class CollectionFilter extends React.Component {
               <li key={choice}>
                 <div className={Object.keys(this.props.collectionFilter).includes(choice) ? filterSet : filterNotSet}
                      id={`${choice}-title`}
-                     onClick={e => this.handleOpenFilterMenu(e)}
+                     onClick={e => this.openFilterMenu(e)}
                      onKeyDown={(e) => this.handleKeyPress(e)}
                      tabIndex="0">
                      {`by ${choice.replace(/_/, ' ')}`}
@@ -254,7 +253,7 @@ export default class CollectionFilter extends React.Component {
                                      id={choiceValue}
                                      name={choice}
                                      value={choiceValue}
-                                     onChange={e => this.handleSetFilter(e.target)}
+                                     onChange={e => this.setFilter(e.target)}
                                      onKeyDown={(e) => this.handleKeySetFilter(e)}/>
                               <div className='mdc-checkbox__background'>
                                 <svg className='mdc-checkbox__checkmark'
