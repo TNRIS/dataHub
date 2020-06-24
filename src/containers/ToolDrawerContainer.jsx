@@ -15,20 +15,30 @@ import {getCollectionTimesliderRange} from '../selectors/collectionSelectors'
 import ToolDrawer from '../components/ToolDrawer'
 
 const mapStateToProps = (state) => ({
-  collectionFilter: state.collectionFilter.collectionFilter,
+  collectionFilter:
+    state.collectionFilter.collectionFilter,
   collectionFilterMapFilter:
     state.collectionFilterMap.collectionFilterMapFilter,
-  collectionTimesliderRange: getCollectionTimesliderRange(state),
-  toolDrawerStatus: state.toolDrawer.toolDrawerStatus,
-  toolDrawerVariant: state.toolDrawer.toolDrawerVariant
+  collectionTimesliderRange:
+    getCollectionTimesliderRange(state),
+  toolDrawerStatus:
+    state.toolDrawer.toolDrawerStatus,
+  toolDrawerVariant:
+    state.toolDrawer.toolDrawerVariant
 });
 
 const mapDispatchToProps = dispatch => ({
   sortNew: () => {
-    dispatch(collectionSorterActions.setSortNew());
+    dispatch(
+      collectionSorterActions.setSortNew()
+    );
   },
   setCollectionFilter: (collectionFilter) => {
-    dispatch(collectionFilterActions.setCollectionFilter(collectionFilter));
+    dispatch(
+      collectionFilterActions.setCollectionFilter(
+        collectionFilter
+      )
+    );
   },
   setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
     dispatch(
@@ -67,14 +77,24 @@ const mapDispatchToProps = dispatch => ({
   },
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
     dispatch(
-      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
+      )
     );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history));
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   }
 })
 

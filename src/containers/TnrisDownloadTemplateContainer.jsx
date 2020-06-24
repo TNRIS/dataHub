@@ -10,7 +10,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchCollectionResources: (collectionId) => {
-    dispatch(collectionActions.fetchCollectionResources(collectionId))
+    dispatch(collectionActions.fetchCollectionResources(collectionId));
   },
   clearSelectedCollection: () => {
     dispatch(collectionActions.clearSelectedCollection());

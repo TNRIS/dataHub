@@ -7,13 +7,16 @@ import HistoricalAerialTemplateIndexDownload from '../components/HistoricalAeria
 const mapStateToProps = state => ({
   collectionFilterMapAoi:
     state.collectionFilterMap.collectionFilterMapAoi,
-  theme: state.colorTheme.theme
+  theme:
+    state.colorTheme.theme
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
     dispatch(
-      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
+      )
     );
   }
 })

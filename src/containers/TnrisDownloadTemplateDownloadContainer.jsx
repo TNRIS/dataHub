@@ -11,18 +11,26 @@ import TnrisDownloadTemplateDownload from '../components/TnrisDownloadTemplate/T
 const mapStateToProps = state => ({
   collectionFilterMapAoi:
     state.collectionFilterMap.collectionFilterMapAoi,
-  errorResources: state.collections.errorResources,
-  loadingResources: state.collections.loadingResources,
-  resourceAreas: getResourceAreas(state),
-  resourceAreaTypes: getResourceAreaTypes(state),
-  selectedCollectionResources: state.collections.selectedCollectionResources,
-  theme: state.colorTheme.theme
+  errorResources:
+    state.collections.errorResources,
+  loadingResources:
+    state.collections.loadingResources,
+  resourceAreas:
+    getResourceAreas(state),
+  resourceAreaTypes:
+    getResourceAreaTypes(state),
+  selectedCollectionResources:
+    state.collections.selectedCollectionResources,
+  theme:
+    state.colorTheme.theme
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
     dispatch(
-      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
+      )
     );
   }
 })

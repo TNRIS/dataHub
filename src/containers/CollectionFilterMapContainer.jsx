@@ -63,20 +63,34 @@ const mapDispatchToProps = dispatch => ({
   },
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
     dispatch(
-      geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue)
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
+      )
     );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history));
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
+    dispatch(
+      catalogActions.setViewCatalog()
+    );
   },
   setViewGeoFilter: () => {
-    dispatch(catalogActions.setViewGeoFilter());
+    dispatch(
+      catalogActions.setViewGeoFilter()
+    );
   }
 })
 

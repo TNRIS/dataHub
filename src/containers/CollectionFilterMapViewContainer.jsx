@@ -17,10 +17,16 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setUrl: (newUrl) => {
-    dispatch(urlTrackerActions.setUrl(newUrl))
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl
+      )
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
+    dispatch(
+      catalogActions.setViewCatalog()
+    );
   },
   setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
     dispatch(

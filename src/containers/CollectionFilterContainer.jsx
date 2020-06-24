@@ -29,16 +29,30 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => ({
   setCollectionFilter: (collectionFilter) => {
-    dispatch(collectionFilterActions.setCollectionFilter(collectionFilter));
+    dispatch(
+      collectionFilterActions.setCollectionFilter(
+        collectionFilter
+      )
+    );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history));
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   },
   url404: () => {
-    dispatch(urlTrackerActions.url404());
+    dispatch(
+      urlTrackerActions.url404()
+    );
   },
   setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
     dispatch(
@@ -62,10 +76,14 @@ const mapDispatchToProps = dispatch => ({
     );
   },
   setViewGeoFilter: () => {
-    dispatch(catalogActions.setViewGeoFilter());
+    dispatch(
+      catalogActions.setViewGeoFilter()
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
+    dispatch(
+      catalogActions.setViewCatalog()
+    );
   }
 })
 

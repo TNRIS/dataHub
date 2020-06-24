@@ -1,17 +1,23 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
-import { geoSearcherActions, collectionFilterMapActions } from '../actions'
+import { geoSearcherActions } from '../actions'
 import GeoSearcher from '../components/GeoSearcher'
 
 const mapStateToProps = state => ({
-  geoSearcherInputValue: state.geoSearcher.geoSearcherInputValue,
-  collectionFilterMapFilter: state.collectionFilterMap.collectionFilterMapFilter
+  geoSearcherInputValue:
+    state.geoSearcher.geoSearcherInputValue,
+  collectionFilterMapFilter:
+    state.collectionFilterMap.collectionFilterMapFilter
 })
 
 const mapDispatchToProps = dispatch => ({
   setGeoSearcherInputValue: (geoSearcherInputValue) => {
-    dispatch(geoSearcherActions.setGeoSearcherInputValue(geoSearcherInputValue))
+    dispatch(
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
+      )
+    );
   }
 })
 
