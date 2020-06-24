@@ -23,6 +23,10 @@ styles for component: GeoSearcher
   margin-right: auto;
 }
 
+.template-content-div > .geo-search-component {
+  width: 40%;
+}
+
 .geo-search-component {
   z-index: 2;
   width: 30%;

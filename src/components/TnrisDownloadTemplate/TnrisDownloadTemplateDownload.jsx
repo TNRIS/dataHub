@@ -7,7 +7,7 @@ import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
-import turfExtent from 'turf-extent'
+import turfBbox from '@turf/bbox'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss'
@@ -670,7 +670,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
             this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
         }
-        this._map.fitBounds(turfExtent(
+        this._map.fitBounds(turfBbox(
           this.props.collectionFilterMapAoi.payload
         ), {padding: 80});
       }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { matchPath } from 'react-router-dom'
-import turfExtent from 'turf-extent'
+import turfBbox from '@turf/bbox'
 import axios from 'axios'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
@@ -115,7 +115,7 @@ export default class CollectionFilter extends React.Component {
     // get the bounds from the aoi and query carto
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
-    let bounds = turfExtent(aoi); // get the bounds with turf.js
+    let bounds = turfBbox(aoi); // get the bounds with turf.js
     let sql = new cartodb.SQL({user: 'tnris-flood'});
     let query = `SELECT
                    areas_view.collections

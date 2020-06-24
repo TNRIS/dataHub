@@ -8,7 +8,7 @@ import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
-import turfExtent from 'turf-extent'
+import turfBbox from '@turf/bbox'
 import styles from '../sass/index.scss'
 // below commented out till we verify dynamic labels work again
 // import intersect from '@turf/intersect';
@@ -654,21 +654,21 @@ export default class CollectionFilterMap extends React.Component {
 
     this._map.on('draw.create', (e) => {
       // get the draw feature's geojson object
-      const aoi = e.features[0]
+      const aoi = e.features[0];
       // add the feature's bounding box to the geojson object
-      aoi.bbox = turfExtent(aoi.geometry)
+      aoi.bbox = turfBbox(aoi.geometry);
 
-      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0])
+      this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0]);
       document.getElementById(
         'map-filter-button'
-      ).classList.remove('mdc-fab--exited')
+      ).classList.remove('mdc-fab--exited');
     })
 
     this._map.on('draw.update', (e) => {
       // get the draw feature's geojson object
-      const aoi = e.features[0]
+      const aoi = e.features[0];
       // add the feature's bounding box to the geojson object
-      aoi.bbox = turfExtent(aoi.geometry)
+      aoi.bbox = turfBbox(aoi.geometry);
 
       this.props.setCollectionFilterMapFilter([]);
       this.getExtentIntersectedCollectionIds(this, 'draw', e.features[0]);
@@ -700,7 +700,7 @@ export default class CollectionFilterMap extends React.Component {
             this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
             this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
         }
-        this._map.fitBounds(turfExtent(
+        this._map.fitBounds(turfBbox(
           this.props.collectionFilterMapAoi.payload
         ), {padding: 80});
         document.getElementById(
@@ -982,8 +982,8 @@ export default class CollectionFilterMap extends React.Component {
     // get the bounds from the aoi and query carto
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
-    const bounds = aoi.bbox
-    const sql = new cartodb.SQL({user: 'tnris-flood'})
+    const bounds = aoi.bbox;
+    const sql = new cartodb.SQL({user: 'tnris-flood'});
     const query = `SELECT
                    areas_view.collections
                  FROM
@@ -998,17 +998,17 @@ export default class CollectionFilterMap extends React.Component {
       // set up the array of collection_id arrays from the returned
       // query object
       const collectionIds = data.rows.map(function (obj) {
-        return obj.collections.split(",")
-      })
+        return obj.collections.split(",");
+      });
       // combine all collection_id arrays into a single array of unique ids
-      const uniqueCollectionIds = [...new Set([].concat(...collectionIds))]
+      const uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
       _this.setState({
         mapFilteredCollectionIds: uniqueCollectionIds
-      })
+      });
       // pan and zoom to the feature
-      _this._map.fitBounds(bounds, {padding: 80})
+      _this._map.fitBounds(bounds, {padding: 80});
       // set the aoi details in the app state
-      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi})
+      _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
     }).error(function(errors) {
       // errors contains a list of errors
       console.log("errors:" + errors);
