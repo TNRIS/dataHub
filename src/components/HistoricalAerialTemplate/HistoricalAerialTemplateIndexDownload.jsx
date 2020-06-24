@@ -74,7 +74,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     }, this);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // START GEOSEARCHER METHODS
+  //
   // returns layer properties based on feature type for the
   // geosearcher 'selected-feature' layer
   getGeoSearcherLayerProps = (featureType) => {
@@ -225,7 +227,9 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       );
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // END GEOSEARCHER METHODS
+  //
 
   createMap() {
     // define mapbox map

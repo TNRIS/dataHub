@@ -14,7 +14,6 @@ import styles from '../sass/index.scss'
 // import intersect from '@turf/intersect';
 // import polylabel from 'polylabel';
 // import parse from 'wellknown';
-// import styles from '../sass/index.scss';
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss'
@@ -42,9 +41,7 @@ export default class CollectionFilterMap extends React.Component {
     this.handleFilterButtonClick = this.handleFilterButtonClick.bind(this);
     this.getExtentIntersectedCollectionIds =
     this.getExtentIntersectedCollectionIds.bind(this);
-    // this.moveToSelectedMapFeature = this.moveToSelectedMapFeature.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
-    // this.getAreaTypeGeoJson = this.getAreaTypeGeoJson.bind(this);
     this.toggleBasemaps = this.toggleBasemaps.bind(this);
     // below commented out till we can verify dynamic labels work again
     // this.dynamicLabels = this.dynamicLabels.bind(this);
@@ -65,40 +62,6 @@ export default class CollectionFilterMap extends React.Component {
   componentDidUpdate() {
     // Disable user interaction if a filter has been set
     this.disableUserInteraction();
-    // const mapElement = document.querySelector('.mapboxgl-canvas');
-    // const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
-    // const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
-    // if (this.props.collectionFilterMapFilter.length > 0) {
-    //   mapElement.classList.add('disabled-map');
-    //   mapControls.forEach((mapControl) => {
-    //     mapControl.disabled = true;
-    //     mapControl.classList.add('disabled-button');
-    //   })
-    //   drawControls.forEach((drawControl) => {
-    //     drawControl.disabled = true;
-    //     drawControl.classList.add('disabled-button');
-    //   })
-    // }
-
-    // if (this.props.collectionFilterMapSelectedAreaType &&
-    //   this.props.collectionFilterMapMoveMap) {
-    //     // Check if there is an aoi drawn on the map. If so,
-    //     // delete the draw features and continue with the
-    //     // area type selection.
-    //     if (this._draw.getAll().features.length > 0) {
-    //       this._draw.deleteAll();
-    //     }
-    //     // Select the chosen area type and pan to that feature
-    //     // in the map.
-    //     if (this.props.collectionFilterMapSelectedAreaTypeName === '') {
-    //       this.resetTheMap();
-    //     } else {
-    //       this.getAreaTypeGeoJson(
-    //         this.props.collectionFilterMapSelectedAreaType,
-    //         this.props.collectionFilterMapSelectedAreaTypeName
-    //       )
-    //     }
-    // }
   }
 
   componentWillUnmount() {
@@ -115,7 +78,9 @@ export default class CollectionFilterMap extends React.Component {
     map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // START GEOSEARCHER METHODS
+  //
   // returns layer properties based on feature type for the
   // geosearcher 'selected-feature' layer
   getGeoSearcherLayerProps = (featureType) => {
@@ -222,7 +187,6 @@ export default class CollectionFilterMap extends React.Component {
       // check if there is a user defined polygon in the map
       // and remove it before continuing
       const features = this._draw.getAll();
-      console.log(features.features.length);
       if (features.features.length > 0) {
         this._draw.deleteAll();
       }
@@ -234,7 +198,9 @@ export default class CollectionFilterMap extends React.Component {
       ).classList.remove('mdc-fab--exited');
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // END GEOSEARCHER METHODS
+  //
 
   createMap() {
     // define mapbox map
@@ -339,28 +305,6 @@ export default class CollectionFilterMap extends React.Component {
           'area-type-source',
           { type: 'vector', tiles: areaTypeTiles }
         );
-
-        // Add the area type selected outline layer to the map.
-        // This layer is used to highlight te outline of the user
-        // selected area type.
-        // map.addLayer({
-        //   'id': 'area-type-outline-selected',
-        //   'type': 'line',
-        //   'source': 'area-type-source',
-        //   'source-layer': 'layer0',
-        //   'minzoom': 2,
-        //   'maxzoom': 24,
-        //   'paint': {
-        //     'line-color': styles['selectedFeature'],
-        //     'line-width': 3,
-        //     'line-opacity': 1
-        //   },
-        //   'filter': [
-        //     "all",
-        //     ["==", ["get", "area_type"], ""],
-        //     ["==", ["get", "area_type_name"], ""]
-        //     ]
-        // }, 'boundary_country_inner');
 
         // Add the county outlines to the map
         map.addLayer({
@@ -721,7 +665,6 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('draw.update', (e) => {
-      console.log('draw-update')
       // get the draw feature's geojson object
       const aoi = e.features[0]
       // add the feature's bounding box to the geojson object
@@ -752,10 +695,8 @@ export default class CollectionFilterMap extends React.Component {
     this._map.on('load', () => {
       if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
         if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
-          console.log('trying to add the drawing');
           this._draw.add(this.props.collectionFilterMapAoi.payload);
         } else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
-            console.log('trying to add the osm feature');
             this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
             this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
         }
@@ -982,24 +923,6 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setGeoSearcherInputValue('');
     this._draw.deleteAll();
     this.removeGeoSearcherLayer();
-
-    // if (this.props.collectionFilterMapSelectedAreaType) {
-    //   this.props.setCollectionFilterMapSelectedAreaType("");
-    //   this.props.setCollectionFilterMapSelectedAreaTypeName("");
-    // }
-    // Enable user interaction once the filter has been cleared
-    // const mapElement = document.querySelector('.mapboxgl-canvas');
-    // const mapControls = document.querySelectorAll('.mapboxgl-ctrl-icon');
-    // const drawControls = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
-    // mapElement.classList.remove('disabled-map');
-    // mapControls.forEach((mapControl) => {
-    //   mapControl.disabled = false;
-    //   mapControl.classList.remove('disabled-button');
-    // })
-    // drawControls.forEach((drawControl) => {
-    //   drawControl.disabled = false;
-    //   drawControl.classList.remove('disabled-button');
-    // })
     this.enableUserInteraction();
     document.getElementById('map-filter-button').classList.add('mdc-fab--exited');
   }
@@ -1054,86 +977,6 @@ export default class CollectionFilterMap extends React.Component {
       this.props.setViewCatalog();
     }
   }
-
-  // getAreaTypeGeoJson(areaType, areaTypeName) {
-  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-  //   let query = `SELECT row_to_json(fc)
-  //                FROM (
-  //                  SELECT
-  //                    'FeatureCollection' AS "type",
-  //                    array_to_json(array_agg(f)) AS "features"
-  //                  FROM (
-  //                    SELECT
-  //                      'Feature' AS "type",
-  //                        ST_AsGeoJSON(area_type.the_geom) :: json AS "geometry",
-  //                        (
-  //                          SELECT json_strip_nulls(row_to_json(t))
-  //                          FROM (
-  //                            SELECT
-  //                              area_type.area_type_name
-  //                          ) t
-  //                          ) AS "properties"
-  //                    FROM area_type
-  //                    WHERE
-  //                      area_type.area_type_name = '${areaTypeName}' AND
-  //                      area_type.area_type = '${areaType}'
-  //                  ) as f
-  //                ) as fc`;
-
-  //   sql.execute(query).done( (data) => {
-  //     let areaTypeGeoJson = data.rows[0].row_to_json;
-  //     this.moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson);
-  //   })
-  // }
-
-  // moveToSelectedMapFeature(areaType, areaTypeName, areaTypeGeoJson) {
-  //   this.getExtentIntersectedCollectionIds(this, areaType, areaTypeGeoJson);
-  //   this._map.setFilter(
-  //     'area-type-outline-selected',
-  //     [
-  //       "all",
-  //       ["==", "area_type", areaType],
-  //       ["==", "area_type_name", areaTypeName]
-  //     ]
-  //   );
-  //   document.getElementById('map-filter-button').classList.remove('mdc-fab--exited');
-  //   this.props.setCollectionFilterMapMoveMap(false);
-  // }
-
-  // getExtentIntersectedCollectionIds(_this, aoiType, aoi) {
-  //   // get the bounds from the aoi and query carto
-  //   // to find the area_type polygons that intersect this mbr
-  //   // and return the collection_ids associated with those areas
-  //   let bounds = turfExtent(aoi); // get the bounds with turf.js
-  //   let sql = new cartodb.SQL({user: 'tnris-flood'});
-  //   let query = `SELECT
-  //                  areas_view.collections
-  //                FROM
-  //                  area_type, areas_view
-  //                WHERE
-  //                  area_type.area_type_id = areas_view.area_type_id
-  //                AND
-  //                  area_type.the_geom && ST_MakeEnvelope(
-  //                    ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-
-  //   sql.execute(query).done(function(data) {
-  //     // set up the array of collection_id arrays from the returned
-  //     // query object
-  //     let collectionIds = data.rows.map(function (obj) {
-  //       return obj.collections.split(",");
-  //     });
-  //     // combine all collection_id arrays into a single array of unique ids
-  //     let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
-  //     _this.setState({
-  //       mapFilteredCollectionIds: uniqueCollectionIds
-  //     });
-  //     _this._map.fitBounds(bounds, {padding: 80});
-  //     _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
-  //   }).error(function(errors) {
-  //     // errors contains a list of errors
-  //     console.log("errors:" + errors);
-  //   })
-  // }
 
   getExtentIntersectedCollectionIds = (_this, aoiType, aoi) => {
     // get the bounds from the aoi and query carto

@@ -163,7 +163,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     }, this);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // START GEOSEARCHER METHODS
+  //
   // returns layer properties based on feature type for the
   // geosearcher 'selected-feature' layer
   getGeoSearcherLayerProps = (featureType) => {
@@ -314,7 +316,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       );
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // END GEOSEARCHER METHODS
+  //
 
   createMap() {
     // define mapbox map
@@ -858,7 +862,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     const { errorResources, loadingResources } = this.props;
     const loadingMessage = (
       <div className='sweet-loading-animation'>

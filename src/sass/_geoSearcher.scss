@@ -55,23 +55,13 @@ styles for component: GeoSearcher
       border-bottom: none !important;
       color: $skin-primary;
       caret-color: $skin-primary;
-      // border: 1px solid $header-border !important;
   }
-
-  // .geo-search-input:hover {
-  //   border-bottom-color: rgba(0, 0, 0, 0.42) !important;
-  //   // border-bottom-color: $header-border !important;
-  // }
 
   .suggestion-list {
     background-color: $main-background;
     border: 1px solid $header-border;
     box-shadow: inherit;
     padding: 0;
-
-    // @media (max-width: $breakpoint-phone) {
-    //   width: 145%;
-    // }
 
     li {
       color: $skin-primary;

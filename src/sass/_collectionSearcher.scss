@@ -3,13 +3,20 @@ styles for component: CollectionSearcher
 */
 
 .search-component:focus-within {
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px,
-    rgba(0, 0, 0, 0.14) 0px 8px 10px 1px,
-    rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+  // box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px,
+  //   rgba(0, 0, 0, 0.14) 0px 8px 10px 1px,
+  //   rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+  
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 7px -1px;
 
-    .search-input {
-      background-color: $main-background;
-    }
+  .search-input {
+    background-color: $main-background;
+    border: 1px solid $header-border;
+  }
+
+  .suggestion-list {
+    border-bottom: none;
+  }
 }
 
 .search-component {
@@ -40,20 +47,16 @@ styles for component: CollectionSearcher
   .search-input {
     background-color: $search-background;
     padding: 5px 60px 5px 50px !important;
-    border-bottom: 0;
+    border-bottom: none !important;
     color: $skin-primary;
     caret-color: $skin-primary;
   }
 
   .suggestion-list {
     background-color: $main-background;
-    border-top: 1px solid $header-border;
+    border: 1px solid $header-border;
     box-shadow: inherit;
     padding: 0;
-
-    // @media (max-width: $breakpoint-phone) {
-    //   width: 145%;
-    // }
 
     li {
       color: $skin-primary;
