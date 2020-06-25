@@ -21,8 +21,7 @@ export default class GeoSearcher extends React.Component {
     // disable the search component if a geo filter is set
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.searchField.disabled = true;
-    } else {
-      this.searchField.disabled = false;
+      this.searchField.foundation_.adapter_.addClass('disabled-geosearcher');
     }
   }
 
@@ -30,8 +29,11 @@ export default class GeoSearcher extends React.Component {
     // disable the search component if a geo filter is set
     if (this.props.collectionFilterMapFilter.length > 0) {
       this.searchField.disabled = true;
+      this.searchField.foundation_.adapter_.addClass('disabled-geosearcher');
     } else {
+      // enable the search component if the filter is removed
       this.searchField.disabled = false;
+      this.searchField.foundation_.adapter_.removeClass('disabled-geosearcher');
     }
   }
   

@@ -61,7 +61,9 @@ export default class CollectionFilterMap extends React.Component {
 
   componentDidUpdate() {
     // Disable user interaction if a filter has been set
-    this.disableUserInteraction();
+    if (this.props.collectionFilterMapFilter.length > 0) {
+      this.disableUserInteraction();
+    }
   }
 
   componentWillUnmount() {
@@ -868,21 +870,19 @@ export default class CollectionFilterMap extends React.Component {
     const mdcSwitch = document.querySelector('.mdc-switch');
     
     // disable the controls
-    if (this.props.collectionFilterMapFilter.length > 0) {
-      mapElement.classList.add('disabled-map');
-      zoomInControl.disabled = true;
-      zoomInControl.classList.add('disabled-button');
-      zoomOutControl.disabled = true;
-      zoomOutControl.classList.add('disabled-button');
-      zoomToExtentControl.disabled = true;
-      zoomToExtentControl.classList.add('disabled-button');
-      drawControls.forEach((drawControl) => {
-        drawControl.disabled = true;
-        drawControl.classList.add('disabled-button');
-      })
-      basemapMenu.classList.add('disabled-button');
-      mdcSwitch.classList.add('mdc-switch--disabled');
-    }
+    mapElement.classList.add('disabled-map');
+    zoomInControl.disabled = true;
+    zoomInControl.classList.add('disabled-button');
+    zoomOutControl.disabled = true;
+    zoomOutControl.classList.add('disabled-button');
+    zoomToExtentControl.disabled = true;
+    zoomToExtentControl.classList.add('disabled-button');
+    drawControls.forEach((drawControl) => {
+      drawControl.disabled = true;
+      drawControl.classList.add('disabled-button');
+    })
+    basemapMenu.classList.add('disabled-button');
+    mdcSwitch.classList.add('mdc-switch--disabled');
   }
 
   // re-enable the map controls when a filter is cleared

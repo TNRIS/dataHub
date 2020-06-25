@@ -27,6 +27,16 @@ styles for component: GeoSearcher
   width: 40%;
 }
 
+.disabled-geosearcher {
+  -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+  filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+  cursor: default !important;
+
+  // label {
+  //   pointer-events: none;
+  // }
+}
+
 .geo-search-component {
   z-index: 2;
   width: 30%;
