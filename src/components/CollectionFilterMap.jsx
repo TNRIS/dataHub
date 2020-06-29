@@ -10,10 +10,6 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
 import turfBbox from '@turf/bbox'
 import styles from '../sass/index.scss'
-// below commented out till we verify dynamic labels work again
-// import intersect from '@turf/intersect';
-// import polylabel from 'polylabel';
-// import parse from 'wellknown';
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.scss'
@@ -23,11 +19,6 @@ import breakpoints from '../sass/_breakpoints.scss'
 const cartodb = window.cartodb;
 const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
 const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
-
-// commented out till we can verify dynamic labels work again
-// const dynamicCountyCentroid = {};
-// dynamicCountyCentroid.type = "FeatureCollection";
-// dynamicCountyCentroid.features = [];
 
 export default class CollectionFilterMap extends React.Component {
   constructor(props) {
@@ -43,11 +34,6 @@ export default class CollectionFilterMap extends React.Component {
     this.getExtentIntersectedCollectionIds.bind(this);
     this.downloadBreakpoint = parseInt(breakpoints.download, 10);
     this.toggleBasemaps = this.toggleBasemaps.bind(this);
-    // below commented out till we can verify dynamic labels work again
-    // this.dynamicLabels = this.dynamicLabels.bind(this);
-    // this.groupBy = this.groupBy.bind(this);
-    // this.getVisualCenter = this.getVisualCenter.bind(this);
-    // this.cleanArray = this.cleanArray.bind(this);
   }
 
   componentDidMount() {
@@ -73,7 +59,7 @@ export default class CollectionFilterMap extends React.Component {
     this.props.setCollectionFilterMapAoi({});
     // reset the map zoom and center for the next reload
     this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
-    this.props.setCollectionFilterMapZoom(5.3);
+    this.props.setCollectionFilterMapZoom(5.8);
   }
 
   toggleBasemaps (e, map, visible) {
@@ -249,7 +235,7 @@ export default class CollectionFilterMap extends React.Component {
           (e) => {
             this._map.easeTo({
               center: [-99.341389, 31.33],
-              zoom: 5.3,
+              zoom: 5.8,
               pitch: 0,
               bearing: 0
             });
@@ -339,62 +325,6 @@ export default class CollectionFilterMap extends React.Component {
           },
           'filter': ["==", ["get", "area_type"], "quad"]
         }, 'county-outline');
-
-        // These are the source and layer for the map's dynamic
-        // labels. They are commented out because they were causing
-        // the app to lock up for unknown reasons, 02/12/2020. Leave
-        // unused until we can verify it is working again. The other
-        // piece to this is commented out below in the map methods within
-        // the map's on moveend method.
-
-        // map.addLayer({
-        //   "id": "county",
-        //   "type": "fill",
-        //   "source": 'area-type-source',
-        //   "source-layer": 'layer0',
-        //   'minzoom': 2,
-        //   'maxzoom': 24,
-        //   "paint": {
-        //       "fill-color": "transparent"
-        //   },
-        //   'filter': ["==", ["get", "area_type"], "county"]
-        // }, 'quad-outline');
-
-        // map.addSource('dynamic-county-centroid', {
-        //   type: 'geojson',
-        //   data: dynamicCountyCentroid
-        // });
-        //
-        // map.addLayer({
-        //   "id": "dynamic-county-label",
-        //   "type": "symbol",
-        //   "source": "dynamic-county-centroid",
-        //   'minzoom': 6,
-        //   'maxzoom': 24,
-        //   "layout": {
-        //       'text-field': ["get", "area_type_name"],
-        //       'text-size': {
-        //           "base": 1,
-        //           "stops": [
-        //               [6, 6],
-        //               [8, 10],
-        //               [10, 12],
-        //               [16, 16]
-        //           ]
-        //       },
-        //       "text-padding": 3,
-        //       "text-letter-spacing": 0.1,
-        //       "text-max-width": 7,
-        //       "text-transform": "uppercase",
-        //       "text-allow-overlap": true
-        //   },
-        //   "paint": {
-        //       "text-color": "#555",
-        //       "text-halo-color": "hsl(0, 0%, 100%)",
-        //       "text-halo-width": 1.5,
-        //       "text-halo-blur": 1
-        //   }
-        // });
 
         map.addSource("county-centroid", {
           "type": "geojson",
@@ -681,13 +611,6 @@ export default class CollectionFilterMap extends React.Component {
     })
 
     this._map.on('moveend', () => {
-      // commented out till we can verify dynamic labels work again
-      // let tileLoad = setInterval( () => {
-      //     if (this._map.loaded()) {
-      //         this.dynamicLabels(this._map);
-      //         clearInterval(tileLoad);
-      //     }
-      // }, 300);
       this.props.setCollectionFilterMapCenter(this._map.getCenter());
       this.props.setCollectionFilterMapZoom(this._map.getZoom());
     })
@@ -711,150 +634,6 @@ export default class CollectionFilterMap extends React.Component {
       }
     })
   }
-
-  // commented out till we can verify dunamic labels work again
-  // Handles dynamic labeling of counties whose centroids fall outside
-  // of the current map extent. Removes duplicate county labels at tile
-  // boundaries and determines the best placement of a single label
-  // when the map extent changes.
-  // dynamicLabels(map) {
-  //   dynamicCountyCentroid.features = [];
-  //   const countyFeatures = map.queryRenderedFeatures({
-  //     layers: ['county']
-  //   });
-  //
-  //   const mapSW = map.getBounds()._sw;
-  //   const mapNE = map.getBounds()._ne;
-  //
-  //   const mapViewBound = {
-  //     type: "Feature",
-  //     geometry: {
-  //       type: "Polygon",
-  //       coordinates: [
-  //         [
-  //           [mapSW.lng, mapSW.lat],
-  //           [mapSW.lng, mapNE.lat],
-  //           [mapNE.lng, mapNE.lat],
-  //           [mapNE.lng, mapSW.lat],
-  //           [mapSW.lng, mapSW.lat]
-  //         ]
-  //       ]
-  //     }
-  //   };
-  //
-  //   const visualCenterList = [];
-  //   const fixedLabelFilter = ["!in", "area_type_name"];
-  //   const counties = this.groupBy(countyFeatures, countyFeature => countyFeature.properties.area_type_name);
-  //   counties.forEach( (value, key) => {
-  //     let lngOfCentroid = parse(value[0].properties.centroid).coordinates[0];
-  //     let latOfCentroid = parse(value[0].properties.centroid).coordinates[1];
-  //     if (lngOfCentroid <= mapSW.lng || lngOfCentroid >= mapNE.lng || latOfCentroid <= mapSW.lat || latOfCentroid >= mapNE.lat) {
-  //       fixedLabelFilter.push(key);
-  //       let visualCenter = value.map(obj => this.getVisualCenter(obj, mapViewBound));
-  //       if (this.cleanArray(visualCenter).length) {
-  //           visualCenterList.push(this.cleanArray(visualCenter));
-  //       }
-  //     }
-  //   });
-  //   visualCenterList.map(obj => {
-  //     const coordinatesList = [];
-  //     obj.forEach( (feature) => {
-  //       coordinatesList.push(feature.geometry.coordinates);
-  //     });
-  //     const center = this.getCenter(coordinatesList);
-  //     const countyCenterFeature = {
-  //       type: "Feature",
-  //       geometry: {
-  //         type: "Point",
-  //         coordinates: center
-  //       },
-  //       properties: {
-  //         area_type_name: obj[0].properties.area_type_name,
-  //       }
-  //     };
-  //     dynamicCountyCentroid.features.push(countyCenterFeature);
-  //     return obj;
-  //   });
-  //   map.setFilter("county-label", fixedLabelFilter);
-  //   map.getSource('dynamic-county-centroid').setData(dynamicCountyCentroid);
-  // }
-  //
-  // // clean method to remove undefined from an array
-  // cleanArray(array) {
-  //   for (let i = 0, n = array.length; i < n; i++) {
-  //     if (!array[i]) {
-  //       array.splice(i, 1);
-  //       i--;
-  //     }
-  //   }
-  //   return array;
-  // }
-  //
-  // // groups the features by county
-  // groupBy(list, keyGetter) {
-  //   const map = new Map();
-  //   list.forEach(function(item) {
-  //     let key = keyGetter(item);
-  //     let collection = map.get(key);
-  //     if (!collection) {
-  //       map.set(key, [item]);
-  //     } else {
-  //       collection.push(item);
-  //     }
-  //   });
-  //   return map;
-  // }
-  //
-  // // Get the visual center from each county sliver after
-  // // intersecting the rendered features with the map bounds.
-  // // Returns a single point to account for multiple county
-  // // features at tile boundaries.
-  // getVisualCenter(feature, mapViewBound) {
-  //   if (feature.geometry.type === "Polygon") {
-  //     const intersection = intersect(mapViewBound, feature.geometry);
-  //     if (intersection) {
-  //       const visualCenter = {
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: []
-  //         },
-  //         properties: {}
-  //       };
-  //       if(intersection.geometry.coordinates.length > 1) {
-  //         const intersections = [];
-  //         intersection.geometry.coordinates.forEach(
-  //           (coordinate) => {
-  //             intersections.push(polylabel(coordinate));
-  //           }
-  //         );
-  //         visualCenter.geometry.coordinates = this.getCenter(
-  //           intersections
-  //         );
-  //       } else {
-  //         visualCenter.geometry.coordinates = polylabel(
-  //           intersection.geometry.coordinates
-  //         );
-  //       }
-  //       visualCenter.properties.area_type_name = feature.properties.area_type_name;
-  //       return visualCenter;
-  //     }
-  //   }
-  // }
-  //
-  // // get the center of a coordinates list
-  // getCenter(coordinates) {
-  //   const lngList = [];
-  //   const latList = [];
-  //   coordinates.map(coordinate => {
-  //     lngList.push(coordinate[0]);
-  //     latList.push(coordinate[1]);
-  //     return coordinate;
-  //   });
-  //   const meanLng = lngList.reduce((p,c) => p + c, 0) / lngList.length;
-  //   const meanLat = latList.reduce((p,c) => p + c, 0) / latList.length;
-  //   return [meanLng, meanLat];
-  // }
 
   // disable the map controls when a filter is set
   disableUserInteraction = () => {

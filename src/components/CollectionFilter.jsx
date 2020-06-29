@@ -105,10 +105,14 @@ export default class CollectionFilter extends React.Component {
     const geocodeUrl = `https://nominatim.tnris.org/search/\
       ${feature}?format=geojson&polygon_geojson=1`;
     // ajax request to retrieve the features
-    axios.get(geocodeUrl).then(response => {
-      // response returns an array and we want the first item
-      this.handleSetGeoFilter(this, 'osm', response.data.features[0])
-    })
+    axios.get(geocodeUrl)
+      .then(response => {
+        // response returns an array and we want the first item
+        this.handleSetGeoFilter(this, 'osm', response.data.features[0])
+        })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   handleSetGeoFilter(_this, aoiType, aoi) {

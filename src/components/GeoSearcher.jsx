@@ -59,9 +59,13 @@ export default class GeoSearcher extends React.Component {
     const geocodeUrl = `https://nominatim.tnris.org/search/\
       ${feature}?format=geojson&polygon_geojson=1`;
     // ajax request to retrieve the features
-    axios.get(geocodeUrl).then(response => {
-      this.setState({ features: response.data.features });
-    })
+    axios.get(geocodeUrl)
+      .then(response => {
+        this.setState({ features: response.data.features });
+        })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   // clears the search input and resets the local state

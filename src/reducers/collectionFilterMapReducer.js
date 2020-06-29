@@ -13,7 +13,7 @@ const initialState = {
   collectionFilterMapAoi: {},
   collectionFilterMapCenter: {lng: -99.341389, lat: 31.33}, // the center of Texas
   collectionFilterMapFilter: [],
-  collectionFilterMapZoom: 5.3
+  collectionFilterMapZoom: 5.8
 };
 
 export default function collectionFilterMapReducer(state = initialState, action) {

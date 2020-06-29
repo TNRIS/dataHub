@@ -3,16 +3,10 @@ styles for component: GeoSearcher
 */
 
 .geo-search-component:focus-within {
-
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 7px -1px;
+  box-shadow: 2px 2px 8px #888;
 
   .geo-search-input {
     background-color: $main-background;
-    border: 1px solid $header-border;
-  }
-
-  .suggestion-list {
-    border-bottom: none;
   }
 }
 
@@ -31,10 +25,6 @@ styles for component: GeoSearcher
   -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
   filter: opacity(.3) drop-shadow(0 0 0 #FFF);
   cursor: default !important;
-
-  // label {
-  //   pointer-events: none;
-  // }
 }
 
 .geo-search-component {
@@ -73,7 +63,7 @@ styles for component: GeoSearcher
 
   .suggestion-list {
     background-color: $main-background;
-    border: 1px solid $header-border;
+    border-top: 1px solid $header-border;
     box-shadow: inherit;
     padding: 0;
 
