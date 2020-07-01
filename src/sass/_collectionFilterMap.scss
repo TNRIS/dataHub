@@ -40,7 +40,9 @@
 
   .map-filter-button {
     position: absolute;
-    right: 46%;
+    width: 184px;
+    left: 50%;
+    margin-left: -92px;
     top: 115px;
     background-color: $secondary-color;
   }

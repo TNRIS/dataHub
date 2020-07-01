@@ -1,7 +1,6 @@
 import React from 'react'
 import { matchPath } from 'react-router-dom'
 import turfBbox from '@turf/bbox'
-import axios from 'axios'
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
 const cartodb = window.cartodb;
@@ -105,13 +104,14 @@ export default class CollectionFilter extends React.Component {
     const geocodeUrl = `https://nominatim.tnris.org/search/\
       ${feature}?format=geojson&polygon_geojson=1`;
     // ajax request to retrieve the features
-    axios.get(geocodeUrl)
-      .then(response => {
+    fetch(geocodeUrl)
+      .then(response => response.json())
+      .then(json => {
         // response returns an array and we want the first item
-        this.handleSetGeoFilter(this, 'osm', response.data.features[0])
-        })
-      .catch(err => {
-        console.log(err);
+        this.handleSetGeoFilter(this, 'osm', json.features[0]);
+      })
+      .catch(error => {
+        console.log(error);
       })
   }
 
