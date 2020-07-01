@@ -22,7 +22,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
-        resourceLength: null,
         areaTypesLength: 1
       };
       // bind our map builder functions
@@ -56,12 +55,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       if (window.innerWidth > this.downloadBreakpoint) {
         this.createMap();
       }
-    }
-
-    if (this.props.selectedCollectionResources.result
-        && this.props.selectedCollectionResources.result.length === 0
-        && (this.state.resourceLength !== 0)) {
-      this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
     }
   }
 
@@ -888,14 +881,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       return loadingMessage;
     }
 
-    if (this.state.resourceLength === 0) {
+    if (this.props.selectedCollectionResources.result
+        && this.props.selectedCollectionResources.result.length === 0) {
       return (
         <div className='tnris-download-template-download'>
           <div className="tnris-download-template-download__none">
             Uh oh, we couldn't find the files to download. Please notify TNRIS using the contact form for this dataset.
           </div>
         </div>
-      )
+      );
     }
 
     return (
