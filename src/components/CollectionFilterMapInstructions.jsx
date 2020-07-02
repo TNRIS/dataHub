@@ -28,7 +28,7 @@ export default class CollectionFilterMapInstructions extends React.Component {
       <div>
         <i className="material-icons close-icon" onClick={() => {this.setState({noteHover:false})}}>close</i>
         <div className="instruction-paragraph">
-          Select a county from the dropdown or use the draw tool (
+          Search for places and addresses in Texas or use the draw tool (
           <div id="instruction-polygon-icon" className="mapbox-gl-draw_polygon"></div>)&nbsp;
           to identify a geographic area.
         </div>

@@ -2,9 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import BasemapSelector from '../BasemapSelector'
 import LayerSelector from '../LayerSelector'
+import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
+import turfBbox from '@turf/bbox'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
 // so we create a constant to represent it so it's available to the component
@@ -27,8 +29,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   }
 
   componentWillUnmount() {
-    if (this.map) {
-      this.map.remove();
+    if (this._map) {
+      this._map.remove();
     }
   }
 
@@ -72,6 +74,163 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     }, this);
   }
 
+  //
+  // START GEOSEARCHER METHODS
+  //
+  // returns layer properties based on feature type for the
+  // geosearcher 'selected-feature' layer
+  getGeoSearcherLayerProps = (featureType) => {
+    if (featureType === 'Point' || featureType === 'MultiPoint') {
+      return {
+        'type': 'circle',
+        'paint': {
+          'circle-radius': 9,
+          'circle-color': styles['selectedFeatureOSM'],
+          'circle-opacity': 0.5
+        }
+      };
+    } else if (
+      featureType === 'Polygon' || featureType === 'MultiPolygon') {
+        return {
+          'type': 'fill',
+          'paint': {
+            'fill-color': styles['selectedFeatureOSM'],
+            'fill-opacity': 0.2,
+            'fill-outline-color': styles['selectedFeatureOSM']
+          }             
+        };
+    } else if (
+      featureType === 'LineString' || featureType === 'MultiLinestring') {
+        return {
+          'type': 'line',
+          'paint': {
+            'line-color': styles['selectedFeatureOSM'],
+            'line-width': 5,
+            'line-opacity': 0.5
+          }
+        };
+    }
+  }
+
+  // adds the selected feature source data to the map
+  // if aoiType is set to 'osm'
+  addGeoSearcherSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
+    
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [
+            selectedFeature
+          ]
+        }
+      });
+    } else {
+      selectedFeatureSource.setData({
+        'type': 'FeatureCollection',
+        'features': [
+          selectedFeature
+        ]
+      });
+    }
+  }
+  
+  // adds the selected feature layer to the map if
+  // aoiType is set to 'osm'
+  addGeoSearcherLayer = (selectedFeature) => {
+    // selected feature layer definition
+    const layerObject = {
+      'id': 'selected-feature',
+      'type': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).type,
+      'source': 'selected-feature',
+      'paint': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).paint
+    };
+  
+    // check for the selected feature source
+    // before adding the layer
+    if (this._map.getSource('selected-feature')) {
+        // check if the selected feature layer is in the map
+        // and add it if not. if it is remove the layer
+        // and add a new one.
+        const selectedFeatureLayer = this._map.getLayer('selected-feature');
+        if (typeof selectedFeatureLayer === 'undefined') {
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        } else {
+          this._map.removeLayer('selected-feature');
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        }
+    };
+  }
+
+  // adds slected feature draw source data to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': this.props.collectionFilterMapAoi.payload
+          }]
+        }
+      });
+    }
+  }
+  
+  // adds selected feature draw layer to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawLayer = () => {
+    if (this._map.getSource('selected-feature')) {
+      const selectedFeatureLayer = this._map.getLayer('selected-feature');
+          if (typeof selectedFeatureLayer === 'undefined') {
+            this._map.addLayer({
+              'id': 'selected-feature',
+              'type': 'line',
+              'source': 'selected-feature',
+              'paint': {
+                'line-color': styles['selectedFeatureOSM'],
+                'line-width': 3,
+                'line-opacity': 0.5
+              }
+            }, 'boundary_country_inner');
+          }
+    }
+  }
+
+  // clear the input and remove the 'selected-feature' layer
+  // if the GeoSearcher input is cleared
+  removeGeoSearcherLayer = () => {
+    this.props.setGeoSearcherInputValue('');
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+    if (typeof selectedFeatureLayer !== 'undefined') {
+      this._map.removeLayer('selected-feature');
+    }
+  }
+
+  // adds the GeoSearcher's 'selected-feature' layer to the map
+  // and moves the map to show the feature
+  handleGeoSearcherChange = (selectedFeature) => {
+    if (selectedFeature !== null) {
+      this.addGeoSearcherSource(selectedFeature);
+      this.addGeoSearcherLayer(selectedFeature);
+
+      this._map.fitBounds(
+        selectedFeature.bbox,
+        {padding: 80}
+      );
+    }
+  }
+  //
+  // END GEOSEARCHER METHODS
+  //
+
   createMap() {
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
@@ -82,7 +241,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       zoom: 4,
       minZoom: 5
     });
-    this.map = map;
+    this._map = map;
     map.addControl(new mapboxgl.NavigationControl({
         showCompass: false
     }), 'top-left');
@@ -160,19 +319,24 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
     // END LAYER CONTROL
     //
 
-    // get the service bounding box and zoom map to features' extent
-    const wmsCapabilities = this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities';
-    fetch(wmsCapabilities)
-    .then(res => res.text())
-    .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-    .then(data => {
-      const bbox = data.getElementsByTagName("LatLonBoundingBox")[0];
-      map.fitBounds([[bbox.getAttribute('minx'), bbox.getAttribute('miny')], [bbox.getAttribute('maxx'), bbox.getAttribute('maxy')]],{padding: 20});
-    })
-    .catch(error => {
-      console.log('Error retrieving LatLongBoundingBox of WMS Service', error);
-      console.log('URL', wmsCapabilities)
-    });
+    // Check if an aoi has been set in the geo filter
+    // and overide the below fitBounds call if it has.
+    // The map will fit to the bounds of the aoi instead.
+    if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
+      // get the service bounding box and zoom map to features' extent
+      const wmsCapabilities = this.props.indexUrl + '&SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities';
+      fetch(wmsCapabilities)
+      .then(res => res.text())
+      .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+      .then(data => {
+        const bbox = data.getElementsByTagName("LatLonBoundingBox")[0];
+        map.fitBounds([[bbox.getAttribute('minx'), bbox.getAttribute('miny')], [bbox.getAttribute('maxx'), bbox.getAttribute('maxy')]],{padding: 20});
+      })
+      .catch(error => {
+        console.log('Error retrieving LatLongBoundingBox of WMS Service', error);
+        console.log('URL', wmsCapabilities)
+      });
+    }
 
     //
     // add wms & vector tile service layers
@@ -486,9 +650,34 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       }
       hoveredStateId = null;
     });
+
+    // if a geo filter aoi is set in the app's state on map load,
+    // add it to the map and fit the map's bounds to the extent
+    this._map.on('load', () => {
+      if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+        if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+          // add the draw aoi source and layer to the map
+          this.addMapboxDrawSource(this.props.collectionFilterMapAoi.payload);
+          this.addMapboxDrawLayer();
+        } else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
+            // add the GeoSearcher aoi source and layer to the map
+            this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
+            this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
+        }
+        this._map.fitBounds(turfBbox(
+          this.props.collectionFilterMapAoi.payload
+        ), {padding: 80});
+      }
+    })
   }
 
   render() {
+    const geoSearcher = (
+      <GeoSearcherContainer
+        handleGeoSearcherChange={ this.handleGeoSearcherChange }
+        resetTheMap={ this.removeGeoSearcherLayer } />
+    );
+
     return (
       <div className="template-content-div historical-aerial-template-index-download">
         <div className='template-content-div-header mdc-typography--headline5'>
@@ -498,6 +687,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         Click a polygon in the map to download available index.
         </div>
         <div id='historical-index-download-map'></div>
+        {Object.keys(this.props.collectionFilterMapAoi).length > 0 ?
+         '' : geoSearcher}
       </div>
     )
   }

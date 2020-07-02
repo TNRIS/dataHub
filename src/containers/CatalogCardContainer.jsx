@@ -13,19 +13,37 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
     selectCollection: (collectionId) => {
-      dispatch(collectionActions.selectCollection(collectionId));
+      dispatch(
+        collectionActions.selectCollection(
+          collectionId
+        )
+      );
     },
     setCollectionSearchQuery: (collectionSearchQuery) => {
-      dispatch(collectionSearcherActions.setCollectionSearchQuery(collectionSearchQuery));
+      dispatch(
+        collectionSearcherActions.setCollectionSearchQuery(
+          collectionSearchQuery
+        )
+      );
     },
     setCollectionSearchSuggestionsQuery: (collectionSearchSuggestionsQuery) => {
-      dispatch(collectionSearcherActions.setCollectionSearchSuggestionsQuery(collectionSearchSuggestionsQuery));
+      dispatch(
+        collectionSearcherActions.setCollectionSearchSuggestionsQuery(
+          collectionSearchSuggestionsQuery
+        )
+      );
     },
     setUrl: (newUrl, history) => {
-      dispatch(urlTrackerActions.setUrl(newUrl, history))
+      dispatch(
+        urlTrackerActions.setUrl(
+          newUrl, history
+        )
+      );
     },
     setViewCollection: () => {
-      dispatch(catalogActions.setViewCollection());
+      dispatch(
+        catalogActions.setViewCollection()
+      );
     }
 })
 

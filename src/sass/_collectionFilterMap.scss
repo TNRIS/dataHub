@@ -2,7 +2,7 @@
 
   #collection-filter-map {
     position: absolute;
-    top: 110px;
+    top: 105px;
     left: 0;
     bottom: 50px;
     width: 100%;
@@ -24,12 +24,26 @@
     -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     filter: opacity(.3) drop-shadow(0 0 0 #FFF);
     cursor: default !important;
+
+    label {
+      pointer-events: none;
+    }
+  }
+
+  .disabled-button:focus {
+    box-shadow: none;
+  }
+
+  .disabled-button:hover {
+    background-color: unset !important;
   }
 
   .map-filter-button {
     position: absolute;
-    right: 60px;
-    bottom: 75px;
+    width: 184px;
+    left: 50%;
+    margin-left: -92px;
+    top: 115px;
     background-color: $secondary-color;
   }
 

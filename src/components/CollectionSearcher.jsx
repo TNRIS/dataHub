@@ -187,9 +187,9 @@ export default class CollectionSearcher extends React.Component {
               tabIndex="3"
               {...getInputProps({
                 value: this.state.searchFieldValue,
-                placeholder: "Search",
+                placeholder: "Search the Catalog",
                 onChange: this.handleInputChange,
-                onKeyDown: event => this.handleKeyDown(event)
+                onKeyDown: this.handleKeyDown
             })}>
             </input>
             {this.props.collectionSearchSuggestionsQuery ?
@@ -213,9 +213,7 @@ export default class CollectionSearcher extends React.Component {
                         index,
                         key: index
                       })}
-                            style={{
-                              backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
-                            }}>
+                    >
                       {item}
                     </li>
                   )}

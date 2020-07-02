@@ -13,16 +13,30 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => ({
   setCollectionTimeslider: (collectionTimeslider) => {
-    dispatch(collectionTimesliderActions.setCollectionTimeslider(collectionTimeslider));
+    dispatch(
+      collectionTimesliderActions.setCollectionTimeslider(
+        collectionTimeslider
+      )
+    );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history))
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   },
   url404: () => {
-    dispatch(urlTrackerActions.url404());
+    dispatch(
+      urlTrackerActions.url404()
+    );
   }
 })
 
