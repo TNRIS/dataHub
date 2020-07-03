@@ -86,17 +86,16 @@ export default class Metadata extends React.Component {
       </li>
     ) : "";
 
-    // const acquisition = this.props.collection.acquisition_date ? this.props.collection.acquisition_date.substring(0, 4) : '';
-    // const acq_year = this.props.collection.template !== 'outside-entity' && this.props.collection.acquisition_date ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <span className="mdc-list-item__primary-text">
-    //         {acquisition}
-    //       </span>
-    //       <span className="mdc-list-item__secondary-text">Acquisition</span>
-    //     </span>
-    //   </li>
-    // ) : "";
+    const mission = this.props.collection.template === 'historical-aerial' && this.props.collection.collection ? (
+      <li className="mdc-list-item">
+        <span className="mdc-list-item__text">
+          <span className="mdc-list-item__primary-text">
+            {this.props.collection.collection}
+          </span>
+          <span className="mdc-list-item__secondary-text">Mission Identifier</span>
+        </span>
+      </li>
+    ) : "";
 
     const category = this.props.collection.template !== 'outside-entity' && this.props.collection.category ? (
       <li className="mdc-list-item">
@@ -112,17 +111,6 @@ export default class Metadata extends React.Component {
         </span>
       </li>
     ) : "";
-
-    // const dataTypes = this.props.collection.template !== 'outside-entity' && this.props.collection.data_types ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <strong>Data Types:</strong>
-    //     </span>
-    //     <span className="mdc-list-item__text">
-    //       {this.props.collection.data_types}
-    //     </span>
-    //   </li>
-    // ) : "";
 
     const fileType = this.props.collection.template !== 'outside-entity' && this.props.collection.file_type ? (
       <li className="mdc-list-item">
@@ -248,50 +236,6 @@ export default class Metadata extends React.Component {
       </li>
     ) : "";
 
-    // const coverageExtent = this.props.collection.template !== 'outside-entity' && this.props.collection.coverage_extent ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <strong>Coverage Extent:</strong>
-    //     </span>
-    //     <span className="mdc-list-item__text">
-    //       {this.props.collection.coverage_extent}
-    //     </span>
-    //   </li>
-    // ) : "";
-
-    // const knownIssues = this.props.collection.template !== 'outside-entity' && this.props.collection.known_issues ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <strong>Known Issues:</strong>
-    //     </span>
-    //     <span className="mdc-list-item__text">
-    //       {this.props.collection.known_issues}
-    //     </span>
-    //   </li>
-    // ) : "";
-
-    // const recommendedUse = this.props.collection.template !== 'outside-entity' && this.props.collection.recommended_use ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <strong>Recommended Use:</strong>
-    //     </span>
-    //     <span className="mdc-list-item__text">
-    //       {this.props.collection.recommended_use}
-    //     </span>
-    //   </li>
-    // ) : "";
-
-    // const tags = this.props.collection.template !== 'outside-entity' && this.props.collection.tags ? (
-    //   <li className="mdc-list-item">
-    //     <span className="mdc-list-item__text">
-    //       <strong>Tags:</strong>
-    //     </span>
-    //     <span className="mdc-list-item__text">
-    //       {this.props.collection.tags}
-    //     </span>
-    //   </li>
-    // ) : "";
-
     return (
       <div className="template-content-div metadata">
         <div className='mdc-typography--headline5 template-content-div-header'>
@@ -305,6 +249,7 @@ export default class Metadata extends React.Component {
           {source_contact}
           {epsg}
           {license}
+          {mission}
 
           {fileType}
           {downloadFormats}

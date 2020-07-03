@@ -1,8 +1,13 @@
 import React from 'react'
 import { GridLoader } from 'react-spinners'
+import ReactDOM from 'react-dom'
+import BasemapSelector from '../BasemapSelector'
+import LayerSelector from '../LayerSelector'
+import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.scss'
+import turfBbox from '@turf/bbox'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.scss'
@@ -17,14 +22,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
-        resourceLength: null,
         areaTypesLength: 1
       };
-
       // bind our map builder functions
       this.createMap = this.createMap.bind(this);
+      this.createPreviewLayer = this.createPreviewLayer.bind(this);
       this.createLayers = this.createLayers.bind(this);
       this.toggleLayers = this.toggleLayers.bind(this);
+      this.toggleBasemaps = this.toggleBasemaps.bind(this);
       this.layerRef = {};
       this.stateMinZoom = 5;
       this.qquadMinZoom = 8;
@@ -51,18 +56,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         this.createMap();
       }
     }
-
-    if (this.props.selectedCollectionResources.result
-        && this.props.selectedCollectionResources.result.length === 0
-        && (this.state.resourceLength !== 0)) {
-      this.setState({resourceLength:this.props.selectedCollectionResources.result.length});
-    }
   }
 
   componentWillUnmount() {
-    if (this.map) {
-      this.map.remove();
+    if (this._map) {
+      this._map.remove();
     }
+    // clear the GeoSearcher input when the map is closed
+    this.props.setGeoSearcherInputValue('');
   }
 
   toggleLayers (e, map, areaType) {
@@ -71,14 +72,35 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       document.querySelector('.mapboxgl-popup').remove();
     }
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
-    if (this.props.collectionName.includes('NAIP') && areaType === 'qquad') {
+    if (this.props.collection.name.includes('NAIP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
-    else if (this.props.collectionName.includes('TOP') && areaType === 'qquad') {
+    else if (this.props.collection.name.includes('TOP') && areaType === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.qquadMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     else {
       map.setMinZoom(this.stateMinZoom);
+      // nav control zoom buttons won't update 'disabled' status until
+      // a zoom action occurs so, if should be enabled, fire zoom changes
+      // to refresh zoom buttons
+      if (map.getZoom() >= this.stateMinZoom) {
+        map.setZoom(map.getZoom() + .00001);
+        map.setZoom(map.getZoom() - .00001);
+      }
     }
     // iterate layerRef for layers in map by areaType key
     Object.keys(this.layerRef).forEach( layer => {
@@ -90,8 +112,11 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           map.setLayoutProperty(layerName, 'visibility', 'visible');
           map.setLayoutProperty(layerName + '__outline', 'visibility', 'visible');
         }, this);
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item mdc-list-item--activated';
+        // special map handling for preview layer since it has a single layerName
+        // which is different from the other layers and not present in this.layerRef
+        if (layer === 'preview') {
+          map.setLayoutProperty('wms-preview-layer', 'visibility', 'visible');
+        }
       }
       else {
         // iterate layer id's for clicked areaType and toggle their visibility
@@ -99,11 +124,194 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           map.setLayoutProperty(layerName, 'visibility', 'none');
           map.setLayoutProperty(layerName + '__outline', 'visibility', 'none');
         }, this);
-        // make the layer's menu button active by classname
-        document.querySelector('#dld-' + layer).className = 'mdc-list-item';
+        // special map handling for preview layer since it has a single layerName
+        // which is different from the other layers and not present in this.layerRef
+        if (layer === 'preview') {
+          map.setLayoutProperty('wms-preview-layer', 'visibility', 'none');
+        }
       }
     }, this);
   }
+
+  toggleBasemaps (e, map, visible) {
+    map.setLayoutProperty('satellite-basemap-layer', 'visibility', visible);
+    const sfx = visible === 'visible' ? 'Satellite' : '';
+    const fillKey = 'boundaryFill' + sfx;
+    const outlineKey = 'boundaryOutline' + sfx;
+    Object.keys(this.layerRef).forEach( layer => {
+      this.layerRef[layer].forEach( layerName => {
+        map.setPaintProperty(layerName, 'fill-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[fillKey]
+        ]);
+        map.setPaintProperty(layerName + '__outline', 'line-color', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          styles['selectedFeature'],
+          styles[outlineKey]
+        ]);
+      }, this);
+    }, this);
+  }
+
+  //
+  // START GEOSEARCHER METHODS
+  //
+  // returns layer properties based on feature type for the
+  // geosearcher 'selected-feature' layer
+  getGeoSearcherLayerProps = (featureType) => {
+    if (featureType === 'Point' || featureType === 'MultiPoint') {
+      return {
+        'type': 'circle',
+        'paint': {
+          'circle-radius': 9,
+          'circle-color': styles['selectedFeatureOSM'],
+          'circle-opacity': 0.5
+        }
+      };
+    } else if (
+      featureType === 'Polygon' || featureType === 'MultiPolygon') {
+        return {
+          'type': 'fill',
+          'paint': {
+            'fill-color': styles['selectedFeatureOSM'],
+            'fill-opacity': 0.2,
+            'fill-outline-color': styles['selectedFeatureOSM']
+          }             
+        };
+    } else if (
+      featureType === 'LineString' || featureType === 'MultiLinestring') {
+        return {
+          'type': 'line',
+          'paint': {
+            'line-color': styles['selectedFeatureOSM'],
+            'line-width': 5,
+            'line-opacity': 0.5
+          }
+        };
+    }
+  }
+
+  // adds the selected feature source data to the map
+  // if aoiType is set to 'osm'
+  addGeoSearcherSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
+    
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [
+            selectedFeature
+          ]
+        }
+      });
+    } else {
+      selectedFeatureSource.setData({
+        'type': 'FeatureCollection',
+        'features': [
+          selectedFeature
+        ]
+      });
+    }
+  }
+  
+  // adds the selected feature layer to the map if
+  // aoiType is set to 'osm'
+  addGeoSearcherLayer = (selectedFeature) => {
+    // selected feature layer definition
+    const layerObject = {
+      'id': 'selected-feature',
+      'type': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).type,
+      'source': 'selected-feature',
+      'paint': this.getGeoSearcherLayerProps(
+        selectedFeature.geometry.type).paint
+    };
+  
+    // check for the selected feature source
+    // before adding the layer
+    if (this._map.getSource('selected-feature')) {
+        // check if the selected feature layer is in the map
+        // and add it if not. if it is remove the layer
+        // and add a new one.
+        const selectedFeatureLayer = this._map.getLayer('selected-feature');
+        if (typeof selectedFeatureLayer === 'undefined') {
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        } else {
+          this._map.removeLayer('selected-feature');
+          this._map.addLayer(layerObject, 'boundary_country_inner');
+        }
+    };
+  }
+
+  // adds slected feature draw source data to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawSource = (selectedFeature) => {
+    const selectedFeatureSource = this._map.getSource('selected-feature');
+    if (typeof selectedFeatureSource === 'undefined') {
+      this._map.addSource('selected-feature', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': this.props.collectionFilterMapAoi.payload
+          }]
+        }
+      });
+    }
+  }
+  
+  // adds selected feature draw layer to the map if
+  // aoiType is set to 'draw'
+  addMapboxDrawLayer = () => {
+    if (this._map.getSource('selected-feature')) {
+      const selectedFeatureLayer = this._map.getLayer('selected-feature');
+          if (typeof selectedFeatureLayer === 'undefined') {
+            this._map.addLayer({
+              'id': 'selected-feature',
+              'type': 'line',
+              'source': 'selected-feature',
+              'paint': {
+                'line-color': styles['selectedFeatureOSM'],
+                'line-width': 3,
+                'line-opacity': 0.5
+              }
+            }, 'boundary_country_inner');
+          }
+    }
+  }
+
+  // clear the input and remove the 'selected-feature' layer
+  // if the GeoSearcher input is cleared
+  removeGeoSearcherLayer = () => {
+    this.props.setGeoSearcherInputValue('');
+    const selectedFeatureLayer = this._map.getLayer('selected-feature');
+    if (typeof selectedFeatureLayer !== 'undefined') {
+      this._map.removeLayer('selected-feature');
+    }
+  }
+
+  // adds the GeoSearcher's 'selected-feature' layer to the map
+  // and moves the map to show the feature
+  handleGeoSearcherChange = (selectedFeature) => {
+    if (selectedFeature !== null) {
+      this.addGeoSearcherSource(selectedFeature);
+      this.addGeoSearcherLayer(selectedFeature);
+
+      this._map.fitBounds(
+        selectedFeature.bbox,
+        {padding: 80}
+      );
+    }
+  }
+  //
+  // END GEOSEARCHER METHODS
+  //
 
   createMap() {
     // define mapbox map
@@ -112,20 +320,14 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         container: 'tnris-download-map', // container id
         style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
         center: [-99.341389, 31.330000],
-        zoom: 6.1
+        zoom: 6
     });
-    this.map = map;
-    // add regular out-of-the-box controls if they dont already exist
-    // prevents stacking/duplicating controls on component update
-    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
-      map.addControl(new mapboxgl.NavigationControl({
-        showCompass: false
-      }), 'top-left');
-    }
-    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
-      map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
-    }
-
+    this._map = map;
+    map.addControl(new mapboxgl.NavigationControl({
+      showCompass: false
+    }), 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
+    
     //
     // START COUNTY AND QUAD REFERENCE LAYERS
     //
@@ -177,7 +379,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'line-opacity': .2
           },
           'filter': ['==', ['get', 'area_type'], 'county']
-        });
+        }, 'quad-label');
 
         // Add the quad outlines to the map
         map.addLayer({
@@ -327,6 +529,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     } else if (areaTypesAry.includes('quad')) {
       startLayer = 'quad';
     }
+    // add wms preview option to array if wms_link present
+    if (this.props.collection.wms_link && this.props.collection.wms_link !== "") {
+      areaTypesAry.push('preview');
+    }
 
     // areaTypes length in state turns on display of layer menu if more than 1 layer
     if (areaTypesAry.length !== this.state.areaTypesLength) {
@@ -337,33 +543,41 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
 
     // set initial minZoom
     // naip and top qquad layers get qqMinZoom, everything else is state zoom
-    if (this.props.collectionName.includes('NAIP') && startLayer === 'qquad') {
+    if (this.props.collection.name.includes('NAIP') && startLayer === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
-    else if (this.props.collectionName.includes('TOP') && startLayer === 'qquad') {
+    else if (this.props.collection.name.includes('TOP') && startLayer === 'qquad') {
       map.setMinZoom(this.qquadMinZoom);
     }
     else {
       map.setMinZoom(this.stateMinZoom);
     }
 
-    // add custom control to map; only add download area
-    // menu control if areaTypesAry.length is greater than
-    // one and the control doesn't already exist in the Dom
-    if (areaTypesAry.length > 1) {
-      if (!document.querySelector('.tnris-download-menu')) {
-        map.addControl(ctrlMenu, 'top-right')
+    // add custom control to map
+    if (!document.querySelector('.tnris-download-menu')) {
+      map.addControl(ctrlMenu, 'top-right');
+    }
+    const ctrlMenuNode = document.querySelector('#download-menu');
+    // reset layer menu in case of component update
+    if (ctrlMenuNode) {
+      while (ctrlMenuNode.firstChild) {
+        ctrlMenuNode.removeChild(ctrlMenuNode.firstChild);
       }
     }
-
-    // add custom controls to map
-    const menuItems = document.querySelector('#download-menu');
-
-    // reset layer menu in case of component update
-    if (menuItems) {
-      while (menuItems.firstChild) {
-        menuItems.removeChild(menuItems.firstChild);
-      }
+    // add control containers
+    const basemapSelectorContainer = document.createElement('div');
+    basemapSelectorContainer.id = 'basemap-selector-container';
+    ctrlMenuNode.appendChild(basemapSelectorContainer);
+    // add basemap selector component to container
+    ReactDOM.render(<BasemapSelector map={map} handler={this.toggleBasemaps} />, basemapSelectorContainer);
+    // only add download layer selectors container if areaTypesAry.length
+    // is greater than one (multiple layers exist)
+    if (areaTypesAry.length > 1) {
+      const layerSelectorContainer = document.createElement('div');
+      layerSelectorContainer.id = 'layer-selector-container';
+      ctrlMenuNode.appendChild(layerSelectorContainer);
+      // add layer selector component to container
+      ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
     }
 
     // iterate our area_types so we can add them to different layers for
@@ -375,50 +589,42 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside the api response with all available resources (downloads)
       // for this areaType
       const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
-      // create the layer control in the DOM
-      var link = document.createElement('a');
-      link.href = '#';
-      link.id = 'dld-' + areaType;
-      link.textContent = areaType.toUpperCase();
-      // determine if it is the active layer. apply the correct classes and
-      // assign the visibility layoutProperty
-      let linkClass;
+
       let visibility;
       switch (areaType === startLayer) {
         case true:
-          linkClass = 'mdc-list-item mdc-list-item--activated';
           visibility = 'visible';
-          // since this is our initial layer on display, we'll zoom to the bounds
-          const areasString = areasList.join("','");
-          const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
-          const sql = new cartodb.SQL({ user: 'tnris-flood' });
-          sql.getBounds(boundsQuery).done(function(bounds) {
-            // set map to extent of download areas
-            map.fitBounds(
-              [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
-              {padding: 20}
-            );
-          });
+          // Check if an aoi has been set in the geo filter
+          // and overide the below fitBounds call if it has.
+          // The map will fit to the bounds of the aoi instead.
+          if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
+            // since this is our initial layer on display, we'll zoom to the bounds
+            const areasString = areasList.join("','");
+            const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
+            const sql = new cartodb.SQL({ user: 'tnris-flood' });
+            sql.getBounds(boundsQuery).done(function(bounds) {
+              // set map to extent of download areas
+              map.fitBounds(
+                [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
+                {padding: 20}
+              );
+            });
+          }
           break;
         default:
-          linkClass = 'mdc-list-item';
           visibility = 'none';
       }
-      link.className = linkClass;
-      link.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.toggleLayers(e, map, areaType);
-      };
-
-      // add areaType layer to layer menu
-      if (menuItems) {menuItems.appendChild(link)};
 
       // get total number of resources available for download
       const total = areasList.length;
+      // if the preview layer, we'll use a separate function to add the wms service
+      // otherwise, use the total areas count to add interactive download layer(s)
+      if (areaType === 'preview') {
+        this.createPreviewLayer(map, this.props.collection.wms_link);
+      }
       // if < 2000 downloads, we know the map can perform so we'll just get them
       // all at once
-      if (total < 2000) {
+      else if (total < 2000) {
         const allAreasString = areasList.join("','");
         const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
         this.createLayers(allAreasQuery, map, "0", areaType, visibility);
@@ -443,6 +649,44 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       }
       return areaType;
     }, this);
+
+    // if a geo filter aoi is set in the app's state on map load,
+    // add it to the map and fit the map's bounds to the extent
+    this._map.on('load', () => {
+      if (Object.keys(this.props.collectionFilterMapAoi).length > 0) {
+        if (this.props.collectionFilterMapAoi.aoiType === 'draw') {
+          // add the draw aoi source and layer to the map
+          this.addMapboxDrawSource(this.props.collectionFilterMapAoi.payload);
+          this.addMapboxDrawLayer();
+        } else if (this.props.collectionFilterMapAoi.aoiType === 'osm') {
+            // add the GeoSearcher aoi source and layer to the map
+            this.addGeoSearcherSource(this.props.collectionFilterMapAoi.payload);
+            this.addGeoSearcherLayer(this.props.collectionFilterMapAoi.payload);
+        }
+        this._map.fitBounds(turfBbox(
+          this.props.collectionFilterMapAoi.payload
+        ), {padding: 80});
+      }
+    })
+  }
+
+  createPreviewLayer(map, wms_link) {
+    // get capabilities url for ESRI AGS services append: ?service=WMS&request=getcapabilities
+    // ESRI AGS service query. different from mapserver insofar as query "?" instead
+    // of addition "&", also requires styles to be declared and layer chosen by #
+    const url = wms_link + '?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&SRS=EPSG:3857&styles=default&width=256&height=256&layers=0';
+    setTimeout(function () {
+      map.addSource(
+        'wms-preview',
+        { type: 'raster', tiles: [url], tileSize: 256 }
+      );
+      map.addLayer({
+        id: 'wms-preview-layer',
+        type: 'raster',
+        source: 'wms-preview',
+        'layout': {'visibility': 'none'}
+      });
+    }, 500);
   }
 
   createLayers(query, map, loop, areaType, visibility) {
@@ -473,29 +717,13 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           .replace(/.png/, '.mvt');
       });
 
-    setTimeout(function () {
-      // use the tiles from the response to add a source to the map
-      map.addSource(layerSourceName, {
-        'type': 'vector',
-        'tiles': areaTiles,
-        'promoteId': 'objectid'
-      });
-
-      /// add the area_type outline hover layer
-        map.addLayer({
-            id: layerBaseName + '__outline-hover',
-            'type': 'line',
-            'source': layerSourceName,
-            'source-layer': 'layer0',
-            'layout': {'visibility': 'visible'},
-            'interactive': true,
-            'paint': {
-              'line-color': styles['selectedFeature'],
-              'line-width': 2.5,
-              'line-opacity': 1
-            },
-            'filter': ['==', 'area_type_name', '']
-        }, 'boundary_country_inner');
+      setTimeout(function () {
+        // use the tiles from the response to add a source to the map
+        map.addSource(layerSourceName, {
+          'type': 'vector',
+          'tiles': areaTiles,
+          'promoteId': 'objectid'
+        });
 
         // add the area_type outline layer
         map.addLayer({
@@ -506,11 +734,21 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             'layout': {'visibility': visibility},
             'interactive': true,
             'paint': {
-              'line-color': styles['boundaryOutline'],
-              'line-width': 1.5,
+              'line-color': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                styles['selectedFeature'],
+                styles['boundaryOutline']
+              ],
+              'line-width': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                2.5,
+                1.5
+              ],
               'line-opacity': 1
             }
-        }, layerBaseName + '__outline-hover');
+        });
 
         // add the area_type polygon layer
         map.addLayer({
@@ -596,8 +834,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           hover: true
         });
       }
-      // set the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', e.features[0].properties.area_type_name]);
     });
 
     // toggle the layer symbology when the cursor leaves a feature
@@ -615,8 +851,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         });
       }
       hoveredStateId = null;
-      // reset the area_type outline hover layer filter
-      map.setFilter(layerBaseName + '__outline-hover', ['==', 'area_type_name', '']);
     });
   }
 
@@ -631,7 +865,13 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           loading={true}
         />
       </div>
-      );
+    );
+
+    const geoSearcher = (
+      <GeoSearcherContainer
+        handleGeoSearcherChange={ this.handleGeoSearcherChange }
+        resetTheMap={ this.removeGeoSearcherLayer } />
+    );
 
     if (errorResources) {
       return <div>Error! {errorResources.message}</div>;
@@ -641,14 +881,15 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       return loadingMessage;
     }
 
-    if (this.state.resourceLength === 0) {
+    if (this.props.selectedCollectionResources.result
+        && this.props.selectedCollectionResources.result.length === 0) {
       return (
         <div className='tnris-download-template-download'>
           <div className="tnris-download-template-download__none">
             Uh oh, we couldn't find the files to download. Please notify TNRIS using the contact form for this dataset.
           </div>
         </div>
-      )
+      );
     }
 
     return (
@@ -660,6 +901,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           Click a polygon in the map to download available data.
         </div>
         <div id='tnris-download-map'></div>
+        {Object.keys(this.props.collectionFilterMapAoi).length > 0 ?
+         '' : geoSearcher}
       </div>
     );
   }

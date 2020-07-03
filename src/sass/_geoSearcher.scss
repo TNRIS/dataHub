@@ -1,0 +1,84 @@
+/*
+styles for component: GeoSearcher
+*/
+
+.geo-search-component:focus-within {
+  box-shadow: 2px 2px 8px #888;
+
+  .geo-search-input {
+    background-color: $main-background;
+  }
+}
+
+.collection-filter-map-component > .geo-search-component {
+  top: 42px;
+  left: 50%;
+  margin-left: -15%;
+  margin-right: auto;
+}
+
+.template-content-div > .geo-search-component {
+  width: 40%;
+}
+
+.disabled-geosearcher {
+  -webkit-filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+  filter: opacity(.3) drop-shadow(0 0 0 #FFF);
+  cursor: default !important;
+}
+
+.geo-search-component {
+  z-index: 2;
+  width: 30%;
+  position: absolute;
+  top: 13px;
+  right: 0;
+  margin-right: 10px;
+  overflow: unset;
+
+  @media (min-width: $breakpoint-phone) and (max-width: $breakpoint-desktop) {
+      width: 40%;
+      margin-left: -20%;
+  }
+
+  @media (max-width: $breakpoint-phone) {
+      width: 100%;
+      position: relative;
+      left: 0;
+      margin-left: 0;
+      margin-right: 12px;
+  }
+
+  .material-icons.mdc-text-field__icon {
+      color: $skin-primary;
+  }
+
+  .geo-search-input {
+      background-color: $search-background;
+      padding: 5px 60px 5px 50px !important;
+      border-bottom: none !important;
+      color: $skin-primary;
+      caret-color: $skin-primary;
+  }
+
+  .suggestion-list {
+    background-color: $main-background;
+    border-top: 1px solid $header-border;
+    box-shadow: inherit;
+    padding: 0;
+
+    li {
+      color: $skin-primary;
+      background-color: $main-background !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    li[aria-selected="true"] {
+      background-color: rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
+  .suggestion-list:hover {
+      cursor: pointer;
+  }
+}

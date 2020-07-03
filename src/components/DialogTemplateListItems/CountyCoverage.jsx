@@ -31,16 +31,10 @@ export default class CountyCoverage extends React.Component {
         zoom: 4
     });
     this.map = map;
-    // add regular out-of-the-box controls if they dont already exist
-    // prevents stacking/duplicating controls on component update
-    if (!document.querySelector('.mapboxgl-ctrl-zoom-in')) {
-      map.addControl(new mapboxgl.NavigationControl({
-        showCompass: false
-      }), 'top-left');
-    }
-    if (!document.querySelector('.mapboxgl-ctrl-fullscreen')) {
-      map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-    }
+    map.addControl(new mapboxgl.NavigationControl({
+      showCompass: false
+    }), 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
     const re = new RegExp(", ", 'g');
     const quotedCounties = this.props.counties.replace(re, "','");

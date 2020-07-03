@@ -27,25 +27,25 @@ export default class CollectionFilterMapInstructions extends React.Component {
     const noteContent = this.state.noteHover ? (
       <div>
         <i className="material-icons close-icon" onClick={() => {this.setState({noteHover:false})}}>close</i>
-        <div className="mdc-typography--body1 instruction-paragraph">
-          Select a county from the dropdown or use the draw tool (
+        <div className="instruction-paragraph">
+          Search for places and addresses in Texas or use the draw tool (
           <div id="instruction-polygon-icon" className="mapbox-gl-draw_polygon"></div>)&nbsp;
           to identify a geographic area.
         </div>
-        <div className="mdc-typography--body1 instruction-paragraph">
+        <div className="instruction-paragraph">
           To use the draw tool, single click to begin, move cursor to increase the extent/size, single click to finish the drawing.
         </div>
-        <div className="mdc-typography--body1 instruction-paragraph">
+        <div className="instruction-paragraph">
           Click the "Set Map Filter" button to apply a filter once an area has been identified. To set a new map filter, clear the currently applied filter.
         </div>
       </div>
     ) : (
-      <div className="mdc-typography--body1">Instructions</div>
+      <div>Instructions</div>
     );
 
     return (
       <div id='collection-filter-map-instructions'
-           className='mdc-typography--caption'
+           className='mdc-form-field'
            onClick={() => {this.toggleInstructions()}}>
         {noteContent}
       </div>

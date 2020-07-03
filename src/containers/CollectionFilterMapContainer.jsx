@@ -4,10 +4,11 @@ import { withRouter } from 'react-router'
 import {
   catalogActions,
   collectionFilterMapActions,
+  geoSearcherActions,
   urlTrackerActions
 } from '../actions';
-import { getAllResources
-       } from '../selectors/resourceSelectors';
+
+import { getAllResources } from '../selectors/resourceSelectors';
 import CollectionFilterMap from '../components/CollectionFilterMap';
 
 const mapStateToProps = state => ({
@@ -19,59 +20,77 @@ const mapStateToProps = state => ({
     state.collectionFilterMap.collectionFilterMapFilter,
   collectionFilterMapZoom:
     state.collectionFilterMap.collectionFilterMapZoom,
-  collectionFilterMapMoveMap:
-    state.collectionFilterMap.collectionFilterMapMoveMap,
-  collectionFilterMapSelectedAreaType:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
-  collectionFilterMapSelectedAreaTypeName:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName,
-  theme: state.colorTheme.theme,
-  catalogFilterUrl: state.urlTracker.catalogFilterUrl,
-  view: state.catalog.view,
-  resources: getAllResources(state)
+  geoSearcherInputValue:
+    state.geoSearcher.geoSearcherInputValue,
+  theme:
+    state.colorTheme.theme,
+  catalogFilterUrl:
+    state.urlTracker.catalogFilterUrl,
+  view:
+    state.catalog.view,
+  resources:
+    getAllResources(state)
 });
 
 const mapDispatchToProps = dispatch => ({
   setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
-  },
-  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
-  },
-  setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapFilter(collectionFilterMapFilter));
-  },
-  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
-  },
-  setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapMoveMap(collectionFilterMapMoveMap));
-  },
-  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
-        collectionFilterMapSelectedAreaType
+      collectionFilterMapActions.setCollectionFilterMapAoi(
+        collectionFilterMapAoi
       )
     );
   },
-  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+  setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
-        collectionFilterMapSelectedAreaTypeName
+      collectionFilterMapActions.setCollectionFilterMapCenter(
+        collectionFilterMapCenter
+      )
+    );
+  },
+  setCollectionFilterMapFilter: (collectionFilterMapFilter) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapFilter(
+        collectionFilterMapFilter
+      )
+    );
+  },
+  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapZoom(
+        collectionFilterMapZoom
+      )
+    );
+  },
+  setGeoSearcherInputValue: (geoSearcherInputValue) => {
+    dispatch(
+      geoSearcherActions.setGeoSearcherInputValue(
+        geoSearcherInputValue
       )
     );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history))
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
+    dispatch(
+      catalogActions.setViewCatalog()
+    );
   },
   setViewGeoFilter: () => {
-    dispatch(catalogActions.setViewGeoFilter());
+    dispatch(
+      catalogActions.setViewGeoFilter()
+    );
   }
 })
 

@@ -7,7 +7,6 @@ import { MDCSnackbar } from '@material/snackbar'
 import { MDCDialog } from '@material/dialog'
 import { GridLoader } from 'react-spinners'
 
-import HistoricalAerialTemplate from './HistoricalAerialTemplate/HistoricalAerialTemplate'
 import OutsideEntityTemplate from './TnrisOutsideEntityTemplate/TnrisOutsideEntityTemplate'
 import TnrisOrderTemplate from './TnrisOrderTemplate/TnrisOrderTemplate'
 
@@ -16,6 +15,7 @@ import FooterContainer from '../containers/FooterContainer'
 import HeaderContainer from '../containers/HeaderContainer'
 import ToolDrawerContainer from '../containers/ToolDrawerContainer'
 import CatalogCardContainer from '../containers/CatalogCardContainer'
+import HistoricalAerialTemplateContainer from '../containers/HistoricalAerialTemplateContainer'
 import TnrisDownloadTemplateContainer from '../containers/TnrisDownloadTemplateContainer'
 import OrderCartViewContainer from '../containers/OrderCartViewContainer'
 import NotFoundContainer from '../containers/NotFoundContainer'
@@ -166,7 +166,7 @@ export default class Catalog extends React.Component {
         case 'tnris-order':
           return (<TnrisOrderTemplate collection={collection} />);
         case 'historical-aerial':
-          return (<HistoricalAerialTemplate collection={collection} />);
+          return (<HistoricalAerialTemplateContainer collection={collection} />);
         case 'outside-entity':
           return (<OutsideEntityTemplate collection={collection} />);
         default:

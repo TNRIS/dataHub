@@ -12,49 +12,40 @@ const mapStateToProps = state => ({
   catalogFilterUrl:
     state.urlTracker.catalogFilterUrl,
   collectionFilterMapFilter:
-    state.collectionFilterMap.collectionFilterMapFilter,
-  collectionFilterMapMoveMap:
-    state.collectionFilterMap.collectionFilterMapMoveMap,
-  collectionFilterMapSelectedAreaType:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaType,
-  collectionFilterMapSelectedAreaTypeName:
-    state.collectionFilterMap.collectionFilterMapSelectedAreaTypeName
+    state.collectionFilterMap.collectionFilterMapFilter
 });
 
 const mapDispatchToProps = dispatch => ({
   setUrl: (newUrl) => {
-    dispatch(urlTrackerActions.setUrl(newUrl))
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl
+      )
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
-  },
-  setCollectionFilterMapMoveMap: (collectionFilterMapMoveMap) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapMoveMap(
-        collectionFilterMapMoveMap
-      )
+      catalogActions.setViewCatalog()
     );
   },
   setCollectionFilterMapCenter: (collectionFilterMapCenter) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapCenter(collectionFilterMapCenter));
-  },
-  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapZoom(collectionFilterMapZoom));
-  },
-  setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
-    dispatch(collectionFilterMapActions.setCollectionFilterMapAoi(collectionFilterMapAoi));
-  },
-  setCollectionFilterMapSelectedAreaType: (collectionFilterMapSelectedAreaType) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaType(
-        collectionFilterMapSelectedAreaType
+      collectionFilterMapActions.setCollectionFilterMapCenter(
+        collectionFilterMapCenter
       )
     );
   },
-  setCollectionFilterMapSelectedAreaTypeName: (collectionFilterMapSelectedAreaTypeName) => {
+  setCollectionFilterMapZoom: (collectionFilterMapZoom) => {
     dispatch(
-      collectionFilterMapActions.setCollectionFilterMapSelectedAreaTypeName(
-        collectionFilterMapSelectedAreaTypeName
+      collectionFilterMapActions.setCollectionFilterMapZoom(
+        collectionFilterMapZoom
+      )
+    );
+  },
+  setCollectionFilterMapAoi: (collectionFilterMapAoi) => {
+    dispatch(
+      collectionFilterMapActions.setCollectionFilterMapAoi(
+        collectionFilterMapAoi
       )
     );
   }

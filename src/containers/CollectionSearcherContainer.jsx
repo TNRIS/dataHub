@@ -17,39 +17,72 @@ import {
 } from '../selectors/collectionSelectors'
 
 const mapStateToProps = (state) => ({
-  collections: getAllCollections(state),
-  collectionSearchQuery: state.collectionSearcher.collectionSearchQuery,
-  collectionSearchSuggestions: getSearchSuggestions(state),
-  collectionSearchSuggestionsQuery: state.collectionSearcher.collectionSearchSuggestionsQuery,
-  view: state.catalog.view,
-  previousUrl: state.urlTracker.previousUrl,
-  selectedCollection: state.collections.selectedCollection
+  collections:
+    getAllCollections(state),
+  collectionSearchQuery:
+    state.collectionSearcher.collectionSearchQuery,
+  collectionSearchSuggestions:
+    getSearchSuggestions(state),
+  collectionSearchSuggestionsQuery:
+    state.collectionSearcher.collectionSearchSuggestionsQuery,
+  view:
+    state.catalog.view,
+  previousUrl:
+    state.urlTracker.previousUrl,
+  selectedCollection:
+    state.collections.selectedCollection
 });
 
 const mapDispatchToProps = dispatch => ({
   clearSelectedCollection: () => {
-    dispatch(collectionActions.clearSelectedCollection());
+    dispatch(
+      collectionActions.clearSelectedCollection()
+    );
   },
   setCollectionSearchQuery: (collectionSearchQuery) => {
-    dispatch(collectionSearcherActions.setCollectionSearchQuery(collectionSearchQuery));
+    dispatch(
+      collectionSearcherActions.setCollectionSearchQuery(
+        collectionSearchQuery
+      )
+    );
   },
   setCollectionSearchSuggestionsQuery: (collectionSearchSuggestionsQuery) => {
-    dispatch(collectionSearcherActions.setCollectionSearchSuggestionsQuery(collectionSearchSuggestionsQuery));
+    dispatch(
+      collectionSearcherActions.setCollectionSearchSuggestionsQuery(
+        collectionSearchSuggestionsQuery
+      )
+    );
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history));
+    dispatch(
+      urlTrackerActions.setUrl(
+        newUrl, history
+      )
+    );
   },
   logFilterChange: (url) => {
-    dispatch(urlTrackerActions.logFilterChange(url));
+    dispatch(
+      urlTrackerActions.logFilterChange(
+        url
+      )
+    );
   },
   url404: () => {
-    dispatch(urlTrackerActions.url404());
+    dispatch(
+      urlTrackerActions.url404()
+    );
   },
   setViewCatalog: () => {
-    dispatch(catalogActions.setViewCatalog());
+    dispatch(
+      catalogActions.setViewCatalog()
+    );
   },
   setColorTheme: (theme) => {
-    dispatch(colorThemeActions.setColorTheme(theme));
+    dispatch(
+      colorThemeActions.setColorTheme(
+        theme
+      )
+    );
   }
 })
 

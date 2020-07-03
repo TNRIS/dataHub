@@ -28,7 +28,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(orderCartActions.submitOrderCartForm(formInfo));
   },
   setUrl: (newUrl, history) => {
-    dispatch(urlTrackerActions.setUrl(newUrl, history))
+    dispatch(urlTrackerActions.setUrl(newUrl, history));
   },
   setViewCatalog: () => {
     dispatch(catalogActions.setViewCatalog());

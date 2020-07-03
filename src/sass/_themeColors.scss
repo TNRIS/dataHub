@@ -44,6 +44,7 @@ $error-text: #af0000;
 $success-text: #00870b;
 
 $skin-primary: $nest-text;
+$filter-highlighter: initial;
 
 $footer-light: #444;
 $footer-dark: #222;
@@ -99,6 +100,7 @@ When adding new themes you will also need to update:
   $success-text: #00870b;
 
   $skin-primary: lightgray;
+  $filter-highlighter: $nest-text;
 
   $footer-light: #444;
   $footer-dark: #222;
@@ -254,6 +256,7 @@ When adding new themes you will also need to update:
   $success-text: #00870b;
 
   $skin-primary: lightgray;
+  $filter-highlighter: lightgray;
 
   $footer-light: #444;
   $footer-dark: #222;
@@ -342,6 +345,9 @@ When adding new themes you will also need to update:
   boundaryFill: #7D7D7D;
   boundaryOutline: rgba(100,100,100,.5);
   selectedFeature: #1E8DC1;
+  selectedFeatureOSM: #ff0088; // selected features from GeoSearcher
+  boundaryFillSatellite: rgb(248, 248, 248);
+  boundaryOutlineSatellite: rgba(235, 235, 235, 0.5);
   lightFill: #7D7D7D; lightText: white;
   darkFill: #7D7D7D; darkText: white;
   satanFill: $satan-theme-primary; satanText: white;

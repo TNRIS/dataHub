@@ -50,7 +50,7 @@ export default class TnrisDownloadTemplateDetails extends React.Component {
   render() {
 
     const downloadMap = this.props.collection.template === 'tnris-download' ? (
-                          <TnrisDownloadTemplateDownloadContainer collectionName={this.props.collection.name} />
+                          <TnrisDownloadTemplateDownloadContainer collection={this.props.collection} />
                         ) : "";
 
     const coverageMap = this.props.collection.counties ? (
