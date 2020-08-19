@@ -22,7 +22,24 @@ export default class Services extends React.Component {
       <a className="mdc-button mdc-button--raised" href={this.props.collection.popup_link} target="_blank" rel="noopener noreferrer">
         <i className="material-icons">launch</i>Map Preview
       </a>
-    ) : ""
+    ) : "";
+
+    // change out the url in the wms note for new tnris arcgis server
+    // endpoints based on the wms_link prop url containing certain words
+    let insertUrl;
+
+    if (this.props.collection.wms_link.includes('feature')) {
+      // assign url for tnris arcgis feature services
+      insertUrl = "https://feature.tnris.org/arcgis/rest/services"
+    }
+    else if (this.props.collection.wms_link.includes('imagery')) {
+      // assign url for tnris arcgis imagery services
+      insertUrl = "https://imagery.tnris.org/server/rest/services"
+    }
+    else {
+      // assign url as old tnris arcgis services
+      insertUrl = "https://webservices.tnris.org/arcgis/services";
+    }
 
     return (
       <div className="template-content-div">
@@ -33,7 +50,7 @@ export default class Services extends React.Component {
           This dataset is available as an online mapping service. An OGC WMS service and an ArcGIS service are available.
           To connect to the WMS service in your software, please copy the unique url provided in the box below. To access
           the TNRIS ArcGIS Server, please use the following url in your ESRI software and select from the list of available
-          services: <strong>https://webservices.tnris.org/arcgis/services</strong>.
+          services: <strong>{insertUrl}</strong>
         </p>
         <i>For questions regarding the use of one of these services in your software package, please consult the software help/support information.</i>
         <div className="services-link-details">
