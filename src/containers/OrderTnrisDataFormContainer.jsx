@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 
-import {orderCartActions} from '../actions'
+import {orderCartActions, urlTrackerActions, catalogActions} from '../actions'
 import {getAllCollections} from '../selectors/collectionSelectors'
 import OrderTnrisDataForm from '../components/OrderTnrisDataForm'
 
@@ -13,6 +13,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  setUrl: (newUrl, history) => {
+    dispatch(urlTrackerActions.setUrl(newUrl, history));
+  },
+  setViewOrderCart: () => {
+    dispatch(catalogActions.setViewOrderCart());
+  },
   addCollectionToCart: (collectionId, formInfo) => {
     dispatch(orderCartActions.addCollectionToCart(collectionId, formInfo));
   },

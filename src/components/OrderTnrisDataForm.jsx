@@ -6,6 +6,7 @@ import {MDCRipple} from '@material/ripple'
 import {MDCSwitch} from '@material/switch'
 import {MDCTextFieldHelperText} from '@material/textfield/helper-text'
 
+
 class OrderTnrisDataForm extends Component {
 
   constructor(props) {
@@ -35,6 +36,8 @@ class OrderTnrisDataForm extends Component {
       this.submitForm = this.submitForm.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.handleSwitch = this.handleSwitch.bind(this);
+      this.handleOrderCartView = this.handleOrderCartView.bind(this);
+
       // set aside declaration of data type: Lidar, Historic Imagery, or all others
       if (this.collection.category && this.collection.category.indexOf('Lidar') !== -1) {
         this.dataForm = 'lidar';
@@ -150,6 +153,13 @@ class OrderTnrisDataForm extends Component {
     }
     else if (this.dataForm === 'historicImagery' && !this.state.digital) {
       this.digitalGeoref.disabled = true;
+    }
+  }
+
+  handleOrderCartView() {
+    if (this.props.view !== 'orderCart') {
+      this.props.setViewOrderCart();
+      this.props.setUrl('/cart/');
     }
   }
 
@@ -624,7 +634,7 @@ class OrderTnrisDataForm extends Component {
             This dataset is already in the shopping cart.
           </p>
           <p className="mdc-typography--body2">
-            Please visit the shopping cart to finalize your order.
+            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView}>shopping cart</button> to finalize your order.
           </p>
         </div>
       );
@@ -636,7 +646,7 @@ class OrderTnrisDataForm extends Component {
             This dataset has been added to the shopping cart.
           </p>
           <p className="mdc-typography--body2">
-            Please visit the shopping cart to finalize your order.
+            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView}>shopping cart</button> to finalize your order.
           </p>
         </div>
       );
