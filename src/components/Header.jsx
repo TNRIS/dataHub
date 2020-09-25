@@ -24,10 +24,6 @@ export default class Header extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
-  componentDidUpdate() {
-    //console.log(this.props.view, this.props)
-  }
-
   componentDidMount() {
     this.topAppBarElement = document.querySelector('.mdc-top-app-bar');
     this.topAppBar = new MDCTopAppBar(this.topAppBarElement);
@@ -108,13 +104,12 @@ export default class Header extends React.Component {
       (<NotificationBadge key={x} label='!' count={1} frameLength={30}/>) : '');
 
     const appTitle = window.innerWidth >= tablet && this.props.view === 'catalog' ? (
-            <button
-              onClick={this.handleCatalogView}
+            <p
               id="app-title"
-              className="back-to-hub mdc-typography mdc-typography--headline5"
+              className="mdc-typography mdc-typography--headline5"
               title = "DataHub">
                 DataHub
-            </button>) : window.innerWidth >= tablet && this.props.view !== 'catalog' ? (
+            </p>) : window.innerWidth >= tablet && this.props.view !== 'catalog' ? (
             <button
               id="app-title"
               className="back-to-hub mdc-typography mdc-typography--headline5"
@@ -133,7 +128,7 @@ export default class Header extends React.Component {
                 view_comfy
             </button>) : '';
 
-    const header = (
+    const header = this.props.view === 'catalog' ? (
       <header
         className={`header-component mdc-top-app-bar mdc-top-app-bar--fixed`}
         id="master-header">
@@ -144,7 +139,7 @@ export default class Header extends React.Component {
             </a>
             <a
               className='header-title__tnris title-size'
-              href="/"
+              href="https://tnris.org/"
               tabIndex="0"
               title="tnris.org">
                 {this.state.tnrisTitle}
@@ -161,7 +156,7 @@ export default class Header extends React.Component {
             {appTitle}
           </section>
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            { this.props.view === 'catalog' ? <CollectionSearcherContainer /> : ''}
+            <CollectionSearcherContainer />
             {this.props.orders && Object.keys(this.props.orders).length !== 0 && this.props.view !== 'geoFilter' ?
                <div className="shopping-cart-icon nav-button">
                  {shoppingCartCountBadge}
@@ -187,6 +182,30 @@ export default class Header extends React.Component {
                       tune
                   </button>
                 </div> : ''}
+          </section>
+        </div>
+      </header>
+    ) : (
+      <header
+        className={`header-component mdc-top-app-bar mdc-top-app-bar--fixed`}
+        id="master-header">
+        <div className="header-title mdc-top-app-bar__row">
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <a href="https://tnris.org">
+              <img className="tnris-logo" src={tnrisLogo} alt="TNRIS Logo" title="tnris.org" />
+            </a>
+            <a
+              className='header-title__tnris title-size'
+              href="https://tnris.org/"
+              tabIndex="0"
+              title="tnris.org">
+                {this.state.tnrisTitle}
+            </a>
+          </section>
+          <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+            <a className='header-title__twdb title-size' href="http://www.twdb.texas.gov/" tabIndex="0">
+              {this.state.twdbTitle}
+            </a>
           </section>
         </div>
       </header>

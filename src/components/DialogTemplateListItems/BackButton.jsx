@@ -8,16 +8,14 @@ export default class BackButton extends React.Component {
   }
 
   handleBack() {
-    // check if in cart. 
+    // Check if in cart view. 
     // Cart is only route with multiple paths to it. 
     // So if previousUrl is collection, go back to that collection
     // Else, go home using stored filter parameters
     if (this.props.view === 'orderCart' && this.props.previousUrl.startsWith('/collection')) {
         this.props.setViewCollection();
         this.props.setUrl(this.props.previousUrl);
-        this.props.selectCollection(this.props.selectedCollection);
-        console.log(this.props.selectedCollection, this.props.previousUrl)
-      
+        this.props.selectCollection(this.props.selectedCollection);      
     } else {
       this.props.setViewCatalog();
       this.props.setUrl(this.props.catalogFilterUrl);
@@ -25,7 +23,6 @@ export default class BackButton extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     return (
       <button
         className="mdc-icon-button material-icons close-collection"
