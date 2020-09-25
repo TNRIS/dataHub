@@ -634,7 +634,7 @@ class OrderTnrisDataForm extends Component {
             This dataset is already in the shopping cart.
           </p>
           <p className="mdc-typography--body2">
-            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView}>shopping cart</button> to finalize your order.
+            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView} type='button'>shopping cart</button> to finalize your order.
           </p>
         </div>
       );
@@ -646,7 +646,7 @@ class OrderTnrisDataForm extends Component {
             This dataset has been added to the shopping cart.
           </p>
           <p className="mdc-typography--body2">
-            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView}>shopping cart</button> to finalize your order.
+            Please visit the <button style={{color: '#1E8DC1'}} className="mdc-button" onClick={this.handleOrderCartView} type='button'>shopping cart</button> to finalize your order.
           </p>
         </div>
       );
