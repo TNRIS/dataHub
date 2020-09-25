@@ -29,7 +29,7 @@ export default class HistoricalAerialTemplate extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.clearSelectedCollection();
+    //this.props.clearSelectedCollection();
   }
 
   setTemplateView(viewString) {

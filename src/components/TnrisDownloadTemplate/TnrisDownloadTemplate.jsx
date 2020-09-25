@@ -40,7 +40,7 @@ export default class TnrisDownloadTemplate extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.clearSelectedCollection();
+    //this.props.clearSelectedCollection();
   }
 
   setTemplateView(viewString) {
