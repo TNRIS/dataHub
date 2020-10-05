@@ -21,7 +21,7 @@ const SurveyJSContainer = ({
   }, [surveyId]);
 
   const onComplete = (survey, options) => {
-    onCompleteSurveyFunction(survey.data)
+    onCompleteSurveyFunction(survey.data);
   };
 
   const defaultThemeColors = Survey.StylesManager.ThemeColors["default"];
@@ -33,7 +33,7 @@ const SurveyJSContainer = ({
   defaultThemeColors["$body-container-background-color"] = "#fff";
 
   Survey.StylesManager.applyTheme();
-  
+
   const srvy = new Survey.Model(surveyJSON);
 
   return surveyJSON && isDisplayed ? (
@@ -42,5 +42,3 @@ const SurveyJSContainer = ({
 };
 
 export default SurveyJSContainer;
-
-

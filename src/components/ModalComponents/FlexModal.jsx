@@ -49,7 +49,10 @@ const cornerPositionLogic = (pos) => {
         justifyContent: "flex-end",
       };
     default:
-      break;
+      return {
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
+      };
   }
 };
 
@@ -68,6 +71,19 @@ const modalSizeLogic = (size) => {
       return {
         width: "calc(100% - 72px)",
       };
+    case "half-screen":
+      return {
+        width: "calc(50% - 72px)",
+        height: "calc(50% - 72px)",
+      };
+    case "half-height":
+      return {
+        height: "calc(50% - 72px)",
+      };
+    case "half-width":
+      return {
+        width: "calc(50% - 72px)",
+      };
     default:
       return "";
   }
@@ -83,27 +99,26 @@ const baseStyleDefault = {
     pointerEvents: "none",
   },
   contentContainer: {
-    padding: "8px",
-    borderRadius: "8px",
-    border: "solid #efefef 1px",
-    boxShadow:
-      "0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12)",
     margin: "30px",
-    zIndex: "7",
+    zIndex: "5001",
     position: "fixed",
-    background: "white",
     pointerEvents: "all",
     maxWidth: "calc(100% - 72px)",
+    minWidth: "calc(320px - 72px)",
   },
 };
 
 const FlexModal = ({
-  cornerPosition = "bottom-right",
+  modalClasses,
+  modalBackground = "#fff",
+  modalPadding = "8px",
+  modalBorder = "solid 1px #333",
+  modalPosition = "bottom-right",
   contentContainerStyle,
   modalContainerStyle,
   isDisplayed = true,
   modalSize, //Should area be full-screen, full-height, or full-width
-  background, //Pass a hex code for overlay area outside of modal content.
+  backgroundOverlayColor, //Pass a hex code for overlay area outside of modal content.
   onClickBackground = () => null, //function called on click outside modal content. if set, overrides pointerEvents: 'none' css default
   children,
 }) => {
@@ -113,18 +128,21 @@ const FlexModal = ({
         ...(modalContainerStyle
           ? modalContainerStyle
           : baseStyleDefault.modalContainer),
-        ...cornerPositionLogic(cornerPosition),
-        ...modalSizeLogic(),
-        background: background,
+        background: backgroundOverlayColor,
+        ...cornerPositionLogic(modalPosition),
       }}
       onClick={() => onClickBackground()}
     >
       <div
+        className={modalClasses}
         style={{
           ...(contentContainerStyle
             ? contentContainerStyle
             : baseStyleDefault.contentContainer),
           ...modalSizeLogic(modalSize),
+          background: modalBackground,
+          padding: modalPadding,
+          border: modalBorder
         }}
       >
         {children}

@@ -11,13 +11,11 @@ import CatalogContainer from "./containers/CatalogContainer";
 
 import ApiModalContainer from "./containers/ApiModalContainer";
 
-import { composeWithDevTools } from 'redux-devtools-extension';
-
 
 export const history = createBrowserHistory();
 export const store = createStore(
   rootReducer(history),
-  composeWithDevTools(applyMiddleware(thunk, routerMiddleware(history)))
+  compose(applyMiddleware(thunk, routerMiddleware(history)))
 );
 
 class App extends Component {

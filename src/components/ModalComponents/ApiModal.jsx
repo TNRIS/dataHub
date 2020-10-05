@@ -1,96 +1,9 @@
 import React, { useEffect, useState } from "react";
 import FlexModal from "./FlexModal";
-import SurveyJSContainer from "./SurveyJSContainer";
 
-const PreviewContent = (props) => {
-  return (
-    <React.Fragment>
-      <div /* style={{ ...preview_content_style }} */>
-        {props.preview_header ? <h2>{props.preview_header}</h2> : null}
-        {props.preview_text ? <p>{props.preview_text}</p> : null}
-      </div>
-      <div style={{ ...props.preview_buttons_container_style }}>
-        <button
-          aria-label={props.accept_button_text}
-          onClick={() => {
-            props.setContentStateFn("full");
-            props.localStoreController.setModalKeyStorage(
-              props.modal_id,
-              "STARTED_AT",
-              Date.now()
-            );
-          }}
-        >
-          {props.accept_button_text}
-        </button>
-        <button
-          aria-label={props.later_button_text}
-          onClick={() => props.setContentStateFn("minimized")}
-        >
-          {props.later_button_text}
-        </button>
-        <button
-          aria-label={props.reject_button_text}
-          onClick={() => {
-            props.setContentStateFn("none");
-            props.localStoreController.setModalKeyStorage(
-              props.modal_id,
-              "DO_NOT_DISTURB",
-              "true"
-            );
-          }}
-        >
-          {props.reject_button_text}
-        </button>
-      </div>
-    </React.Fragment>
-  );
-};
-const FullContent = (props) => {
-  const onCompleteSurveyFunction = (surveyResponses) => {
-    console.log(surveyResponses, navigator.platform, navigator.userAgent);
-    props.localStoreController.setModalKeyStorage(
-      props.modal_id,
-      "SUBMITTED_AT",
-      Date.now()
-    );
-    props.setContentStateFn("none");
-  };
-  return (
-    <React.Fragment>
-      {props.full_header && props.full_text && !props.survey_id ? (
-        <React.Fragment>
-          <h1>{props.full_header}</h1>
-          <div>{props.full_text}</div>
-        </React.Fragment>
-      ) : (
-        <SurveyJSContainer
-          surveyId={props.survey_id}
-          onCompleteSurveyFunction={onCompleteSurveyFunction}
-        />
-      )}
-    </React.Fragment>
-  );
-};
-const MinimizedContent = (props) => {
-  return (
-    <React.Fragment>
-      <div
-        onClick={() => props.setContentStateFn("preview")}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyItems: "center",
-        }}
-      >
-        <span className={"material-icons mdc-fab__icon"}>
-          {props.minimized_icon}
-        </span>
-        {props.minimized_text ? <strong>{props.minimized_text}</strong> : null}
-      </div>
-    </React.Fragment>
-  );
-};
+import PreviewContent from "./PreviewContent";
+import FullContent from "./FullContent";
+import MinimizedContent from "./MinimizedContent";
 
 export const ApiModal = (props) => {
   const [contentState, setContentState] = useState(props.default_content_state);
@@ -185,8 +98,9 @@ export const ApiModal = (props) => {
               localStoreController={localStoreController}
               minimized_text={props.minimized_text}
               minimized_icon={props.minimized_icon}
-            />
+            />  
           </FlexModal>
+          
         );
       case "none":
         return null;
