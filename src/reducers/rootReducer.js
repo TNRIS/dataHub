@@ -15,6 +15,7 @@ import orderCart from './orderCartReducer';
 import resources from './resourceReducer';
 import toolDrawer from './toolDrawerReducer';
 import urlTracker from './urlTrackerReducer';
+import apiModal from './apiModalReducer';
 
 const rootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -32,6 +33,7 @@ const rootReducer = (history) => combineReducers({
   resources,
   toolDrawer,
   urlTracker,
+  apiModal,
 })
 
 export default rootReducer;

@@ -12,6 +12,7 @@ import * as orderCartActions from './orderCartActions';
 import * as resourceActions from './resourceActions';
 import * as toolDrawerActions from './toolDrawerActions';
 import * as urlTrackerActions from './urlTrackerActions';
+import * as apiModalActions from './apiModalActions';
 
 export {
   catalogActions,
@@ -27,5 +28,6 @@ export {
   orderCartActions,
   resourceActions,
   toolDrawerActions,
-  urlTrackerActions
+  urlTrackerActions,
+  apiModalActions,
 };
