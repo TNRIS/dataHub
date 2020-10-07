@@ -162,11 +162,13 @@ FlexModal.propTypes = {
     "bottom-right",
     "bottom-left",
     "bottom-center",
+    "center-left",
+    "center-right",
     "center",
   ]),
   isDisplayed: PropTypes.bool,
   modalContainerStyle: PropTypes.object,
-  modalSize: PropTypes.oneOf(["full-screen", "full-height", "full-width"]),
+  modalSize: PropTypes.oneOf(["full-screen", "full-height", "full-width", "half-width", "half-height"]),
   onClickBackground: PropTypes.func,
 };
 

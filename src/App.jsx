@@ -29,7 +29,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <ApiModalContainer popupId={'12315'} />
+          <ApiModalContainer />
           <CatalogContainer />
         </ConnectedRouter>
       </Provider>

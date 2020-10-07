@@ -19,40 +19,43 @@ export const fetchModalsFailure = (error) => ({
   payload: { error },
 });
 
-/* function handleErrors(response) {
+function handleErrors(response) {
   // Handle HTTP errors since fetch won't.
   if (!response.ok) {
     throw Error(response.statusText);
   }
   return response;
-} */
+}
 
 //-----------COMMENTED OUT FOR DEV
 // TODO: connect to new API endpoint
-/* export function fetchModals() {
+export function fetchModals() {
   return (dispatch, getState) => {
     dispatch(fetchModalsBegin());
-    return fetch(process.env.REACT_APP_API_URL + "/api/v1/modals")
+    return fetch(
+      process.env.REACT_APP_API_URL + "/api/v1/contact/survey?limit=1"
+    )
       .then(handleErrors)
       .then((res) => res.json())
       .then((json) => {
+        dispatch(fetchModalsSuccess(json.results));
         return json.results;
       })
       .catch((error) => dispatch(fetchModalsFailure(error)));
   };
-} */
+}
 
-export function fetchModals() {
+/* export function fetchModals() {
   const modalArray = [
     {
-      modal_id: "21345",
-      default_content_state: "preview",
-      display_delay: 5,
-      preview_text: "Preview Text 1",
+      survey_template_id: "21345",
+      initial_content_state: "preview",
+      display_delay_template_type: 5,
+      preview_body_text: "Preview Text 1",
       preview_header: "Preview Header 1",
-      accept_button_text: "Accept",
-      later_button_text: "Maybe Later",
-      reject_button_text: "No Thanks",
+      preview_accept_button_text: "Accept",
+      preview_later_button_text: "Maybe Later",
+      preview_reject_button_text: "No Thanks",
       preview_position: null,
       preview_size: null,
       preview_background_color: null,
@@ -67,14 +70,14 @@ export function fetchModals() {
       minimized_text: "TNRIS Survey",
     },
     {
-      modal_id: "2134sdf5",
-      default_content_state: "preview",
-      display_delay: 10,
-      preview_text: "Preview Text 2",
+      survey_template_id: "2134sdf5",
+      initial_content_state: "preview",
+      display_delay_template_type: 10,
+      preview_body_text: "Preview Text 2",
       preview_header: "Preview Header 2",
-      accept_button_text: "Accept",
-      later_button_text: "Maybe Later",
-      reject_button_text: "No Thanks",
+      preview_accept_button_text: "Accept",
+      preview_later_button_text: "Maybe Later",
+      preview_reject_button_text: "No Thanks",
       preview_position: 'center',
       preview_size: null,
       preview_background_color: null,
@@ -94,4 +97,4 @@ export function fetchModals() {
     dispatch(fetchModalsSuccess(modalArray));
     return null;
   };
-}
+} */

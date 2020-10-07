@@ -5,7 +5,7 @@ const FullContent = (props) => {
   const onCompleteSurveyFunction = (surveyResponses) => {
     console.log(surveyResponses, navigator.platform, navigator.userAgent);
     props.localStoreController.setModalKeyStorage(
-      props.modal_id,
+      props.survey_template_id,
       "SUBMITTED_AT",
       Date.now()
     );

@@ -6,8 +6,8 @@ import FullContent from "./FullContent";
 import MinimizedContent from "./MinimizedContent";
 
 export const ApiModal = (props) => {
-  const [contentState, setContentState] = useState(props.default_content_state);
-  const [timeLeft, setTimeLeft] = useState(props.display_delay);
+  const [contentState, setContentState] = useState(props.initial_content_state);
+  const [timeLeft, setTimeLeft] = useState(props.display_delay_template_type);
 
   const localStoreController = {
     getModalKeyStorage: (modalId, key) => {
@@ -21,20 +21,20 @@ export const ApiModal = (props) => {
   };
 
   useEffect(() => {
-    setContentState(props.default_content_state);
-    setTimeLeft(props.display_delay);
-  }, [props.default_content_state, props.display_delay]);
+    setContentState(props.initial_content_state);
+    setTimeLeft(props.display_delay_template_type);
+  }, [props.initial_content_state, props.display_delay_template_type]);
 
   //Decrements timeLeft until timeLeft === 0
   useEffect(() => {
     //fired on load, and every time dependency timeLeft changes (state value)
     const doNotDisturb = localStoreController.getModalKeyStorage(
-      props.modal_id,
+      props.survey_template_id,
       "DO_NOT_DISTURB"
     );
 
     const submittedAt = localStoreController.getModalKeyStorage(
-      props.modal_id,
+      props.survey_template_id,
       "SUBMITTED_AT"
     );
 
@@ -47,7 +47,7 @@ export const ApiModal = (props) => {
         clearInterval(timer);
       }
     }
-  }, [timeLeft, localStoreController, props.modal_id]);
+  }, [timeLeft, localStoreController, props.survey_template_id]);
 
   //switch content of modal via switch function
   const modalContentSwitch = () => {
@@ -59,13 +59,14 @@ export const ApiModal = (props) => {
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
           >
+            <div><button class="mdc-icon-button material-icons">minimize</button></div>
             <PreviewContent
-              modal_id={props.modal_id}
+              survey_template_id={props.survey_template_id}
               preview_header={props.preview_header}
-              preview_text={props.preview_text}
-              later_button_text={props.later_button_text}
-              accept_button_text={props.accept_button_text}
-              reject_button_text={props.reject_button_text}
+              preview_body_text={props.preview_body_text}
+              preview_later_button_text={props.preview_later_button_text}
+              preview_accept_button_text={props.preview_accept_button_text}
+              preview_reject_button_text={props.preview_reject_button_text}
               setContentStateFn={setContentState}
               localStoreController={localStoreController}
             />
@@ -79,7 +80,7 @@ export const ApiModal = (props) => {
             backgroundOverlayColor={props.full_background_color}
           >
             <FullContent
-              modal_id={props.modal_id}
+              survey_template_id={props.survey_template_id}
               setContentStateFn={setContentState}
               full_header={props.full_header}
               full_text={props.full_text}
@@ -93,7 +94,7 @@ export const ApiModal = (props) => {
         return (
           <FlexModal>
             <MinimizedContent
-              modal_id={props.modal_id}
+              survey_template_id={props.survey_template_id}
               setContentStateFn={setContentState}
               localStoreController={localStoreController}
               minimized_text={props.minimized_text}
@@ -113,10 +114,10 @@ export const ApiModal = (props) => {
     <React.Fragment>
       {timeLeft < 1 &&
       !localStoreController.getModalKeyStorage(
-        props.modal_id,
+        props.survey_template_id,
         "DONOTDISTURB"
       ) &&
-      !localStoreController.getModalKeyStorage(props.modal_id, "SUBMITTED_AT")
+      !localStoreController.getModalKeyStorage(props.survey_template_id, "SUBMITTED_AT")
         ? modalContentSwitch()
         : null}
     </React.Fragment>

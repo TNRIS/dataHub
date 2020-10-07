@@ -8,11 +8,11 @@ const ApiModalFeed = (props) => {
     fetchModals();
   }, [fetchModals]);
 
-  if (props.loading) return <div>loading...</div>;
+  if (props.loading) return null;
   if (props.modals.length < 1) return null;
 
   const modalsRenderer = () =>
-    props.modals.map((mdl) => <ApiModal key={mdl.modal_id} {...mdl} />);
+    props.modals.map((mdl) => <ApiModal key={mdl.survey_template_id} {...mdl} />);
   return modalsRenderer();
 };
 
