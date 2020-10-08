@@ -59,17 +59,23 @@ export const ApiModal = (props) => {
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
           >
-            <div><button class="mdc-icon-button material-icons">minimize</button></div>
-            <PreviewContent
-              survey_template_id={props.survey_template_id}
-              preview_header={props.preview_header}
-              preview_body_text={props.preview_body_text}
-              preview_later_button_text={props.preview_later_button_text}
-              preview_accept_button_text={props.preview_accept_button_text}
-              preview_reject_button_text={props.preview_reject_button_text}
-              setContentStateFn={setContentState}
-              localStoreController={localStoreController}
-            />
+            <React.Fragment>
+              <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent:'space-between' }}>
+                <button className="mdc-icon-button material-icons">
+                  minimize
+                </button>
+                <h2>{props.preview_header}</h2>
+              </div>
+              <PreviewContent
+                survey_template_id={props.survey_template_id}
+                preview_body_text={props.preview_body_text}
+                preview_later_button_text={props.preview_later_button_text}
+                preview_accept_button_text={props.preview_accept_button_text}
+                preview_reject_button_text={props.preview_reject_button_text}
+                setContentStateFn={setContentState}
+                localStoreController={localStoreController}
+              />
+            </React.Fragment>
           </FlexModal>
         );
       case "full":
@@ -86,6 +92,7 @@ export const ApiModal = (props) => {
               full_text={props.full_text}
               sheet_id={props.sheet_id}
               survey_id={props.survey_id}
+              modal_id={props.survey_template_id}
               localStoreController={localStoreController}
             />
           </FlexModal>
@@ -99,9 +106,8 @@ export const ApiModal = (props) => {
               localStoreController={localStoreController}
               minimized_text={props.minimized_text}
               minimized_icon={props.minimized_icon}
-            />  
+            />
           </FlexModal>
-          
         );
       case "none":
         return null;
@@ -117,7 +123,10 @@ export const ApiModal = (props) => {
         props.survey_template_id,
         "DONOTDISTURB"
       ) &&
-      !localStoreController.getModalKeyStorage(props.survey_template_id, "SUBMITTED_AT")
+      !localStoreController.getModalKeyStorage(
+        props.survey_template_id,
+        "SUBMITTED_AT"
+      )
         ? modalContentSwitch()
         : null}
     </React.Fragment>

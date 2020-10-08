@@ -4,11 +4,26 @@ import "survey-react/survey.css";
 
 const SurveyJSContainer = ({
   surveyId,
+  modalId,
+  sheetId,
   onCompleteSurveyFunction,
   isDisplayed = true,
 }) => {
-  const [surveyJSON, setSurveyJSON] = useState(null);
 
+  const postSurvey = async (jsonPayload) => {
+    const url = process.env.REACT_APP_API_URL + '/api/v1/contact/survey/submit/'
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify(jsonPayload)
+    });
+
+    return await response.json();
+  }
+
+  const [surveyJSON, setSurveyJSON] = useState(null);
   useEffect(() => {
     const getSurveyJSON = async () => {
       const endpoint = `https://api.surveyjs.io/public/Survey/getSurvey?surveyId=${surveyId}`;
@@ -21,7 +36,19 @@ const SurveyJSContainer = ({
   }, [surveyId]);
 
   const onComplete = (survey, options) => {
-    onCompleteSurveyFunction(survey.data);
+
+    postSurvey({
+      sheet_id: sheetId,
+      survey_id: surveyId,
+      survey_response: {
+        ...survey.data,
+        user_agent: navigator.userAgent,
+        submit_time: Date.now(),
+        survey_id: surveyId,
+        modal_id: modalId
+      }
+    })
+    onCompleteSurveyFunction();
   };
 
   const defaultThemeColors = Survey.StylesManager.ThemeColors["default"];

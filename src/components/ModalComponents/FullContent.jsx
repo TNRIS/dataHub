@@ -20,6 +20,8 @@ const FullContent = (props) => {
         </React.Fragment>
       ) : (
         <SurveyJSContainer
+          modalId={props.modal_id}
+          sheetId={props.sheet_id}
           surveyId={props.survey_id}
           onCompleteSurveyFunction={onCompleteSurveyFunction}
         />
