@@ -1,4 +1,5 @@
 import React from "react";
+import { CalculatedValue } from "survey-react";
 import SurveyJSContainer from "./SurveyJSContainer";
 
 const FullContent = (props) => {
@@ -12,7 +13,7 @@ const FullContent = (props) => {
     props.setContentStateFn("none");
   };
   return (
-    <React.Fragment>
+    <div style={{overflow: 'scroll', maxHeight: 'calc(100% - 48px)', width:'100%'}}>
       {props.full_header && props.full_text && !props.survey_id ? (
         <React.Fragment>
           <h1>{props.full_header}</h1>
@@ -26,7 +27,7 @@ const FullContent = (props) => {
           onCompleteSurveyFunction={onCompleteSurveyFunction}
         />
       )}
-    </React.Fragment>
+    </div>
   );
 };
 

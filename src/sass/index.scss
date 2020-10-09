@@ -18,4 +18,8 @@ html {
   body {
     margin: 0;
   }
+
+  .mdc-button.mdc-button--outlined {
+    color: $primary-color
+  }
 }

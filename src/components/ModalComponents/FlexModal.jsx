@@ -95,7 +95,7 @@ const baseStyleDefault = {
     height: "100%",
     position: "fixed",
     display: "flex",
-    zIndex: 7,
+    zIndex: 5001,
     pointerEvents: "none",
   },
   contentContainer: {
@@ -105,14 +105,16 @@ const baseStyleDefault = {
     pointerEvents: "all",
     maxWidth: "calc(100% - 72px)",
     minWidth: "calc(320px - 72px)",
+    boxShadow: '2px 2px 8px #888',
+    borderRadius: '4px'
   },
 };
 
 const FlexModal = ({
   modalClasses,
   modalBackground = "#fff",
-  modalPadding = "8px",
-  modalBorder = "solid 1px #333",
+  modalPadding = "0px",
+  modalBorder = "none",
   modalPosition = "bottom-right",
   contentContainerStyle,
   modalContainerStyle,

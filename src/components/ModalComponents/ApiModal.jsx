@@ -4,6 +4,7 @@ import FlexModal from "./FlexModal";
 import PreviewContent from "./PreviewContent";
 import FullContent from "./FullContent";
 import MinimizedContent from "./MinimizedContent";
+import ModalHeaderActionBar from "./ModalHeaderActionBar";
 
 export const ApiModal = (props) => {
   const [contentState, setContentState] = useState(props.initial_content_state);
@@ -58,24 +59,18 @@ export const ApiModal = (props) => {
             modalPosition={props.preview_position}
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
+            modalPadding={'16px'}
           >
-            <React.Fragment>
-              <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent:'space-between' }}>
-                <button className="mdc-icon-button material-icons">
-                  minimize
-                </button>
-                <h2>{props.preview_header}</h2>
-              </div>
-              <PreviewContent
-                survey_template_id={props.survey_template_id}
-                preview_body_text={props.preview_body_text}
-                preview_later_button_text={props.preview_later_button_text}
-                preview_accept_button_text={props.preview_accept_button_text}
-                preview_reject_button_text={props.preview_reject_button_text}
-                setContentStateFn={setContentState}
-                localStoreController={localStoreController}
-              />
-            </React.Fragment>
+            <PreviewContent
+              survey_template_id={props.survey_template_id}
+              preview_header={props.preview_header}
+              preview_body_text={props.preview_body_text}
+              preview_later_button_text={props.preview_later_button_text}
+              preview_accept_button_text={props.preview_accept_button_text}
+              preview_reject_button_text={props.preview_reject_button_text}
+              setContentStateFn={setContentState}
+              localStoreController={localStoreController}
+            />
           </FlexModal>
         );
       case "full":
@@ -84,22 +79,28 @@ export const ApiModal = (props) => {
             modalPosition={props.full_position}
             modalSize={props.full_size}
             backgroundOverlayColor={props.full_background_color}
+            modalPadding={'16px'}
           >
-            <FullContent
-              survey_template_id={props.survey_template_id}
-              setContentStateFn={setContentState}
-              full_header={props.full_header}
-              full_text={props.full_text}
-              sheet_id={props.sheet_id}
-              survey_id={props.survey_id}
-              modal_id={props.survey_template_id}
-              localStoreController={localStoreController}
-            />
+            <React.Fragment>
+              <ModalHeaderActionBar
+                modalActionBarButtonIcon="close"
+                setContentStateFn={ () => setContentState("minimized")}
+              />
+              <FullContent
+                survey_template_id={props.survey_template_id}
+                setContentStateFn={setContentState}
+                full_header={props.full_header}
+                full_text={props.full_text}
+                sheet_id={props.sheet_id}
+                survey_id={props.survey_id}
+                modal_id={props.survey_template_id}
+                localStoreController={localStoreController}
+              />
+            </React.Fragment>
           </FlexModal>
         );
       case "minimized":
         return (
-          <FlexModal>
             <MinimizedContent
               survey_template_id={props.survey_template_id}
               setContentStateFn={setContentState}
@@ -107,7 +108,6 @@ export const ApiModal = (props) => {
               minimized_text={props.minimized_text}
               minimized_icon={props.minimized_icon}
             />
-          </FlexModal>
         );
       case "none":
         return null;
