@@ -4,9 +4,13 @@ const PreviewContent = (props) => {
   const [dontAsk, setDontAsk] = useState(false);
 
   return (
-    <React.Fragment>
+    <div className={"modalPreviewContainer"}>
       <div>
-        {props.preview_header ? <h2 className={'catalog-card__headline mdc-typography--headline6'}>{props.preview_header}</h2> : null}
+        {props.preview_header ? (
+          <h2 className={"catalog-card__headline mdc-typography--headline6"}>
+            {props.preview_header}
+          </h2>
+        ) : null}
         {props.preview_body_text ? <p>{props.preview_body_text}</p> : null}
       </div>
       <div className="mdc-form-field">
@@ -32,14 +36,7 @@ const PreviewContent = (props) => {
         </div>
         <label htmlFor="checkbox-1">Do not ask me again</label>
       </div>
-      <div
-        style={{
-          ...props.preview_buttons_container_style,
-          display: "grid",
-          gap: "8px",
-          gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-        }}
-      >
+      <div className="previewModalButtonsContainer">
         <button
           className={"mdc-button mdc-button--outlined"}
           aria-label={props.preview_accept_button_text}
@@ -75,7 +72,7 @@ const PreviewContent = (props) => {
             : props.preview_later_button_text}
         </button>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 

@@ -21,6 +21,7 @@ export const ApiModal = (props) => {
     },
   };
 
+  // Fired on load, when props update
   useEffect(() => {
     setContentState(props.initial_content_state);
     setTimeLeft(props.display_delay_template_type);
@@ -38,6 +39,7 @@ export const ApiModal = (props) => {
       props.survey_template_id,
       "SUBMITTED_AT"
     );
+
 
     if (timeLeft > 0 && !doNotDisturb && !submittedAt) {
       const timer = setTimeout(() => {
@@ -60,6 +62,8 @@ export const ApiModal = (props) => {
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
             modalPadding={'16px'}
+            modalBackground={'#1E8DC1'}
+            modalTextColor={'white'}
           >
             <PreviewContent
               survey_template_id={props.survey_template_id}
