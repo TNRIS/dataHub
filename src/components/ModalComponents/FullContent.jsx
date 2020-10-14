@@ -3,7 +3,6 @@ import SurveyJSContainer from "./SurveyJSContainer";
 
 const FullContent = (props) => {
   const onCompleteSurveyFunction = (surveyResponses) => {
-    console.log(surveyResponses, navigator.platform, navigator.userAgent);
     props.localStoreController.setModalKeyStorage(
       props.survey_template_id,
       "SUBMITTED_AT",
