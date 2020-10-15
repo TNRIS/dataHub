@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import { connectRouter } from 'connected-react-router';
 
+import apiModal from './apiModalReducer';
 import catalog from './catalogReducer';
 import collections from './collectionReducer';
 import collectionFilter from './collectionFilterReducer';
@@ -15,7 +16,6 @@ import orderCart from './orderCartReducer';
 import resources from './resourceReducer';
 import toolDrawer from './toolDrawerReducer';
 import urlTracker from './urlTrackerReducer';
-import apiModal from './apiModalReducer';
 
 const rootReducer = (history) => combineReducers({
   router: connectRouter(history),
