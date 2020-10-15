@@ -95,7 +95,7 @@ FlexModal.propTypes = {
     "center",
   ]),
   isDisplayed: PropTypes.bool,
-  modalSize: PropTypes.oneOf(["full-screen", "full-height", "full-width", "half-width", "half-height", "half-screen"]),
+  modalSize: PropTypes.oneOf(["full-screen", "full-height", "full-width", "half-width", "half-height", "half-screen", "fit-content"]),
   onClickBackground: PropTypes.func,
 };
 
