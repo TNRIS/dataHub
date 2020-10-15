@@ -1,0 +1,115 @@
+// Modal Position Utility classes
+.modalPosition__bottom-right {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+.modalPosition__bottom-left {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+.modalPosition__top-right {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.modalPosition__top-left {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.modalPosition__center {
+  align-items: center;
+  justify-content: center;
+}
+.modalPosition__bottom-center {
+  align-items: flex-end;
+  justify-content: center;
+}
+.modalPosition__top-center {
+  align-items: flex-start;
+  justify-content: center;
+}
+.modalPosition__right-center {
+  align-items: center;
+  justify-content: flex-start;
+}
+.modalPosition__left-center {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Modal Size Utility classes
+.modalSize__full-screen {
+  width: calc(100% - 64px);
+  height: calc(100% - 64px);
+}
+.modalSize__full-height {
+  height: calc(100% - 64px);
+}
+.modalSize__full-width {
+  width: calc(100% - 64px);
+}
+.modalSize__half-screen {
+  width: calc(50% - 64px);
+  height: calc(50% - 64px);
+}
+.modalSize__half-height {
+  height: calc(50% - 64px);
+}
+.modalSize__half-width {
+  width: calc(50% - 64px);
+}
+
+.modalContainer {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  z-index: 5001;
+  pointer-events: none;
+}
+.modalContentContainer {
+  z-index: 5001;
+  position: fixed;
+  pointer-events: all;
+  max-width: calc(100% - 64px);
+  min-width: calc(320px - 64px);
+  box-shadow: 2px 2px 8px #888;
+  border-radius: 4px;
+  margin: 16px;
+}
+
+.modalPreviewContainer {
+  .mdc-button.mdc-button--outlined {
+    color: white;
+  }
+  .mdc-form-field {
+    color: white;
+  }
+  .mdc-checkbox__background {
+    border-color: white !important;
+  }
+
+  .previewModalButtonsContainer {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+.modalFullContainer {
+  overflow: scroll;
+  max-height: calc(100% - 64px);
+  width: 100%;
+}
+
+.modalMinimizedContainer {
+  z-index: 5000;
+  text-align: center;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  color: #1e8dc1;
+
+  button {
+    background-color: white;
+  }
+}
