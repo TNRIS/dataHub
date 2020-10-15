@@ -15,6 +15,7 @@ import * as urlTrackerActions from './urlTrackerActions';
 import * as apiModalActions from './apiModalActions';
 
 export {
+  apiModalActions,
   catalogActions,
   collectionActions,
   collectionFilterActions,
@@ -29,5 +30,4 @@ export {
   resourceActions,
   toolDrawerActions,
   urlTrackerActions,
-  apiModalActions,
 };

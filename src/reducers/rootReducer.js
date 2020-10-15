@@ -19,6 +19,7 @@ import apiModal from './apiModalReducer';
 
 const rootReducer = (history) => combineReducers({
   router: connectRouter(history),
+  apiModal,
   catalog,
   collections,
   collectionFilter,
@@ -33,7 +34,6 @@ const rootReducer = (history) => combineReducers({
   resources,
   toolDrawer,
   urlTracker,
-  apiModal,
 })
 
 export default rootReducer;

@@ -27,8 +27,6 @@ function handleErrors(response) {
   return response;
 }
 
-//-----------COMMENTED OUT FOR DEV
-// TODO: connect to new API endpoint
 export function fetchModals() {
   return (dispatch, getState) => {
     dispatch(fetchModalsBegin());
