@@ -1,3 +1,4 @@
+import * as apiModalActions from './apiModalActions';
 import * as catalogActions from './catalogActions';
 import * as collectionActions from './collectionActions';
 import * as collectionFilterActions from './collectionFilterActions';
@@ -6,14 +7,15 @@ import * as collectionSearcherActions from './collectionSearcherActions';
 import * as collectionSorterActions from './collectionSorterActions';
 import * as collectionTimesliderActions from './collectionTimesliderActions';
 import * as colorThemeActions from './colorThemeActions';
-import * as geoSearcherActions from './geoSearcherActions';
 import * as contactActions from './contactActions';
+import * as geoSearcherActions from './geoSearcherActions';
 import * as orderCartActions from './orderCartActions';
 import * as resourceActions from './resourceActions';
 import * as toolDrawerActions from './toolDrawerActions';
 import * as urlTrackerActions from './urlTrackerActions';
 
 export {
+  apiModalActions,
   catalogActions,
   collectionActions,
   collectionFilterActions,
@@ -27,5 +29,5 @@ export {
   orderCartActions,
   resourceActions,
   toolDrawerActions,
-  urlTrackerActions
+  urlTrackerActions,
 };
