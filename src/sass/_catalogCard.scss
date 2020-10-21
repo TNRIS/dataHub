@@ -6,11 +6,14 @@ styles for component: CatalogCard
   width: 100%;
   background-color: $main-background;
   box-shadow: $catalog-card-shadow;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   padding: 5px;
 
+  .MuiCardContent-root {
+    padding: 0px;
+  }
   .catalog-card__headline {
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: "Roboto Condensed", sans-serif;
     font-size: 22px;
     font-weight: 400;
     margin: 1em 0 inherit 0;
@@ -37,10 +40,13 @@ styles for component: CatalogCard
     padding-left: 5px;
     padding-right: 5px;
     margin-top: 0;
+    margin-bottom: 1em;
     -webkit-margin-before: 0;
   }
 
-  &:hover, &:active, &:focus {
+  &:hover,
+  &:active,
+  &:focus {
     cursor: pointer;
     box-shadow: $catalog-card-shadow-hover;
 
@@ -56,12 +62,6 @@ styles for component: CatalogCard
         white-space: normal;
       }
     }
-
-    img {
-      outline: 3px solid black;
-      outline-offset: -2px;
-    }
-
   }
 
   .mdc-image-list__supporting {
@@ -75,6 +75,5 @@ styles for component: CatalogCard
       line-height: 1.3rem;
       font-size: 14px;
     }
-
   }
 }

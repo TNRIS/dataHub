@@ -1,45 +1,50 @@
-import React from 'react'
-import { Redirect } from 'react-router'
-import { Route, Switch } from 'react-router'
-import { matchPath } from 'react-router-dom'
-import { MDCDrawer } from "@material/drawer"
-import { MDCSnackbar } from '@material/snackbar'
-import { MDCDialog } from '@material/dialog'
-import { GridLoader } from 'react-spinners'
+import React from "react";
+import { Redirect } from "react-router";
+import { Route, Switch } from "react-router";
+import { matchPath } from "react-router-dom";
+import { MDCDrawer } from "@material/drawer";
+import { MDCDialog } from "@material/dialog";
+import { GridLoader } from "react-spinners";
 
-import OutsideEntityTemplate from './TnrisOutsideEntityTemplate/TnrisOutsideEntityTemplate'
-import TnrisOrderTemplate from './TnrisOrderTemplate/TnrisOrderTemplate'
+import OutsideEntityTemplate from "./TnrisOutsideEntityTemplate/TnrisOutsideEntityTemplate";
+import TnrisOrderTemplate from "./TnrisOrderTemplate/TnrisOrderTemplate";
 
-import CollectionFilterMapViewContainer from '../containers/CollectionFilterMapViewContainer'
-import FooterContainer from '../containers/FooterContainer'
-import HeaderContainer from '../containers/HeaderContainer'
-import ToolDrawerContainer from '../containers/ToolDrawerContainer'
-import CatalogCardContainer from '../containers/CatalogCardContainer'
-import HistoricalAerialTemplateContainer from '../containers/HistoricalAerialTemplateContainer'
-import TnrisDownloadTemplateContainer from '../containers/TnrisDownloadTemplateContainer'
-import OrderCartViewContainer from '../containers/OrderCartViewContainer'
-import NotFoundContainer from '../containers/NotFoundContainer'
+import CollectionFilterMapViewContainer from "../containers/CollectionFilterMapViewContainer";
+import FooterContainer from "../containers/FooterContainer";
+import HeaderContainer from "../containers/HeaderContainer";
+import ToolDrawerContainer from "../containers/ToolDrawerContainer";
+import CatalogCardContainer from "../containers/CatalogCardContainer";
+import HistoricalAerialTemplateContainer from "../containers/HistoricalAerialTemplateContainer";
+import TnrisDownloadTemplateContainer from "../containers/TnrisDownloadTemplateContainer";
+import OrderCartViewContainer from "../containers/OrderCartViewContainer";
+import NotFoundContainer from "../containers/NotFoundContainer";
 
 // import loadingImage from '../images/loading.gif';
-import noDataImage from '../images/no-data.png'
-import noDataImage666 from '../images/no-data-satan.png'
+import noDataImage from "../images/no-data.png";
+import noDataImage666 from "../images/no-data-satan.png";
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../sass/_breakpoints.scss'
+import breakpoints from "../sass/_breakpoints.scss";
+import { Container, Fab, Grid, Icon, Snackbar } from "@material-ui/core";
 
 export default class Catalog extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      showButton: 'no'
-    }
+      showButton: "no",
+      snack: {
+        open: false,
+        message: undefined,
+      },
+    };
 
     this.handleResize = this.handleResize.bind(this);
     this.handleToolDrawerDisplay = this.handleToolDrawerDisplay.bind(this);
     this.handleShowCollectionView = this.handleShowCollectionView.bind(this);
     this.setCatalogView = this.setCatalogView.bind(this);
     this.handleToast = this.handleToast.bind(this);
+    this.handleToastClose = this.handleToastClose.bind(this);
     this.handleCloseBetaNotice = this.handleCloseBetaNotice.bind(this);
     this.chunkCatalogCards = this.chunkCatalogCards.bind(this);
     this.detectScroll = this.detectScroll.bind(this);
@@ -50,11 +55,11 @@ export default class Catalog extends React.Component {
     //   </div>
     // );
     this.loadingMessage = (
-      <div className='sweet-loading-animation'>
+      <div className="sweet-loading-animation">
         <GridLoader
           sizeUnit={"px"}
           size={25}
-          color={'#1E8DC1'}
+          color={"#1E8DC1"}
           loading={true}
         />
       </div>
@@ -66,22 +71,28 @@ export default class Catalog extends React.Component {
     this.props.fetchStoredShoppingCart();
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("scroll", this.detectScroll);
-    window.innerWidth >= parseInt(breakpoints.desktop, 10) ? this.props.setDismissibleDrawer() : this.props.setModalDrawer();
+    window.innerWidth >= parseInt(breakpoints.desktop, 10)
+      ? this.props.setDismissibleDrawer()
+      : this.props.setModalDrawer();
     window.onpopstate = (e) => {
       if (e.state) {
         const theState = e.state.state;
         this.props.popBrowserStore(theState);
       }
-    }
+    };
     // apply theme
     // on component mount, check localstorage for theme to apply
-    if (typeof(Storage) !== void(0)) {
-      const savedTheme = localStorage.getItem("data_theme") ? localStorage.getItem("data_theme") : null;
+    if (typeof Storage !== void 0) {
+      const savedTheme = localStorage.getItem("data_theme")
+        ? localStorage.getItem("data_theme")
+        : null;
       if (savedTheme) {
-        if (this.props.themeOptions.includes(savedTheme) || savedTheme === 'satan') {
+        if (
+          this.props.themeOptions.includes(savedTheme) ||
+          savedTheme === "satan"
+        ) {
           this.props.setColorTheme(savedTheme);
-        }
-        else {
+        } else {
           localStorage.removeItem("data_theme");
         }
       }
@@ -96,16 +107,19 @@ export default class Catalog extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.theme !== this.props.theme) {
       const themedClass = this.props.theme + "-app-theme";
-      const html = document.querySelector('html');
+      const html = document.querySelector("html");
       html.className = themedClass;
     }
     if (prevProps.visibleCollections) {
-      if (this.props.view === 'catalog' || this.props.view === 'geoFilter') {
-        if (prevProps.visibleCollections.length !== this.props.visibleCollections.length) {
+      if (this.props.view === "catalog" || this.props.view === "geoFilter") {
+        if (
+          prevProps.visibleCollections.length !==
+          this.props.visibleCollections.length
+        ) {
           this.handleToast(
-            this.props.visibleCollections.length !== 1 ?
-            `${this.props.visibleCollections.length} datasets found` :
-            `${this.props.visibleCollections.length} dataset found`
+            this.props.visibleCollections.length !== 1
+              ? `${this.props.visibleCollections.length} datasets found`
+              : `${this.props.visibleCollections.length} dataset found`
           );
         }
       }
@@ -113,7 +127,9 @@ export default class Catalog extends React.Component {
   }
 
   detectScroll() {
-    window.pageYOffset > 500 ? this.setState({showButton: 'yes'}) : this.setState({showButton: 'no'});
+    window.pageYOffset > 500
+      ? this.setState((prevState) => ({ showButton: "yes", ...prevState }))
+      : this.setState((prevState) => ({ showButton: "no", ...prevState }));
   }
 
   scrollTop() {
@@ -121,36 +137,48 @@ export default class Catalog extends React.Component {
   }
 
   handleCloseBetaNotice() {
-    this.betaDialog = new MDCDialog(document.querySelector('.mdc-dialog'));
-    this.betaDialog.foundation_.adapter_.removeClass('mdc-dialog--open');
+    this.betaDialog = new MDCDialog(document.querySelector(".mdc-dialog"));
+    this.betaDialog.foundation_.adapter_.removeClass("mdc-dialog--open");
   }
 
   handleToast(labelText) {
-    this.snackbar = new MDCSnackbar(document.querySelector('.mdc-snackbar'));
-    this.snackbar.labelText = labelText;
-    this.snackbar.open();
+    this.setState((prevState) => ({
+      ...prevState,
+      snack: { open: true, message: labelText },
+    }));
+  }
+
+  handleToastClose() {
+    this.setState(prevState => ({
+      ...prevState,
+      snack: {
+        open: false,
+        message: undefined
+      }
+    }))
   }
 
   handleResize() {
     if (window.innerWidth >= parseInt(breakpoints.desktop, 10)) {
       this.props.setDismissibleDrawer();
-    }
-    else {
+    } else {
       this.props.setModalDrawer();
     }
   }
 
   handleToolDrawerDisplay() {
-    if (this.props.toolDrawerVariant === 'dismissible') {
-      if (this.props.toolDrawerStatus === 'open') {
+    if (this.props.toolDrawerVariant === "dismissible") {
+      if (this.props.toolDrawerStatus === "open") {
         this.props.closeToolDrawer();
         return;
       }
       this.props.openToolDrawer();
-    } else if (this.props.toolDrawerVariant === 'modal') {
-      this.toolDrawer = MDCDrawer.attachTo(document.querySelector('.tool-drawer'));
+    } else if (this.props.toolDrawerVariant === "modal") {
+      this.toolDrawer = MDCDrawer.attachTo(
+        document.querySelector(".tool-drawer")
+      );
       this.toolDrawer.open = true;
-      const scrim = document.getElementById('scrim');
+      const scrim = document.getElementById("scrim");
       scrim.onclick = () => {
         this.toolDrawer.open = false;
       };
@@ -160,53 +188,63 @@ export default class Catalog extends React.Component {
   handleShowCollectionView() {
     if (this.props.selectedCollection) {
       let collection = this.props.collections[this.props.selectedCollection];
-      switch(collection['template']) {
-        case 'tnris-download':
-          return (<TnrisDownloadTemplateContainer collection={collection} />);
-        case 'tnris-order':
-          return (<TnrisOrderTemplate collection={collection} />);
-        case 'historical-aerial':
-          return (<HistoricalAerialTemplateContainer collection={collection} />);
-        case 'outside-entity':
-          return (<OutsideEntityTemplate collection={collection} />);
+      switch (collection["template"]) {
+        case "tnris-download":
+          return <TnrisDownloadTemplateContainer collection={collection} />;
+        case "tnris-order":
+          return <TnrisOrderTemplate collection={collection} />;
+        case "historical-aerial":
+          return <HistoricalAerialTemplateContainer collection={collection} />;
+        case "outside-entity":
+          return <OutsideEntityTemplate collection={collection} />;
         default:
-          return (<TnrisDownloadTemplateContainer collection={collection} />);
+          return <TnrisDownloadTemplateContainer collection={collection} />;
       }
-    }
-    else {
-      const match = matchPath(
-        this.props.history.location.pathname,
-        { path: '/collection/:collectionId' }
-      );
-      if (this.props.collections && Object.keys(match.params).includes('collectionId')) {
-        if (!Object.keys(this.props.collections).includes(match.params.collectionId)) {
-          return <Redirect to='/404' />;
+    } else {
+      const match = matchPath(this.props.history.location.pathname, {
+        path: "/collection/:collectionId",
+      });
+      if (
+        this.props.collections &&
+        Object.keys(match.params).includes("collectionId")
+      ) {
+        if (
+          !Object.keys(this.props.collections).includes(
+            match.params.collectionId
+          )
+        ) {
+          return <Redirect to="/404" />;
         }
       }
     }
-
   }
 
-  chunkCatalogCards () {
-    let chunks = []
+  chunkCatalogCards() {
+    let chunks = [];
     let loop = 0;
     let s = 0;
     let e = 900;
     while (s < this.props.visibleCollections.length) {
       let chunk = this.props.visibleCollections.slice(s, e);
       chunks.push(
-        <ul className="mdc-layout-grid__inner" key={loop} count={loop}>
-          {chunk.map((collectionId, index) =>
-            <li
-              className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
+        <Grid container spacing={4} key={loop} count={loop}>
+          {chunk.map((collectionId, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
               key={collectionId}
-              idx={index}>
+              idx={index}
+            >
               <CatalogCardContainer
-                collection={this.props.collections[collectionId]} />
-            </li>
-          )}
-        </ul>
-      )
+                collection={this.props.collections[collectionId]}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      );
       loop += 1;
       s += 900;
       e += 900;
@@ -215,58 +253,81 @@ export default class Catalog extends React.Component {
   }
 
   setCatalogView() {
-    const scrollTopButton = this.state.showButton === 'yes' ? (
-      <div className="scrolltop-container">
-        <button className="scrolltop mdc-fab" aria-label="Back to top" onClick={this.scrollTop} title="Back to top">
-          <span className="mdc-fab__icon material-icons">keyboard_arrow_up</span>
-        </button>
-      </div>
-    ) : '';
-    const catalogCards = this.props.visibleCollections && this.props.visibleCollections.length < 1 ?
-      <div className='no-data'>
-        <img
-          src={this.props.theme !== 'satan' ? noDataImage : noDataImage666}
-          className="no-data-image"
-          alt="No Data Available"
-          title="No data available with those search terms" />
-      </div> :
-        (!this.props.visibleCollections
-            ? this.loadingMessage
-            : (
-              this.props.visibleCollections.length < 900
-              ? (
-                  <div className="catalog-grid mdc-layout-grid">
-                    {scrollTopButton}
-                    <ul className="mdc-layout-grid__inner">
-                      {this.props.visibleCollections.map((collectionId, index) =>
-                        <li
-                          className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
-                          key={collectionId}
-                          count={index}>
-                          <CatalogCardContainer
-                            collection={this.props.collections[collectionId]} />
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                ) : <div className="catalog-grid mdc-layout-grid">
-                      {scrollTopButton}
-                      {this.chunkCatalogCards()}
-                    </div>
-              )
-        );
+    const scrollTopButton =
+      this.state.showButton === "yes" ? (
+        <div className="scrolltop-container">
+          <Fab
+            className="scrolltop"
+            aria-label="Back to top"
+            onClick={this.scrollTop}
+            title="Back to top"
+          >
+            <Icon>keyboard_arrow_up</Icon>
+          </Fab>
+        </div>
+      ) : (
+        ""
+      );
+    const catalogCards =
+      this.props.visibleCollections &&
+      this.props.visibleCollections.length < 1 ? (
+        <div className="no-data">
+          <img
+            src={this.props.theme !== "satan" ? noDataImage : noDataImage666}
+            className="no-data-image"
+            alt="No Data Available"
+            title="No data available with those search terms"
+          />
+        </div>
+      ) : !this.props.visibleCollections ? (
+        this.loadingMessage
+      ) : this.props.visibleCollections.length < 900 ? (
+        <Container className={"catalog-grid"}>
+          {scrollTopButton}
+          <Grid container spacing={4}>
+            {this.props.visibleCollections.map((collectionId, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                key={collectionId}
+                idx={index}
+              >
+                <CatalogCardContainer
+                  collection={this.props.collections[collectionId]}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      ) : (
+        <Container className={"catalog-grid"}>
+          {scrollTopButton}
+          {this.chunkCatalogCards()}
+        </Container>
+      );
 
-    let drawerStatusClass = 'closed-drawer';
-    if (this.props.toolDrawerStatus === 'open' && this.props.toolDrawerVariant === 'dismissible') {
-      drawerStatusClass = 'open-drawer';
+    let drawerStatusClass = "closed-drawer";
+    if (
+      this.props.toolDrawerStatus === "open" &&
+      this.props.toolDrawerVariant === "dismissible"
+    ) {
+      drawerStatusClass = "open-drawer";
     }
     const catalogView = (
       <div className={`catalog ${drawerStatusClass} mdc-drawer-app-content`}>
         <ToolDrawerContainer
-        total={this.props.visibleCollections ? this.props.visibleCollections.length : 0} />
+          total={
+            this.props.visibleCollections
+              ? this.props.visibleCollections.length
+              : 0
+          }
+        />
         {catalogCards}
       </div>
-    )
+    );
     return catalogView;
   }
 
@@ -312,35 +373,56 @@ export default class Catalog extends React.Component {
       return this.loadingMessage;
     }
 
-    const viewClass = this.props.view === 'catalog' ? 'catalog-view-container' : 'other-view-container';
+    const viewClass =
+      this.props.view === "catalog"
+        ? "catalog-view-container"
+        : "other-view-container";
 
     return (
       <div className="catalog-component">
-
         {/*{betaDialog}*/}
 
-        <HeaderContainer handleToolDrawerDisplay={this.handleToolDrawerDisplay} />
+        <HeaderContainer
+          handleToolDrawerDisplay={this.handleToolDrawerDisplay}
+        />
 
         <div className={viewClass}>
           <Switch>
-            <Route path='/collection/:collectionId' exact render={(props) => this.handleShowCollectionView()} />
-            <Route path='/catalog/:filters' exact render={(props) => this.setCatalogView()} />
-            <Route path='/cart/' exact render={(props) => <OrderCartViewContainer />} />
-            <Route path='/geofilter/' exact render={(props) => <CollectionFilterMapViewContainer />} />
-            <Route path='/' exact render={(props) => this.setCatalogView()} />
-            <Route path='*' render={(props) => <NotFoundContainer />} />
+            <Route
+              path="/collection/:collectionId"
+              exact
+              render={(props) => this.handleShowCollectionView()}
+            />
+            <Route
+              path="/catalog/:filters"
+              exact
+              render={(props) => this.setCatalogView()}
+            />
+            <Route
+              path="/cart/"
+              exact
+              render={(props) => <OrderCartViewContainer />}
+            />
+            <Route
+              path="/geofilter/"
+              exact
+              render={(props) => <CollectionFilterMapViewContainer />}
+            />
+            <Route path="/" exact render={(props) => this.setCatalogView()} />
+            <Route path="*" render={(props) => <NotFoundContainer />} />
           </Switch>
         </div>
 
         <FooterContainer />
 
-        <div className=" dataset-toaster mdc-snackbar">
-          <div className="mdc-snackbar__surface">
-            <div className="mdc-snackbar__label" role="status" aria-live="polite">
-            </div>
-          </div>
-        </div>
-
+        <Snackbar
+          className={'dataset-toaster'}
+          open={this.state.snack.open}
+          message={this.state.snack.message}
+          onClose={this.handleToastClose} 
+          autoHideDuration={10000}         
+        />
+        
       </div>
     );
   }

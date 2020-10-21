@@ -135,7 +135,7 @@ When adding new themes you will also need to update:
       .catalog {
         background-color: #282828;
 
-        .mdc-typography--subtitle1 {
+        .mdc-typography--subtitle1, .MuiTypography-subtitle1 {
           color: gray;
         }
       }

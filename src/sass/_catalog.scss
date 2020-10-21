@@ -29,11 +29,11 @@ styles for component: Catalog
   }
 
   .dataset-toaster {
-    .mdc-snackbar__surface {
-      text-align: center;
+    .MuiSnackbarContent-root {
+      justify-content: center;
       background-color: $primary-color;
 
-      .mdc-snackbar__label {
+      .MuiSnackbarContent-message {
         font-size: 1.1rem;
         font-weight: bold;
       }
