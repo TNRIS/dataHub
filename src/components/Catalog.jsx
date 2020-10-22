@@ -128,8 +128,8 @@ export default class Catalog extends React.Component {
 
   detectScroll() {
     window.pageYOffset > 500
-      ? this.setState((prevState) => ({ showButton: "yes", ...prevState }))
-      : this.setState((prevState) => ({ showButton: "no", ...prevState }));
+      ? this.setState((prevState) => ({ ...prevState, showButton: "yes" }))
+      : this.setState((prevState) => ({  ...prevState, showButton: "no" }));
   }
 
   scrollTop() {
