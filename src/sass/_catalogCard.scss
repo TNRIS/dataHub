@@ -50,12 +50,12 @@ styles for component: CatalogCard
     cursor: pointer;
     box-shadow: $catalog-card-shadow-hover;
 
-    .mdc-image-list__supporting {
+    .image-list__supporting {
       height: auto;
       max-height: 100%;
       overflow: hidden;
 
-      .mdc-image-list__label {
+      .image-list__label {
         padding: 3px 0 3px 0;
         margin-top: 3px;
         line-height: 1.1rem;
@@ -64,12 +64,12 @@ styles for component: CatalogCard
     }
   }
 
-  .mdc-image-list__supporting {
+  .image-list__supporting {
     height: auto;
     width: 100%;
     max-width: 100%;
 
-    .mdc-image-list__label {
+    .image-list__label {
       text-overflow: ellipsis;
       white-space: nowrap;
       line-height: 1.3rem;

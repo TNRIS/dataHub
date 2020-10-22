@@ -1,88 +1,105 @@
-import React from 'react'
-import { MDCDrawer } from "@material/drawer"
+import React from "react";
+import { Drawer, List } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-import CollectionFilterContainer from '../containers/CollectionFilterContainer'
-import CollectionSorterContainer from '../containers/CollectionSorterContainer'
-import CollectionTimesliderContainer from '../containers/CollectionTimesliderContainer'
-import ThemeChooserContainer from '../containers/ThemeChooserContainer'
+import CollectionFilterContainer from "../containers/CollectionFilterContainer";
+import CollectionSorterContainer from "../containers/CollectionSorterContainer";
+import CollectionTimesliderContainer from "../containers/CollectionTimesliderContainer";
+import ThemeChooserContainer from "../containers/ThemeChooserContainer";
 
-import ShareButtons from './DialogTemplateListItems/ShareButtons'
+import ShareButtons from "./DialogTemplateListItems/ShareButtons";
 
-export default class ToolDrawer extends React.Component {
-  constructor(props) {
-      super(props);
-      this.clearAllFilters = this.clearAllFilters.bind(this);
-  }
+const drawerWidth = 256;
 
-  componentDidMount() {
-    this.toolDrawer = MDCDrawer.attachTo(document.querySelector('.tool-drawer'));
-  }
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawer: {
+    width: drawerWidth,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+    top: 106,
+  },
+  drawerContainer: {
+    overflow: "auto",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+}));
 
-  clearAllFilters() {
-    this.props.sortNew();
-    this.props.setCollectionFilter({});
-    this.props.setCollectionFilterMapAoi({});
-    this.props.setCollectionFilterMapFilter([]);
-    this.props.setCollectionFilterMapCenter({lng: -99.341389, lat: 31.33}); // the center of Texas
-    this.props.setCollectionFilterMapZoom(5.3);
-    this.props.setCollectionTimeslider(this.props.collectionTimesliderRange);
-    this.props.setGeoSearcherInputValue('');
-    this.props.setUrl('/');
-    this.props.logFilterChange('/');
-  }
+const ToolDrawer = (props) => {
+  const classes = useStyles();
 
-  render() {
-    const drawerTypeClass = this.props.toolDrawerVariant=== 'dismissible' ?
-      'mdc-drawer mdc-drawer--dismissible tool-drawer' : 'mdc-drawer mdc-drawer--modal tool-drawer';
-    const openClass = this.props.toolDrawerVariant === 'dismissible' && this.props.toolDrawerStatus === 'open' ?
-      'mdc-drawer--open' : '';
+  const clearAllFilters = () => {
+    props.sortNew();
+    props.setCollectionFilter({});
+    props.setCollectionFilterMapAoi({});
+    props.setCollectionFilterMapFilter([]);
+    props.setCollectionFilterMapCenter({ lng: -99.341389, lat: 31.33 }); // the center of Texas
+    props.setCollectionFilterMapZoom(5.3);
+    props.setCollectionTimeslider(props.collectionTimesliderRange);
+    props.setGeoSearcherInputValue("");
+    props.setUrl("/");
+    props.logFilterChange("/");
+  };
 
-    return (
-      <div className='tool-drawer-component mdc-typography'>
-        <aside className={`${drawerTypeClass} ${openClass}`} dir='rtl'>
-          <div className='mdc-drawer__content' dir='ltr'>
-
-              <div className='mdc-drawer__header no-scroll'>
-                <div className='dataset-counter'>
-                  <span>
-                    {this.props.total !== 1 ? `${this.props.total} Datasets Found` : `${this.props.total} Dataset Found`}
-                  </span>
-                </div>
-              </div>
-
-            <nav className='mdc-list-group scroll'>
-              <div className='sort-title mdc-list-group__subheader'>
-                Sort
-              </div>
-              <CollectionSorterContainer className='mdc-list-item' />
-              <div className='filter-title mdc-list-group__subheader'>
-                Filter
-              </div>
-              <CollectionFilterContainer className='mdc-list-item' />
-              <div className='timeslider-title mdc-list-group__subheader'>
-                Date Range
-              </div>
-              <CollectionTimesliderContainer className='mdc-list-item' />
-              <div className='clear-all-filters-container'>
-                <button
-                  className="mdc-button mdc-button--raised"
-                  onClick={this.clearAllFilters}
-                  disabled={Object.keys(this.props.collectionFilter).length < 1 &&
-                    this.props.collectionFilterMapFilter.length < 1 &&
-                    !this.props.location.pathname.includes('range') ? true : false}>
-                  Clear All Filters
-                </button>
-              </div>
-              <ThemeChooserContainer />
-              <ShareButtons />
-            </nav>
-
+  return (
+    <Drawer
+      className={classes.drawer}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+      open={props.toolDrawerStatus === "open" ? true : false}
+      variant={"persistent"}
+      anchor={"right"}
+    >
+      <div className="drawer__content" dir="ltr">
+        <div className="drawer__header no-scroll">
+          <div className="dataset-counter">
+            <span>
+              {props.total !== 1
+                ? `${props.total} Datasets Found`
+                : `${props.total} Dataset Found`}
+            </span>
           </div>
-        </aside>
+        </div>
 
-        {this.props.toolDrawerVariant === 'modal' ? <div className='mdc-drawer-scrim' id='scrim'></div> : ''}
-
+        <List>
+          <CollectionSorterContainer className="list-item" />
+          <div className="filter-title list-group__subheader">Filter</div>
+          <CollectionFilterContainer className="list-item" />
+          <div className="timeslider-title list-group__subheader">
+            Date Range
+          </div>
+          <CollectionTimesliderContainer className="list-item" />
+          <div className="clear-all-filters-container">
+            <button
+              className="button button--raised"
+              onClick={() => clearAllFilters()}
+              disabled={
+                Object.keys(props.collectionFilter).length < 1 &&
+                props.collectionFilterMapFilter.length < 1 &&
+                !props.location.pathname.includes("range")
+                  ? true
+                  : false
+              }
+            >
+              Clear All Filters
+            </button>
+          </div>
+          <ThemeChooserContainer />
+          <ShareButtons />
+        </List>
       </div>
-    );
-  }
-}
+    </Drawer>
+  );
+};
+
+export default ToolDrawer;

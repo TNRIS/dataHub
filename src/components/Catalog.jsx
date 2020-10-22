@@ -2,7 +2,6 @@ import React from "react";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router";
 import { matchPath } from "react-router-dom";
-import { MDCDrawer } from "@material/drawer";
 import { MDCDialog } from "@material/dialog";
 import { GridLoader } from "react-spinners";
 
@@ -162,22 +161,11 @@ export default class Catalog extends React.Component {
   }
 
   handleToolDrawerDisplay() {
-    if (this.props.toolDrawerVariant === "dismissible") {
       if (this.props.toolDrawerStatus === "open") {
         this.props.closeToolDrawer();
         return;
       }
       this.props.openToolDrawer();
-    } else if (this.props.toolDrawerVariant === "modal") {
-      this.toolDrawer = MDCDrawer.attachTo(
-        document.querySelector(".tool-drawer")
-      );
-      this.toolDrawer.open = true;
-      const scrim = document.getElementById("scrim");
-      scrim.onclick = () => {
-        this.toolDrawer.open = false;
-      };
-    }
   }
 
   handleShowCollectionView() {
@@ -312,7 +300,7 @@ export default class Catalog extends React.Component {
       drawerStatusClass = "open-drawer";
     }
     const catalogView = (
-      <div className={`catalog ${drawerStatusClass} mdc-drawer-app-content`}>
+      <div className={`catalog typography ${drawerStatusClass}`}>
         <ToolDrawerContainer
           total={
             this.props.visibleCollections
