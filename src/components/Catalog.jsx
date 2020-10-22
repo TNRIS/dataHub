@@ -33,10 +33,8 @@ export default class Catalog extends React.Component {
 
     this.state = {
       showButton: "no",
-      snack: {
-        open: false,
-        message: undefined,
-      },
+      snackOpen: false,
+      snackMessage: undefined,
     };
 
     this.handleResize = this.handleResize.bind(this);
@@ -128,8 +126,8 @@ export default class Catalog extends React.Component {
 
   detectScroll() {
     window.pageYOffset > 500
-      ? this.setState((prevState) => ({ ...prevState, showButton: "yes" }))
-      : this.setState((prevState) => ({  ...prevState, showButton: "no" }));
+      ? this.setState((prevState) => ({ showButton: "yes" }))
+      : this.setState((prevState) => ({ showButton: "no" }));
   }
 
   scrollTop() {
@@ -143,19 +141,16 @@ export default class Catalog extends React.Component {
 
   handleToast(labelText) {
     this.setState((prevState) => ({
-      ...prevState,
-      snack: { open: true, message: labelText },
+      snackOpen: true,
+      snackMessage: labelText
     }));
   }
 
   handleToastClose() {
-    this.setState(prevState => ({
-      ...prevState,
-      snack: {
-        open: false,
-        message: undefined
-      }
-    }))
+    this.setState((prevState) => ({
+      snackOpen: false,
+      snackMessage: undefined
+    }));
   }
 
   handleResize() {
@@ -416,13 +411,12 @@ export default class Catalog extends React.Component {
         <FooterContainer />
 
         <Snackbar
-          className={'dataset-toaster'}
-          open={this.state.snack.open}
-          message={this.state.snack.message}
-          onClose={this.handleToastClose} 
-          autoHideDuration={10000}         
+          className={"dataset-toaster"}
+          open={this.state.snackOpen}
+          message={this.state.snackMessage}
+          onClose={this.handleToastClose}
+          autoHideDuration={10000}
         />
-        
       </div>
     );
   }
