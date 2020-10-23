@@ -73,7 +73,6 @@ const ToolDrawer = (props) => {
 
         <List>
           <CollectionSorterContainer className="list-item" />
-          <div className="filter-title list-group__subheader">Filter</div>
           <CollectionFilterContainer className="list-item" />
           <div className="timeslider-title list-group__subheader">
             Date Range

@@ -94,7 +94,7 @@ class CollectionSorter extends React.Component {
       <div className="sort-component">
         <List id="sorter-list" component="nav" aria-label="Sort list"
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
+            <ListSubheader disableSticky={true} component="div" id="nested-list-subheader">
               Sort
             </ListSubheader>
           }
