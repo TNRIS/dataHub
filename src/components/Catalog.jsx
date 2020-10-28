@@ -36,7 +36,6 @@ const Catalog = (props) => {
   const [snackMessage, setSnackMessage] = useState(undefined);
 
   useEffect(() => {
-    console.log("first ue");
     props.fetchCollections();
     props.fetchStoredShoppingCart();
     window.addEventListener("resize", handleResize);
@@ -72,8 +71,6 @@ const Catalog = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("second ue");
-
     if (props.visibleCollections) {
       const msg =
         props.visibleCollections.length !== 1
@@ -87,8 +84,6 @@ const Catalog = (props) => {
   }, [props.visibleCollections]);
 
   useEffect(() => {
-    console.log("third ue");
-
     if (snackPack.length && !snackMessage) {
       // Set a new snack when we don't have an active one
       setSnackMessage({ ...snackPack[0] });
