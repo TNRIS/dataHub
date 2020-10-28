@@ -1,41 +1,15 @@
 import React from "react";
-import { Drawer, List } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box, Button, Drawer, List, ListSubheader } from "@material-ui/core";
 
 import CollectionFilterContainer from "../containers/CollectionFilterContainer";
 import CollectionSorterContainer from "../containers/CollectionSorterContainer";
 import CollectionTimesliderContainer from "../containers/CollectionTimesliderContainer";
-import ThemeChooserContainer from "../containers/ThemeChooserContainer";
 
 import ShareButtons from "./DialogTemplateListItems/ShareButtons";
-
-const drawerWidth = 256;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  drawer: {
-    width: drawerWidth,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    top: 106,
-  },
-  drawerContainer: {
-    overflow: "auto",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-}));
+import useToolDrawerStyles from "../cssInJs/_toolDrawer";
 
 const ToolDrawer = (props) => {
-  const classes = useStyles();
+  const classes = useToolDrawerStyles();
 
   const clearAllFilters = () => {
     props.sortNew();
@@ -60,43 +34,65 @@ const ToolDrawer = (props) => {
       variant={"persistent"}
       anchor={"right"}
     >
-      <div className="drawer__content" dir="ltr">
-        <div className="drawer__header no-scroll">
-          <div className="dataset-counter">
-            <span>
-              {props.total !== 1
-                ? `${props.total} Datasets Found`
-                : `${props.total} Dataset Found`}
-            </span>
-          </div>
-        </div>
+      <Box
+        p={2}
+        display="flex"
+        flexDirection="row"
+        justifyContent="center"
+        top={0}
+      >
+        <span>
+          {props.total !== 1
+            ? `${props.total} Datasets Found`
+            : `${props.total} Dataset Found`}
+        </span>
+      </Box>
 
-        <List>
-          <CollectionSorterContainer className="list-item" />
-          <CollectionFilterContainer className="list-item" />
-          <div className="timeslider-title list-group__subheader">
+      <List>
+        <Box className={classes.drawerSection}>
+          <CollectionSorterContainer
+            className={"list-item " + classes.drawerSection}
+          />
+        </Box>
+        <Box className={classes.drawerSection}>
+          <CollectionFilterContainer className={"list-item "} />
+        </Box>
+        <Box className={classes.drawerSection}>
+          <ListSubheader
+            disableSticky={true}
+            component="div"
+            id="nested-list-subheader"
+          >
             Date Range
-          </div>
-          <CollectionTimesliderContainer className="list-item" />
-          <div className="clear-all-filters-container">
-            <button
-              className="button button--raised"
-              onClick={() => clearAllFilters()}
-              disabled={
-                Object.keys(props.collectionFilter).length < 1 &&
-                props.collectionFilterMapFilter.length < 1 &&
-                !props.location.pathname.includes("range")
-                  ? true
-                  : false
-              }
-            >
-              Clear All Filters
-            </button>
-          </div>
-          <ThemeChooserContainer />
-          <ShareButtons />
-        </List>
-      </div>
+          </ListSubheader>
+          <CollectionTimesliderContainer className={"list-item"} />
+        </Box>
+
+        <Box
+          className={"clear-all-filters-container " + classes.drawerSection}
+          display="flex"
+          justifyContent="center"
+        >
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => clearAllFilters()}
+            disabled={
+              Object.keys(props.collectionFilter).length < 1 &&
+              props.collectionFilterMapFilter.length < 1 &&
+              !props.location.pathname.includes("range")
+                ? true
+                : false
+            }
+          >
+            Clear All Filters
+          </Button>
+        </Box>
+        {/* <ThemeChooserContainer /> */}
+        <ShareButtons
+          className={"share-buttons-container " + classes.drawerSection}
+        />
+      </List>
     </Drawer>
   );
 };

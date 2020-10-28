@@ -2,123 +2,106 @@
 styles for component: ToolDrawer
 */
 
-.tool-drawer-component {
-
-  .mdc-drawer--dismissible.mdc-drawer--open {
-    display: flex;
+.drawer__content {
+  .list-group {
     position: fixed;
-    top: 106px;
+    min-width: 255px;
+    padding-top: 36px;
   }
 
-  .mdc-drawer {
-    @include mdc-drawer-surface-fill-color($main-background);
+  .no-scroll {
+    position: fixed;
+    background: #fff;
+  }
+
+  .scroll {
+    max-height: calc(100vh - 46px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    top: 100px;
+    bottom: 0;
 
     @media (max-width: $breakpoint-desktop) {
-      top: 0;
+      top: 10px;
+      bottom: 0;
+    }
+  }
+
+  .drawer__header {
+    min-width: 255px;
+    z-index: 999;
+    padding: 0 0 0 0;
+    background: $main-background;
+    min-height: 26px;
+    top: 120px;
+
+    @media (max-width: $breakpoint-desktop) {
+      top: 20px;
+    }
+  }
+
+  .dataset-counter {
+    color: $nest-text;
+    text-align: center;
+    height: 26px;
+    line-height: 26px;
+  }
+
+  .list-group {
+    margin-top: 56px;
+    padding-top: 0;
+
+    .list-group__subheader {
+      font-size: 1rem;
+      color: $nest-text-subtle;
+    }
+  }
+
+  ul {
+    padding-left: 0;
+  }
+
+  hr {
+    clear: left;
+  }
+
+  .clear-all-filters-container {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: center;
+
+    .mdc-button--raised:not(:disabled),
+    .mdc-button--unelevated:not(:disabled) {
+      background-color: $primary-color;
+      color: $button-text;
+    }
+  }
+
+  .share-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 72px;
+
+    .share-button {
+      margin: 6px;
+      cursor: pointer;
     }
 
-    .mdc-drawer__content {
+    .share-copy-link {
+      background-color: #7e7e7e;
+      color: white;
+      border-radius: 15px;
+      height: 26px;
+      width: 26px;
+      text-align: center;
+      border: none;
+      padding-left: 5px;
 
-      .mdc-list-group {
-        position: fixed;
-        min-width: 255px;
-        padding-top: 36px;
-      }
-
-      .no-scroll {
-        position: fixed;
-      }
-
-      .scroll {
-        max-height: calc(100vh - 46px);
-        overflow-x: hidden;
-        overflow-y: auto;
-        top: 100px;
-        bottom: 0;
-
-        @media (max-width: $breakpoint-desktop) {
-          top: 10px;
-          bottom: 0;
-        }
-      }
-
-      .mdc-drawer__header {
-        min-width: 255px;
-        z-index: 999;
-        padding: 0 0 0 0;
-        background: $main-background;
-        min-height: 26px;
-        top: 120px;
-
-        @media (max-width: $breakpoint-desktop) {
-          top: 20px;
-        }
-      }
-
-      .dataset-counter {
-        color: $nest-text;
-        text-align: center;
-        height: 26px;
-        line-height: 26px;
-      }
-
-      .mdc-list-group {
-        margin-top: 56px;
-        padding-top: 0;
-
-        .mdc-list-group__subheader {
-          font-size: 1rem;
-          color: $nest-text-subtle;
-        }
-      }
-
-      ul {
-        padding-left: 0;
-      }
-
-      hr {
-        clear: left;
-      }
-
-      .clear-all-filters-container {
-        padding-top: 8px;
-        padding-bottom: 8px;
-        display: flex;
-        justify-content: center;
-
-        .mdc-button--raised:not(:disabled),
-        .mdc-button--unelevated:not(:disabled) {
-          background-color: $primary-color;
-          color: $button-text;
-        }
-      }
-
-      .share-bar {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        padding-bottom: 72px;
-
-        .share-button {
-          margin: 6px;
-          cursor: pointer;
-        }
-
-        .share-copy-link {
-          background-color: #7E7E7E;
-          color: white;
-          border-radius: 15px;
-          height: 26px;
-          width: 26px;
-          text-align: center;
-          border: none;
-          padding-left: 5px;
-
-          i {
-            font-size: 18px;
-            line-height: 24px;
-          }
-        }
+      i {
+        font-size: 18px;
+        line-height: 24px;
       }
     }
   }

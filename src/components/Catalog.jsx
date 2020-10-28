@@ -1,9 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router";
 import { matchPath } from "react-router-dom";
-import { MDCDialog } from "@material/dialog";
-import { GridLoader } from "react-spinners";
 
 import OutsideEntityTemplate from "./TnrisOutsideEntityTemplate/TnrisOutsideEntityTemplate";
 import TnrisOrderTemplate from "./TnrisOrderTemplate/TnrisOrderTemplate";
@@ -24,57 +22,32 @@ import noDataImage666 from "../images/no-data-satan.png";
 
 // global sass breakpoint variables to be used in js
 import breakpoints from "../sass/_breakpoints.scss";
-import { Container, Fab, Grid, Icon, Snackbar } from "@material-ui/core";
+import { Box, Container, Fab, Grid, Icon, Snackbar } from "@material-ui/core";
+import SweetLoadingScreen from "./SweetLoadingScreen";
 
-export default class Catalog extends React.Component {
-  constructor(props) {
-    super(props);
+import useCatalogStyles from "../cssInJs/_catalog";
 
-    this.state = {
-      showButton: "no",
-      snackOpen: false,
-      snackMessage: undefined,
-    };
+const Catalog = (props) => {
+  const classes = useCatalogStyles();
 
-    this.handleResize = this.handleResize.bind(this);
-    this.handleToolDrawerDisplay = this.handleToolDrawerDisplay.bind(this);
-    this.handleShowCollectionView = this.handleShowCollectionView.bind(this);
-    this.setCatalogView = this.setCatalogView.bind(this);
-    this.handleToast = this.handleToast.bind(this);
-    this.handleToastClose = this.handleToastClose.bind(this);
-    this.handleCloseBetaNotice = this.handleCloseBetaNotice.bind(this);
-    this.chunkCatalogCards = this.chunkCatalogCards.bind(this);
-    this.detectScroll = this.detectScroll.bind(this);
-    this.scrollTop = this.scrollTop.bind(this);
-    // this.loadingMessage = (
-    //   <div className="catalog-component__loading">
-    //     <img src={loadingImage} alt="Holodeck Loading..." className="holodeck-loading-image" />
-    //   </div>
-    // );
-    this.loadingMessage = (
-      <div className="sweet-loading-animation">
-        <GridLoader
-          sizeUnit={"px"}
-          size={25}
-          color={"#1E8DC1"}
-          loading={true}
-        />
-      </div>
-    );
-  }
+  const [toTopDisplay, setToTopDisplay] = useState("no");
+  const [snackPack, setSnackPack] = useState([]);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState(undefined);
 
-  componentDidMount() {
-    this.props.fetchCollections();
-    this.props.fetchStoredShoppingCart();
-    window.addEventListener("resize", this.handleResize);
-    window.addEventListener("scroll", this.detectScroll);
+  useEffect(() => {
+    console.log("first ue");
+    props.fetchCollections();
+    props.fetchStoredShoppingCart();
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", detectScroll);
     window.innerWidth >= parseInt(breakpoints.desktop, 10)
-      ? this.props.setDismissibleDrawer()
-      : this.props.setModalDrawer();
+      ? props.setDismissibleDrawer()
+      : props.setModalDrawer();
     window.onpopstate = (e) => {
       if (e.state) {
         const theState = e.state.state;
-        this.props.popBrowserStore(theState);
+        props.popBrowserStore(theState);
       }
     };
     // apply theme
@@ -84,93 +57,84 @@ export default class Catalog extends React.Component {
         ? localStorage.getItem("data_theme")
         : null;
       if (savedTheme) {
-        if (
-          this.props.themeOptions.includes(savedTheme) ||
-          savedTheme === "satan"
-        ) {
-          this.props.setColorTheme(savedTheme);
+        if (props.themeOptions.includes(savedTheme) || savedTheme === "satan") {
+          props.setColorTheme(savedTheme);
         } else {
           localStorage.removeItem("data_theme");
         }
       }
     }
-  }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
-    window.removeEventListener("scroll", this.detectScroll);
-  }
+    return function cleanup() {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", detectScroll);
+    };
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.theme !== this.props.theme) {
-      const themedClass = this.props.theme + "-app-theme";
-      const html = document.querySelector("html");
-      html.className = themedClass;
+  useEffect(() => {
+    console.log("second ue");
+
+    if (props.visibleCollections) {
+      const msg =
+        props.visibleCollections.length !== 1
+          ? `${props.visibleCollections.length} datasets found`
+          : `${props.visibleCollections.length} dataset found`;
+      setSnackPack((prev) => [
+        ...prev,
+        { message: msg, key: new Date().getTime() },
+      ]);
     }
-    if (prevProps.visibleCollections) {
-      if (this.props.view === "catalog" || this.props.view === "geoFilter") {
-        if (
-          prevProps.visibleCollections.length !==
-          this.props.visibleCollections.length
-        ) {
-          this.handleToast(
-            this.props.visibleCollections.length !== 1
-              ? `${this.props.visibleCollections.length} datasets found`
-              : `${this.props.visibleCollections.length} dataset found`
-          );
-        }
-      }
+  }, [props.visibleCollections]);
+
+  useEffect(() => {
+    console.log("third ue");
+
+    if (snackPack.length && !snackMessage) {
+      // Set a new snack when we don't have an active one
+      setSnackMessage({ ...snackPack[0] });
+      setSnackPack((prev) => prev.slice(1));
+      setSnackOpen(true);
+    } else if (snackPack.length && snackMessage && snackOpen) {
+      // Close an active snack when a new one is added
+      setSnackOpen(false);
     }
-  }
+  }, [snackPack, snackMessage, snackOpen]);
 
-  detectScroll() {
-    window.pageYOffset > 500
-      ? this.setState((prevState) => ({ showButton: "yes" }))
-      : this.setState((prevState) => ({ showButton: "no" }));
-  }
+  const detectScroll = () => {
+    window.pageYOffset > 500 ? setToTopDisplay("yes") : setToTopDisplay("no");
+  };
 
-  scrollTop() {
+  const scrollTop = () => {
     window.scrollTo(0, 0);
-  }
+  };
 
-  handleCloseBetaNotice() {
-    this.betaDialog = new MDCDialog(document.querySelector(".mdc-dialog"));
-    this.betaDialog.foundation_.adapter_.removeClass("mdc-dialog--open");
-  }
+  const handleToastClose = (event, reason) => {
+    setSnackOpen(false);
+  };
 
-  handleToast(labelText) {
-    this.setState((prevState) => ({
-      snackOpen: true,
-      snackMessage: labelText
-    }));
-  }
+  const handleToastExited = () => {
+    setSnackMessage(undefined);
+  };
 
-  handleToastClose() {
-    this.setState((prevState) => ({
-      snackOpen: false,
-      snackMessage: undefined
-    }));
-  }
-
-  handleResize() {
+  const handleResize = () => {
     if (window.innerWidth >= parseInt(breakpoints.desktop, 10)) {
-      this.props.setDismissibleDrawer();
+      props.setDismissibleDrawer();
     } else {
-      this.props.setModalDrawer();
+      props.setModalDrawer();
     }
-  }
+  };
 
-  handleToolDrawerDisplay() {
-      if (this.props.toolDrawerStatus === "open") {
-        this.props.closeToolDrawer();
-        return;
-      }
-      this.props.openToolDrawer();
-  }
+  const handleToolDrawerDisplay = () => {
+    if (props.toolDrawerStatus === "open") {
+      props.closeToolDrawer();
+      return;
+    }
+    props.openToolDrawer();
+  };
 
-  handleShowCollectionView() {
-    if (this.props.selectedCollection) {
-      let collection = this.props.collections[this.props.selectedCollection];
+  const handleShowCollectionView = () => {
+    if (props.selectedCollection) {
+      let collection = props.collections[props.selectedCollection];
       switch (collection["template"]) {
         case "tnris-download":
           return <TnrisDownloadTemplateContainer collection={collection} />;
@@ -184,31 +148,29 @@ export default class Catalog extends React.Component {
           return <TnrisDownloadTemplateContainer collection={collection} />;
       }
     } else {
-      const match = matchPath(this.props.history.location.pathname, {
+      const match = matchPath(props.history.location.pathname, {
         path: "/collection/:collectionId",
       });
       if (
-        this.props.collections &&
+        props.collections &&
         Object.keys(match.params).includes("collectionId")
       ) {
         if (
-          !Object.keys(this.props.collections).includes(
-            match.params.collectionId
-          )
+          !Object.keys(props.collections).includes(match.params.collectionId)
         ) {
           return <Redirect to="/404" />;
         }
       }
     }
-  }
+  };
 
-  chunkCatalogCards() {
+  const chunkCatalogCards = () => {
     let chunks = [];
     let loop = 0;
     let s = 0;
     let e = 900;
-    while (s < this.props.visibleCollections.length) {
-      let chunk = this.props.visibleCollections.slice(s, e);
+    while (s < props.visibleCollections.length) {
+      let chunk = props.visibleCollections.slice(s, e);
       chunks.push(
         <Grid container spacing={4} key={loop} count={loop}>
           {chunk.map((collectionId, index) => (
@@ -222,7 +184,7 @@ export default class Catalog extends React.Component {
               idx={index}
             >
               <CatalogCardContainer
-                collection={this.props.collections[collectionId]}
+                collection={props.collections[collectionId]}
               />
             </Grid>
           ))}
@@ -233,16 +195,16 @@ export default class Catalog extends React.Component {
       e += 900;
     }
     return chunks;
-  }
+  };
 
-  setCatalogView() {
+  const setCatalogView = () => {
     const scrollTopButton =
-      this.state.showButton === "yes" ? (
+      toTopDisplay === "yes" ? (
         <div className="scrolltop-container">
           <Fab
             className="scrolltop"
             aria-label="Back to top"
-            onClick={this.scrollTop}
+            onClick={scrollTop}
             title="Back to top"
           >
             <Icon>keyboard_arrow_up</Icon>
@@ -252,23 +214,22 @@ export default class Catalog extends React.Component {
         ""
       );
     const catalogCards =
-      this.props.visibleCollections &&
-      this.props.visibleCollections.length < 1 ? (
+      props.visibleCollections && props.visibleCollections.length < 1 ? (
         <div className="no-data">
           <img
-            src={this.props.theme !== "satan" ? noDataImage : noDataImage666}
+            src={props.theme !== "satan" ? noDataImage : noDataImage666}
             className="no-data-image"
             alt="No Data Available"
             title="No data available with those search terms"
           />
         </div>
-      ) : !this.props.visibleCollections ? (
-        this.loadingMessage
-      ) : this.props.visibleCollections.length < 900 ? (
+      ) : !props.visibleCollections ? (
+        <SweetLoadingScreen />
+      ) : props.visibleCollections.length < 900 ? (
         <Container className={"catalog-grid"}>
           {scrollTopButton}
           <Grid container spacing={4}>
-            {this.props.visibleCollections.map((collectionId, index) => (
+            {props.visibleCollections.map((collectionId, index) => (
               <Grid
                 item
                 xs={12}
@@ -279,7 +240,7 @@ export default class Catalog extends React.Component {
                 idx={index}
               >
                 <CatalogCardContainer
-                  collection={this.props.collections[collectionId]}
+                  collection={props.collections[collectionId]}
                 />
               </Grid>
             ))}
@@ -288,124 +249,86 @@ export default class Catalog extends React.Component {
       ) : (
         <Container className={"catalog-grid"}>
           {scrollTopButton}
-          {this.chunkCatalogCards()}
+          {chunkCatalogCards()}
         </Container>
       );
 
-    let drawerStatusClass = "closed-drawer";
+    let drawerStatusClass = classes.closedDrawer;
     if (
-      this.props.toolDrawerStatus === "open" &&
-      this.props.toolDrawerVariant === "dismissible"
+      props.toolDrawerStatus === "open" &&
+      props.toolDrawerVariant === "dismissible"
     ) {
-      drawerStatusClass = "open-drawer";
+      drawerStatusClass = classes.openDrawer;
     }
     const catalogView = (
-      <div className={`catalog typography ${drawerStatusClass}`}>
+      <Box className={`catalog typography ` + drawerStatusClass}>
         <ToolDrawerContainer
-          total={
-            this.props.visibleCollections
-              ? this.props.visibleCollections.length
-              : 0
-          }
+          total={props.visibleCollections ? props.visibleCollections.length : 0}
         />
         {catalogCards}
-      </div>
+      </Box>
     );
     return catalogView;
+  };
+
+  const { error, loading } = props;
+
+  if (error) {
+    return <div>Error! {error.message}</div>;
   }
 
-  render() {
-    // Here lies the beta notice dialog. To remove the notice, remove the reference to this variable
-    // in the returned codeblock below under the 'catalog-component'.
-    // const betaDialog = (
-    //   <div className="beta-notice-dialog mdc-dialog mdc-dialog--open"
-    //        role="alertdialog"
-    //        aria-modal="true"
-    //        aria-labelledby="beta-warning"
-    //        aria-describedby="my-dialog-content">
-    //     <div className="mdc-dialog__container">
-    //       <div className="mdc-dialog__surface">
-    //         <h2 className="mdc-dialog__title" id="my-dialog-title">Howdy Y'all!</h2>
-    //         <div className="mdc-dialog__content" id="my-dialog-content">
-    //           {`This application is currently in beta, so mosy on over to `}<a href='https://tnris.org/'>tnris.org</a>
-    //           {` if'n you're afraid of tanglin' with a few breachy bugs. YEE-HAW!`}
-    //         </div>
-    //         <footer className="mdc-dialog__actions">
-    //           <button type="button"
-    //                   className="mdc-button mdc-button--raised"
-    //                   data-mdc-dialog-action="close"
-    //                   onClick={this.handleCloseBetaNotice}
-    //                   onKeyPress={(e) => e.keyCode === 13 || e.keyCode === 32 ? this.handleCloseBetaNotice() : null}
-    //                   autoFocus>
-    //             <span className="mdc-button__label">OK</span>
-    //           </button>
-    //         </footer>
-    //       </div>
-    //     </div>
-    //     <div className="mdc-dialog__scrim"></div>
-    //   </div>
-    // );
+  if (loading) {
+    return <SweetLoadingScreen />;
+  }
 
-    const { error, loading } = this.props;
+  const viewClass =
+    props.view === "catalog"
+      ? "catalog-view-container"
+      : "other-view-container";
 
-    if (error) {
-      return <div>Error! {error.message}</div>;
-    }
+  return (
+    <div className="catalog-component">
+      <HeaderContainer handleToolDrawerDisplay={handleToolDrawerDisplay} />
 
-    if (loading) {
-      return this.loadingMessage;
-    }
-
-    const viewClass =
-      this.props.view === "catalog"
-        ? "catalog-view-container"
-        : "other-view-container";
-
-    return (
-      <div className="catalog-component">
-        {/*{betaDialog}*/}
-
-        <HeaderContainer
-          handleToolDrawerDisplay={this.handleToolDrawerDisplay}
-        />
-
-        <div className={viewClass}>
-          <Switch>
-            <Route
-              path="/collection/:collectionId"
-              exact
-              render={(props) => this.handleShowCollectionView()}
-            />
-            <Route
-              path="/catalog/:filters"
-              exact
-              render={(props) => this.setCatalogView()}
-            />
-            <Route
-              path="/cart/"
-              exact
-              render={(props) => <OrderCartViewContainer />}
-            />
-            <Route
-              path="/geofilter/"
-              exact
-              render={(props) => <CollectionFilterMapViewContainer />}
-            />
-            <Route path="/" exact render={(props) => this.setCatalogView()} />
-            <Route path="*" render={(props) => <NotFoundContainer />} />
-          </Switch>
-        </div>
-
-        <FooterContainer />
-
-        <Snackbar
-          className={"dataset-toaster"}
-          open={this.state.snackOpen}
-          message={this.state.snackMessage}
-          onClose={this.handleToastClose}
-          autoHideDuration={10000}
-        />
+      <div className={viewClass}>
+        <Switch>
+          <Route
+            path="/collection/:collectionId"
+            exact
+            render={(props) => handleShowCollectionView()}
+          />
+          <Route
+            path="/catalog/:filters"
+            exact
+            render={(props) => setCatalogView()}
+          />
+          <Route
+            path="/cart/"
+            exact
+            render={(props) => <OrderCartViewContainer />}
+          />
+          <Route
+            path="/geofilter/"
+            exact
+            render={(props) => <CollectionFilterMapViewContainer />}
+          />
+          <Route path="/" exact render={(props) => setCatalogView()} />
+          <Route path="*" render={(props) => <NotFoundContainer />} />
+        </Switch>
       </div>
-    );
-  }
-}
+
+      <FooterContainer />
+      <Snackbar
+        key={snackMessage ? snackMessage.key : undefined}
+        className={"dataset-toaster"}
+        open={snackOpen}
+        message={snackMessage ? snackMessage.message : undefined}
+        onClose={handleToastClose}
+        onExited={handleToastExited}
+        autoHideDuration={6000}
+      />
+    </div>
+  );
+};
+
+export default Catalog;
