@@ -23,7 +23,7 @@ const useToolDrawerStyles = makeStyles((theme) => ({
   },
   drawerSection: {
     marginBottom: theme.spacing(1)
-  }
+  },
 }));
 
 export default useToolDrawerStyles;

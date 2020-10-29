@@ -167,7 +167,7 @@ const Catalog = (props) => {
     while (s < props.visibleCollections.length) {
       let chunk = props.visibleCollections.slice(s, e);
       chunks.push(
-        <Grid container spacing={4} key={loop} count={loop}>
+        <Grid container alignItems={'stretch'} spacing={4} key={loop} count={loop}>
           {chunk.map((collectionId, index) => (
             <Grid
               item

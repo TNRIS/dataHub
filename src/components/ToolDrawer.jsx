@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Drawer, List, ListSubheader } from "@material-ui/core";
+import { Box, Button, Divider, Drawer, List, ListSubheader } from "@material-ui/core";
 
 import CollectionFilterContainer from "../containers/CollectionFilterContainer";
 import CollectionSorterContainer from "../containers/CollectionSorterContainer";
@@ -36,7 +36,11 @@ const ToolDrawer = (props) => {
     >
       <Box
         p={2}
+        mx={-1}
+        bgcolor="white"
         display="flex"
+        position="sticky"
+        zIndex="modal"
         flexDirection="row"
         justifyContent="center"
         top={0}
@@ -89,9 +93,10 @@ const ToolDrawer = (props) => {
           </Button>
         </Box>
         {/* <ThemeChooserContainer /> */}
-        <ShareButtons
-          className={"share-buttons-container " + classes.drawerSection}
-        />
+        <Divider variant="middle" />
+        <Box pt={4} pb={2}>
+          <ShareButtons />
+        </Box>
       </List>
     </Drawer>
   );

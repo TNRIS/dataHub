@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   EmailShareButton,
   EmailIcon,
@@ -9,129 +9,115 @@ import {
   TwitterShareButton,
   TwitterIcon,
 } from "react-share";
-import { Box } from "@material-ui/core";
+import { Box, Grid, Icon } from "@material-ui/core";
 
-const CustomLink = ({ children }) => {
-  return (<div
-    style={{
-      width: "26px",
-      height: "26px",
-      justifyContent: "center",
-      alignItems: "center",
-      display: "flex",
-      background: "grey",
-      color: "white",
-      fontSize: '18px'
-    }}
-  >{ children }</div>);
-};
-
-export default class ShareButtons extends React.Component {
-  _isMounted = false;
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      urlCopied: false,
-    };
-    this.copyUrl = this.copyUrl.bind(this);
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-  }
-
-  componentWillUnmount() {
-    this.setState({ urlCopied: false });
-    this._isMounted = false;
-  }
-
-  copyUrl() {
+const CopyUrlButton = () => {
+  const btnStyle = {
+    width: "26px",
+    height: "26px",
+    borderRadius: "50%",
+    border: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    background: "grey",
+    color: "white",
+    fontSize: "18px",
+    cursor: "pointer",
+  };
+  const copyUrl = () => {
     const input = document.createElement("input");
     document.body.appendChild(input);
     input.value = window.location.href;
     input.select();
     document.execCommand("copy");
     document.body.removeChild(input);
-    this.setState({ urlCopied: true });
-    setTimeout(() => {
-      if (this._isMounted) {
-        this.setState({ urlCopied: false });
-      }
-    }, 10000);
-  }
+  };
 
-  render() {
-    const shareUrl = `https://data.tnris.org${window.location.pathname}`;
-    const shareTitle = "Check out this TNRIS DataHub data!";
-    const shareCombo = `${shareTitle} ${shareUrl}`;
+  const [copied, setCopied] = useState(false);
 
-    // react-share use of url for twitter doesn't like the brackets in a filtered
-    // catalog url (despite twitter accepts the url when tweeted directly) so
-    // we must handle this by swapping the url into the title parameter
-    const tweetTitle =
-      shareUrl.includes("[") || shareUrl.includes("]")
-        ? shareCombo
-        : shareTitle;
+  useEffect(() => {
+    if (copied === true) {
+      const tOut = () =>
+        setTimeout(() => {
+          setCopied(false);
+        }, 6000);
+      tOut();
+      clearTimeout(tOut);
+    }
+  }, [copied]);
 
-    const linkIcon = this.state.urlCopied ? "done" : "link";
+  return (
+    <Box
+      onClick={() => {
+        copyUrl();
+        setCopied(true);
+      }}
+      tabIndex="0"
+      style={btnStyle}
+    >
+      <Icon fontSize={"small"}>{copied ? "done" : "link"}</Icon>
+    </Box>
+  );
+};
 
-    return (
-      <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        p={2}
-        pt={4}
-      >
-        <div title="Twitter">
-          <TwitterShareButton
-            url={shareUrl}
-            title={tweetTitle}
-            className="share-button"
-            hashtags={["TNRIS", "DataHolodeck"]}
-          >
-            <TwitterIcon size={26} round={true} />
-          </TwitterShareButton>
-        </div>
-        <div title="Facebook">
-          <FacebookShareButton
-            url={shareUrl}
-            quote={shareTitle}
-            className="share-button"
-            hashtag="#TNRIS"
-          >
-            <FacebookIcon size={26} round={true} />
-          </FacebookShareButton>
-        </div>
-        <div title="Reddit">
-          <RedditShareButton
-            url={shareUrl}
-            title={shareTitle}
-            className="share-button"
-          >
-            <RedditIcon size={26} round={true} />
-          </RedditShareButton>
-        </div>
-        <div title="Email">
-          <EmailShareButton
-            url={shareUrl}
-            subject={shareTitle}
-            body={shareCombo}
-            className="share-button"
-          >
-            <EmailIcon size={26} round={true} />
-          </EmailShareButton>
-        </div>
-        <button
-          title="Copy Link"
-          className="share-button share-copy-link"
-          onClick={() => this.copyUrl()}
-          tabIndex="0"
+const ShareButtons = () => {
+  const shareUrl = `https://data.tnris.org${window.location.pathname}`;
+  const shareTitle = "Check out this TNRIS DataHub data!";
+  const shareCombo = `${shareTitle} ${shareUrl}`;
+
+  // react-share use of url for twitter doesn't like the brackets in a filtered
+  // catalog url (despite twitter accepts the url when tweeted directly) so
+  // we must handle this by swapping the url into the title parameter
+  const tweetTitle =
+    shareUrl.includes("[") || shareUrl.includes("]") ? shareCombo : shareTitle;
+
+  return (
+    <Grid container spacing={1} justify="center">
+      <Grid item title="Twitter">
+        <TwitterShareButton
+          url={shareUrl}
+          title={tweetTitle}
+          className="share-button"
+          hashtags={["TNRIS", "DataHolodeck"]}
         >
-          <i className="material-icons">{linkIcon}</i>
-        </button>
-      </Box>
-    );
-  }
-}
+          <TwitterIcon size={26} round={true} />
+        </TwitterShareButton>
+      </Grid>
+      <Grid item title="Facebook">
+        <FacebookShareButton
+          url={shareUrl}
+          quote={shareTitle}
+          className="share-button"
+          hashtag="#TNRIS"
+        >
+          <FacebookIcon size={26} round={true} />
+        </FacebookShareButton>
+      </Grid>
+      <Grid item title="Reddit">
+        <RedditShareButton
+          url={shareUrl}
+          title={shareTitle}
+          className="share-button"
+        >
+          <RedditIcon size={26} round={true} />
+        </RedditShareButton>
+      </Grid>
+      <Grid item title="Email">
+        <EmailShareButton
+          url={shareUrl}
+          subject={shareTitle}
+          body={shareCombo}
+          className="share-button"
+        >
+          <EmailIcon size={26} round={true} />
+        </EmailShareButton>
+      </Grid>
+      <Grid item title="Link">
+        <CopyUrlButton />
+      </Grid>
+    </Grid>
+  );
+};
+
+export default ShareButtons;

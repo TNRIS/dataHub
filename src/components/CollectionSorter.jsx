@@ -1,19 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { matchPath } from "react-router-dom";
 
 import { List, ListItem, ListItemText, ListSubheader } from "@material-ui/core";
 
-class CollectionSorter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.setSort = this.setSort.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-  }
+const CollectionSorter = (props) => {
 
-  componentDidMount() {
+  useEffect(() => {
     // on component mount, check the URl to apply any necessary filters
     // first, check if url has a 'filters' parameter
-    const match = matchPath(this.props.location.pathname, {
+    const match = matchPath(props.location.pathname, {
       path: "/catalog/:filters",
     });
     const filters = match ? match.params.filters : null;
@@ -23,44 +18,44 @@ class CollectionSorter extends React.Component {
         // second, check if filters param includes sort key
         if (Object.keys(allFilters).includes("sort")) {
           // third, apply sort to store and component
-          if (this.props.sortOrder !== allFilters.sort) {
-            this.setSort(allFilters.sort);
+          if (props.sortOrder !== allFilters.sort) {
+            setSort(allFilters.sort);
           }
         }
       } catch (e) {
         console.log(e);
         if (window.location.pathname !== "/404") {
-          this.props.url404();
+          props.url404();
         }
       }
     }
-  }
+  }, [])
 
-  setSort(order) {
-    if (this.props.sortOrder !== order) {
+  const setSort = (order) => {
+    if (props.sortOrder !== order) {
       switch (order) {
         case "NEW":
-          this.props.sortNew();
+          props.sortNew();
           break;
         case "OLD":
-          this.props.sortOld();
+          props.sortOld();
           break;
         case "AZ":
-          this.props.sortAZ();
+          props.sortAZ();
           break;
         case "ZA":
-          this.props.sortZA();
+          props.sortZA();
           break;
         default:
-          this.props.sortNew();
+          props.sortNew();
       }
       // update URL to reflect new sort change
-      const prevFilter = this.props.history.location.pathname.includes(
+      const prevFilter = props.history.location.pathname.includes(
         "/catalog/"
       )
         ? JSON.parse(
             decodeURIComponent(
-              this.props.history.location.pathname.replace("/catalog/", "")
+              props.history.location.pathname.replace("/catalog/", "")
             )
           )
         : {};
@@ -72,24 +67,24 @@ class CollectionSorter extends React.Component {
       const filterString = JSON.stringify(filterObj);
       // if empty filter settings, use the base home url instead of the filter url
       Object.keys(filterObj).length === 0
-        ? this.props.setUrl("/")
-        : this.props.setUrl("/catalog/" + encodeURIComponent(filterString));
+        ? props.setUrl("/")
+        : props.setUrl("/catalog/" + encodeURIComponent(filterString));
       // log filter change in store
       Object.keys(filterObj).length === 0
-        ? this.props.logFilterChange("/")
-        : this.props.logFilterChange(
+        ? props.logFilterChange("/")
+        : props.logFilterChange(
             "/catalog/" + encodeURIComponent(filterString)
           );
     }
   }
 
-  handleKeyPress(e, order) {
+  const handleKeyPress = (e, order) => {
     if (e.keyCode === 13 || e.keyCode === 32) {
-      this.setSort(order);
+      setSort(order);
     }
   }
 
-  render() {
+
     return (
       <div className="sort-component">
         <List id="sorter-list" component="nav" aria-label="Sort list"
@@ -101,48 +96,48 @@ class CollectionSorter extends React.Component {
         >
           <ListItem
             id="sorter-list-opt1"
-            selected={this.props.sortOrder === "NEW" ? true : false}
-            aria-selected={this.props.sortOrder === "NEW" ? "true" : "false"}
+            selected={props.sortOrder === "NEW" ? true : false}
+            aria-selected={props.sortOrder === "NEW" ? "true" : "false"}
             tabIndex="0"
-            onClick={() => this.setSort("NEW")}
-            onKeyDown={(e) => this.handleKeyPress(e, "NEW")}
+            onClick={() => setSort("NEW")}
+            onKeyDown={(e) => handleKeyPress(e, "NEW")}
           >
             <ListItemText primary="Newest" />
           </ListItem>
           <ListItem
             id="sorter-list-opt2"
-            selected={this.props.sortOrder === "OLD" ? true : false}
-            aria-selected={this.props.sortOrder === "OLD" ? "true" : "false"}
+            selected={props.sortOrder === "OLD" ? true : false}
+            aria-selected={props.sortOrder === "OLD" ? "true" : "false"}
             tabIndex="0"
-            onClick={() => this.setSort("OLD")}
-            onKeyDown={(e) => this.handleKeyPress(e, "OLD")}
+            onClick={() => setSort("OLD")}
+            onKeyDown={(e) => handleKeyPress(e, "OLD")}
           >
             <ListItemText primary="Oldest" />
           </ListItem>
           <ListItem
             id="sorter-list-opt3"
-            selected={this.props.sortOrder === "AZ" ? true : false}
-            aria-selected={this.props.sortOrder === "AZ" ? "true" : "false"}
+            selected={props.sortOrder === "AZ" ? true : false}
+            aria-selected={props.sortOrder === "AZ" ? "true" : "false"}
             tabIndex="0"
-            onClick={() => this.setSort("AZ")}
-            onKeyDown={(e) => this.handleKeyPress(e, "AZ")}
+            onClick={() => setSort("AZ")}
+            onKeyDown={(e) => handleKeyPress(e, "AZ")}
           >
             <ListItemText primary="A to Z" />
           </ListItem>
           <ListItem
             id="sorter-list-opt4"
-            selected={this.props.sortOrder === "ZA" ? true : false}
-            aria-selected={this.props.sortOrder === "ZA" ? "true" : "false"}
+            selected={props.sortOrder === "ZA" ? true : false}
+            aria-selected={props.sortOrder === "ZA" ? "true" : "false"}
             tabIndex="0"
-            onClick={() => this.setSort("ZA")}
-            onKeyDown={(e) => this.handleKeyPress(e, "ZA")}
+            onClick={() => setSort("ZA")}
+            onKeyDown={(e) => handleKeyPress(e, "ZA")}
           >
             <ListItemText primary="Z to A" />
           </ListItem>
         </List>
       </div>
     );
-  }
+  
 }
 
 export default CollectionSorter;
