@@ -93,7 +93,6 @@ const ToolDrawer = (props) => {
           </Button>
         </Box>
         {/* <ThemeChooserContainer /> */}
-        <Divider variant="middle" />
         <Box pt={4} pb={2}>
           <ShareButtons />
         </Box>
