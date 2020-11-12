@@ -92,7 +92,7 @@ export default class CollectionFilterMap extends React.Component {
           }             
         };
     } else if (
-      featureType === 'LineString' || featureType === 'MultiLinestring') {
+      featureType === 'LineString' || featureType === 'MultiLineString') {
         return {
           'type': 'line',
           'paint': {
