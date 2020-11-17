@@ -143,7 +143,8 @@ export const getCollectionFilterChoices = createSelector(
     // the value is an empty array.
     const collectionFilterChoices = {
       availability: ['WMS_Service'],
-      category: []
+      category: [],
+      file_type: [],
     };
     // If collections are in ready the state, continue setting the value arrays in the
     // collectionFilterChoices object from above.
