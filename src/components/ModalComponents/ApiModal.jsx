@@ -40,7 +40,6 @@ export const ApiModal = (props) => {
       "SUBMITTED_AT"
     );
 
-
     if (timeLeft > 0 && !doNotDisturb && !submittedAt) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
@@ -61,9 +60,9 @@ export const ApiModal = (props) => {
             modalPosition={props.preview_position}
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
-            modalPadding={'16px'}
-            modalBackground={'#1E8DC1'}
-            modalTextColor={'white'}
+            modalPadding={"16px"}
+            modalBackground={"#1E8DC1"}
+            modalTextColor={"white"}
           >
             <PreviewContent
               survey_template_id={props.survey_template_id}
@@ -83,12 +82,24 @@ export const ApiModal = (props) => {
             modalPosition={props.full_position}
             modalSize={props.full_size}
             backgroundOverlayColor={props.full_background_color}
-            modalPadding={'16px'}
+            modalPadding={"16px"}
           >
             <React.Fragment>
               <ModalHeaderActionBar
                 modalActionBarButtonIcon="close"
-                setContentStateFn={ () => setContentState("minimized")}
+                setContentStateFn={() => {
+                  setContentState(
+                    props.content_type === "single_modal"
+                      ? "none"
+                      : "minimized"
+                  );
+                  props.content_type === "single_modal" &&
+                    localStoreController.setModalKeyStorage(
+                      props.survey_template_id, 
+                      "DO_NOT_DISTURB",
+                      "true"
+                    );
+                }}
               />
               <FullContent
                 survey_template_id={props.survey_template_id}
@@ -105,13 +116,13 @@ export const ApiModal = (props) => {
         );
       case "minimized":
         return (
-            <MinimizedContent
-              survey_template_id={props.survey_template_id}
-              setContentStateFn={setContentState}
-              localStoreController={localStoreController}
-              minimized_text={props.minimized_text}
-              minimized_icon={props.minimized_icon}
-            />
+          <MinimizedContent
+            survey_template_id={props.survey_template_id}
+            setContentStateFn={setContentState}
+            localStoreController={localStoreController}
+            minimized_text={props.minimized_text}
+            minimized_icon={props.minimized_icon}
+          />
         );
       case "none":
         return null;
