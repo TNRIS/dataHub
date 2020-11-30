@@ -5,7 +5,6 @@ const ApiModalFeed = (props) => {
   const fetchModals = props.fetchModals;
 
   useEffect(() => {
-    console.log(process.env.NODE_ENV)
     fetchModals();
   }, [fetchModals]);
 

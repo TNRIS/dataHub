@@ -60,7 +60,7 @@ export const ApiModal = (props) => {
             modalPosition={props.preview_position}
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
-            modalPadding={"16px"}
+            modalPadding={"2vw"}
             modalBackground={"#1E8DC1"}
             modalTextColor={"white"}
           >
@@ -85,32 +85,48 @@ export const ApiModal = (props) => {
             modalPadding={"16px"}
           >
             <React.Fragment>
-              <ModalHeaderActionBar
-                modalActionBarButtonIcon="close"
-                setContentStateFn={() => {
-                  setContentState(
-                    props.content_type === "single_modal"
-                      ? "none"
-                      : "minimized"
-                  );
-                  props.content_type === "single_modal" &&
-                    localStoreController.setModalKeyStorage(
-                      props.survey_template_id, 
-                      "DO_NOT_DISTURB",
-                      "true"
-                    );
-                }}
-              />
-              <FullContent
-                survey_template_id={props.survey_template_id}
-                setContentStateFn={setContentState}
-                full_header={props.full_header}
-                full_text={props.full_text}
-                sheet_id={props.sheet_id}
-                survey_id={props.survey_id}
-                modal_id={props.survey_template_id}
-                localStoreController={localStoreController}
-              />
+              {props.content_type === "multi-modal" && (
+                <React.Fragment>
+                  <ModalHeaderActionBar
+                    modalActionBarButtonIcon="minimize"
+                    setContentStateFn={() => {
+                      setContentState("minimized");
+                    }}
+                  />
+                  <FullContent
+                    survey_template_id={props.survey_template_id}
+                    setContentStateFn={setContentState}
+                    full_header={props.full_header}
+                    full_body_text={props.full_body_text}
+                    sheet_id={props.sheet_id}
+                    survey_id={props.survey_id}
+                    modal_id={props.survey_template_id}
+                    localStoreController={localStoreController}
+                  />  
+                </React.Fragment>
+                
+              )}
+              {props.content_type === "single-modal" && (
+                <React.Fragment>
+                  <ModalHeaderActionBar
+                    modalActionBarButtonIcon="close"
+                    setContentStateFn={() => {
+                      setContentState("none");
+                      localStoreController.setModalKeyStorage(
+                        props.survey_template_id,
+                        "DO_NOT_DISTURB",
+                        "true"
+                      );
+                    }}
+                  />
+                  <h2 className="mdc-typography--headline4">
+                    {props.full_header}
+                  </h2>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: props.full_body_text }}
+                  />
+                </React.Fragment>
+              )}
             </React.Fragment>
           </FlexModal>
         );

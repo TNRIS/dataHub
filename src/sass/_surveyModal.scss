@@ -27,35 +27,51 @@
   align-items: flex-start;
   justify-content: center;
 }
-.modalPosition__right-center {
+.modalPosition__left-center {
   align-items: center;
   justify-content: flex-start;
 }
-.modalPosition__left-center {
+.modalPosition__right-center {
   align-items: center;
   justify-content: flex-end;
 }
 
 // Modal Size Utility classes
 .modalSize__full-screen {
-  width: calc(100% - 64px);
-  height: calc(100% - 64px);
+  width: calc(100% - 2vw);
+  height: calc(100% - 2vw);
 }
 .modalSize__full-height {
-  height: calc(100% - 64px);
+  height: calc(100% - 2vw);
 }
 .modalSize__full-width {
-  width: calc(100% - 64px);
+  width: calc(100% - 2vw);
 }
 .modalSize__half-screen {
-  width: calc(50% - 64px);
-  height: calc(50% - 64px);
+  width: calc(50% - 2vw);
+  height: calc(50% - 2vw);
+
+  @media screen and (max-width: 750px) {
+    width: calc(100% - 2vw);
+    height: calc(100% - 2vw);
+  }
 }
 .modalSize__half-height {
-  height: calc(50% - 64px);
+  height: calc(50% - 2vw);
+  height: calc(100% - 2vw);
+
+  @media screen and (max-width: 750px) {
+    width: calc(100% - 2vw);
+    height: calc(100% - 2vw);
+  }
 }
 .modalSize__half-width {
-  width: calc(50% - 64px);
+  width: calc(50% - 2vw);
+
+  @media screen and (max-width: 750px) {
+    width: calc(100% - 2vw);
+    height: calc(100% - 2vw);
+  }
 }
 
 .modalContainer {
@@ -65,16 +81,19 @@
   display: flex;
   z-index: 5001;
   pointer-events: none;
+  max-height: 100vh;
 }
 .modalContentContainer {
   z-index: 5001;
   position: fixed;
   pointer-events: all;
-  max-width: calc(100% - 64px);
-  min-width: calc(320px - 64px);
+  max-width: 1200px;
+  min-width: 320px;
   box-shadow: 2px 2px 8px #888;
   border-radius: 4px;
-  margin: 16px;
+  max-height: calc(100% - 2vh);
+  overflow: auto;
+  box-sizing: border-box;
 }
 
 .modalPreviewContainer {
@@ -96,8 +115,8 @@
 }
 
 .modalFullContainer {
-  overflow: scroll;
-  max-height: calc(100% - 64px);
+  overflow: auto;
+  max-height: calc(100% - 2vw);
   width: 100%;
 }
 
@@ -105,11 +124,11 @@
   z-index: 5000;
   text-align: center;
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  color: #1e8dc1;
-
+  bottom: 2vw;
+  right: 2vw;
+  
   button {
-    background-color: white;
+    background-color: $tnris-blue;
+    color: white;
   }
 }
