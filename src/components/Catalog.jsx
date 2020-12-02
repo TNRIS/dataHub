@@ -25,7 +25,7 @@ import noDataImage from '../images/no-data.png'
 import noDataImage666 from '../images/no-data-satan.png'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../sass/_breakpoints.scss'
+import breakpoints from '../sass/_breakpoints.module.scss'
 
 export default class Catalog extends React.Component {
   constructor(props) {

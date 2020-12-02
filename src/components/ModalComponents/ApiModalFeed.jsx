@@ -12,7 +12,13 @@ const ApiModalFeed = (props) => {
   if (props.modals.length < 1) return null;
 
   const modalsRenderer = () =>
-    props.modals.map((mdl) => <ApiModal key={mdl.survey_template_id} {...mdl} />);
+    props.modals.map((mdl) => {
+      if (mdl.dev_mode === true && process.env.NODE_ENV !== "development") {
+        return null
+      } else {
+        return <ApiModal key={mdl.survey_template_id} {...mdl} />
+      }
+    });
   return modalsRenderer();
 };
 

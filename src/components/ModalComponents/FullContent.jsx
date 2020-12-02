@@ -11,13 +11,8 @@ const FullContent = (props) => {
     props.setContentStateFn("none");
   };
   return (
-    <div className={'modalFullContainer'}>
-      {props.full_header && props.full_text && !props.survey_id ? (
-        <React.Fragment>
-          <h1>{props.full_header}</h1>
-          <div>{props.full_text}</div>
-        </React.Fragment>
-      ) : (
+    <div className={"modalFullContainer"}>
+      {props.survey_id && (
         <SurveyJSContainer
           modalId={props.modal_id}
           sheetId={props.sheet_id}
