@@ -4,7 +4,7 @@ import NotificationBadge from 'react-notification-badge'
 import {Effect} from 'react-notification-badge'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../sass/_breakpoints.scss';
+import breakpoints from '../sass/_breakpoints.module.scss';
 
 import CollectionSearcherContainer from '../containers/CollectionSearcherContainer';
 

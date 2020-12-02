@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import FlexModal from "./FlexModal";
 
 import PreviewContent from "./PreviewContent";
@@ -10,7 +10,7 @@ export const ApiModal = (props) => {
   const [contentState, setContentState] = useState(props.initial_content_state);
   const [timeLeft, setTimeLeft] = useState(props.display_delay_template_type);
 
-  const localStoreController = {
+  const localStoreController = useMemo(() => { return {
     getModalKeyStorage: (modalId, key) => {
       const itemKey = `modal::${modalId}::${key}`;
       return window.localStorage.getItem(itemKey);
@@ -19,7 +19,7 @@ export const ApiModal = (props) => {
       const itemKey = `modal::${modalId}::${key}`;
       window.localStorage.setItem(itemKey, value);
     },
-  };
+  }}, []);
 
   // Fired on load, when props update
   useEffect(() => {
@@ -39,7 +39,6 @@ export const ApiModal = (props) => {
       props.survey_template_id,
       "SUBMITTED_AT"
     );
-
 
     if (timeLeft > 0 && !doNotDisturb && !submittedAt) {
       const timer = setTimeout(() => {
@@ -61,9 +60,9 @@ export const ApiModal = (props) => {
             modalPosition={props.preview_position}
             modalSize={props.preview_size}
             backgroundOverlayColor={props.preview_background_color}
-            modalPadding={'16px'}
-            modalBackground={'#1E8DC1'}
-            modalTextColor={'white'}
+            modalPadding={"2vw"}
+            modalBackground={"#1E8DC1"}
+            modalTextColor={"white"}
           >
             <PreviewContent
               survey_template_id={props.survey_template_id}
@@ -83,35 +82,63 @@ export const ApiModal = (props) => {
             modalPosition={props.full_position}
             modalSize={props.full_size}
             backgroundOverlayColor={props.full_background_color}
-            modalPadding={'16px'}
+            modalPadding={"16px"}
           >
             <React.Fragment>
-              <ModalHeaderActionBar
-                modalActionBarButtonIcon="close"
-                setContentStateFn={ () => setContentState("minimized")}
-              />
-              <FullContent
-                survey_template_id={props.survey_template_id}
-                setContentStateFn={setContentState}
-                full_header={props.full_header}
-                full_text={props.full_text}
-                sheet_id={props.sheet_id}
-                survey_id={props.survey_id}
-                modal_id={props.survey_template_id}
-                localStoreController={localStoreController}
-              />
+              {props.content_type === "multi-modal" && (
+                <React.Fragment>
+                  <ModalHeaderActionBar
+                    modalActionBarButtonIcon="minimize"
+                    setContentStateFn={() => {
+                      setContentState("minimized");
+                    }}
+                  />
+                  <FullContent
+                    survey_template_id={props.survey_template_id}
+                    setContentStateFn={setContentState}
+                    full_header={props.full_header}
+                    full_body_text={props.full_body_text}
+                    sheet_id={props.sheet_id}
+                    survey_id={props.survey_id}
+                    modal_id={props.survey_template_id}
+                    localStoreController={localStoreController}
+                  />  
+                </React.Fragment>
+                
+              )}
+              {props.content_type === "single-modal" && (
+                <React.Fragment>
+                  <ModalHeaderActionBar
+                    modalActionBarButtonIcon="close"
+                    setContentStateFn={() => {
+                      setContentState("none");
+                      localStoreController.setModalKeyStorage(
+                        props.survey_template_id,
+                        "DO_NOT_DISTURB",
+                        "true"
+                      );
+                    }}
+                  />
+                  <h2 className="mdc-typography--headline4">
+                    {props.full_header}
+                  </h2>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: props.full_body_text }}
+                  />
+                </React.Fragment>
+              )}
             </React.Fragment>
           </FlexModal>
         );
       case "minimized":
         return (
-            <MinimizedContent
-              survey_template_id={props.survey_template_id}
-              setContentStateFn={setContentState}
-              localStoreController={localStoreController}
-              minimized_text={props.minimized_text}
-              minimized_icon={props.minimized_icon}
-            />
+          <MinimizedContent
+            survey_template_id={props.survey_template_id}
+            setContentStateFn={setContentState}
+            localStoreController={localStoreController}
+            minimized_text={props.minimized_text}
+            minimized_icon={props.minimized_icon}
+          />
         );
       case "none":
         return null;

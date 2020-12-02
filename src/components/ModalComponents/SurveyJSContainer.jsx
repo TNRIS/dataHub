@@ -37,7 +37,7 @@ const SurveyJSContainer = ({
 
   const onComplete = (survey, options) => {
 
-    postSurvey({
+    sheetId && postSurvey({
       sheet_id: sheetId,
       survey_id: surveyId,
       survey_response: {

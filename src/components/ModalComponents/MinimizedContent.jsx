@@ -11,10 +11,10 @@ const MinimizedContent = (props) => {
         aria-label="Open survey container"
         title="Open survey container"
       >
-        <span className="mdc-fab__icon material-icons">
+        <span className="mdc-fab__icon material-icons tnris_blue_text">
           {props.minimized_icon}
         </span>
-        <span className="mdc-fab__label">{props.minimized_text}</span>
+        <span className="mdc-fab__label tnris_blue_text">{props.minimized_text}</span>
       </button>
     </div>
   );

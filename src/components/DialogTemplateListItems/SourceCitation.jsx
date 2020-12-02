@@ -1,7 +1,7 @@
 import React from 'react'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss'
+import breakpoints from '../../sass/_breakpoints.module.scss'
 
 export default class SourceCitation extends React.Component {
   constructor(props) {
