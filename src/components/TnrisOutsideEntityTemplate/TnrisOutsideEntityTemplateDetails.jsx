@@ -7,7 +7,7 @@ import Images from '../Images'
 import OeServices from '../DialogTemplateListItems/OeServices'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss'
+import breakpoints from '../../sass/_breakpoints.module.scss'
 
 export default class TnrisOutsideEntityTemplateDetails extends React.Component {
 

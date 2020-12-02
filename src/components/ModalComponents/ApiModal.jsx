@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import FlexModal from "./FlexModal";
 
 import PreviewContent from "./PreviewContent";
@@ -10,7 +10,7 @@ export const ApiModal = (props) => {
   const [contentState, setContentState] = useState(props.initial_content_state);
   const [timeLeft, setTimeLeft] = useState(props.display_delay_template_type);
 
-  const localStoreController = {
+  const localStoreController = useMemo(() => { return {
     getModalKeyStorage: (modalId, key) => {
       const itemKey = `modal::${modalId}::${key}`;
       return window.localStorage.getItem(itemKey);
@@ -19,7 +19,7 @@ export const ApiModal = (props) => {
       const itemKey = `modal::${modalId}::${key}`;
       window.localStorage.setItem(itemKey, value);
     },
-  };
+  }}, []);
 
   // Fired on load, when props update
   useEffect(() => {

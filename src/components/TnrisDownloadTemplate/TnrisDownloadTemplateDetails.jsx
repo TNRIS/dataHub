@@ -13,7 +13,7 @@ import TnrisDownloadTemplateDownloadContainer from '../../containers/TnrisDownlo
 import CountyCoverageContainer from '../../containers/CountyCoverageContainer'
 
 // global sass breakpoint variables to be used in js
-import breakpoints from '../../sass/_breakpoints.scss'
+import breakpoints from '../../sass/_breakpoints.module.scss'
 
 export default class TnrisDownloadTemplateDetails extends React.Component {
   constructor(props) {

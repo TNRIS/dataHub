@@ -4,7 +4,7 @@ available to the app
 */
 
 @import 'materialSassImporter';
-@import 'breakpoints';
+@import '_breakpoints.module.scss';
 @import 'themeColors';
 // add the cdn for mapbox stylesheet
 // IMPORTANT: if we update the node module we also need to update
