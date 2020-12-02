@@ -6,7 +6,7 @@ import LayerSelector from '../LayerSelector'
 import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
-import styles from '../../sass/index.scss'
+import styles from '../../sass/index.module.scss'
 import turfBbox from '@turf/bbox'
 
 // global sass breakpoint variables to be used in js
