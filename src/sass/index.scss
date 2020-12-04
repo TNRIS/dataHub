@@ -3,19 +3,5 @@ store all scss files in sass folder and import them here to have them
 available to the app
 */
 
-@import 'materialSassImporter';
-@import '_breakpoints.module.scss';
-@import 'themeColors';
-// add the cdn for mapbox stylesheet
-// IMPORTANT: if we update the node module we also need to update
-// the version number in this css reference
-@import url('https://api.tiles.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css');
+@import 'index.module.scss';
 
-html {
-  min-height: 100%;
-  position: relative;
-
-  body {
-    margin: 0;
-  }
-}

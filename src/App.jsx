@@ -25,6 +25,13 @@ class App extends Component {
     ReactGA.pageview(window.location.pathname);
   }
 
+  componentDidMount() {
+    caches.delete("workbox-precache-v2-https://data.tnris.org/").then(function(boolean) {
+      // your cache is now deleted
+      console.log("workbox-precache-v2-https://data.tnris.org/ was deleted")
+    });
+  }
+
   render() {
     return (
       <Provider store={store}>
