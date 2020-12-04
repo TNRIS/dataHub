@@ -5,21 +5,24 @@ import PreviewContent from "./PreviewContent";
 import FullContent from "./FullContent";
 import MinimizedContent from "./MinimizedContent";
 import ModalHeaderActionBar from "./ModalHeaderActionBar";
+import SingleModal from "./SingleModal";
 
 export const ApiModal = (props) => {
   const [contentState, setContentState] = useState(props.initial_content_state);
   const [timeLeft, setTimeLeft] = useState(props.display_delay_template_type);
 
-  const localStoreController = useMemo(() => { return {
-    getModalKeyStorage: (modalId, key) => {
-      const itemKey = `modal::${modalId}::${key}`;
-      return window.localStorage.getItem(itemKey);
-    },
-    setModalKeyStorage: (modalId, key, value) => {
-      const itemKey = `modal::${modalId}::${key}`;
-      window.localStorage.setItem(itemKey, value);
-    },
-  }}, []);
+  const localStoreController = useMemo(() => {
+    return {
+      getModalKeyStorage: (modalId, key) => {
+        const itemKey = `modal::${modalId}::${key}`;
+        return window.localStorage.getItem(itemKey);
+      },
+      setModalKeyStorage: (modalId, key, value) => {
+        const itemKey = `modal::${modalId}::${key}`;
+        window.localStorage.setItem(itemKey, value);
+      },
+    };
+  }, []);
 
   // Fired on load, when props update
   useEffect(() => {
@@ -82,6 +85,7 @@ export const ApiModal = (props) => {
             modalPosition={props.full_position}
             modalSize={props.full_size}
             backgroundOverlayColor={props.full_background_color}
+            modalBackgroundPointerEvents={"fill"}
             modalPadding={"16px"}
           >
             <React.Fragment>
@@ -100,30 +104,17 @@ export const ApiModal = (props) => {
                     survey_id={props.survey_id}
                     modal_id={props.survey_template_id}
                     localStoreController={localStoreController}
-                  />  
+                  />
                 </React.Fragment>
-                
               )}
               {props.content_type === "single-modal" && (
-                <React.Fragment>
-                  <ModalHeaderActionBar
-                    modalActionBarButtonIcon="close"
-                    setContentStateFn={() => {
-                      setContentState("none");
-                      localStoreController.setModalKeyStorage(
-                        props.survey_template_id,
-                        "DO_NOT_DISTURB",
-                        "true"
-                      );
-                    }}
-                  />
-                  <h2 className="mdc-typography--headline4">
-                    {props.full_header}
-                  </h2>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: props.full_body_text }}
-                  />
-                </React.Fragment>
+                <SingleModal
+                  full_header={props.full_header}
+                  full_body_text={props.full_body_text}
+                  survey_template_id={props.survey_template_id}
+                  setContentStateFn={setContentState}
+                  localStoreController={localStoreController}
+                />
               )}
             </React.Fragment>
           </FlexModal>
