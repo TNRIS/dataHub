@@ -1,27 +1,27 @@
 import React from "react";
 
-const styles = {
-  display: "flex",
-  flexDirection: "row-reverse",
-  justifyContent: "space-between",
-};
 const ModalHeaderActionBar = ({
   setContentStateFn,
   modalActionBarTitle,
   modalActionBarButtonIcon,
 }) => (
-  <div style={{ ...styles }}>
-    {modalActionBarTitle ? <h2>{modalActionBarTitle}</h2> : null}
-    {
-      <button
-        onClick={setContentStateFn}
-        className="mdc-icon-button material-icons"
-      >
-        {modalActionBarButtonIcon}
-      </button>
-    }
+  <div className="mdc-top-app-bar__row">
+    <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+      {modalActionBarTitle ? (
+        <h2 className="mdc-typography--headline5">{modalActionBarTitle}</h2>
+      ) : null}{" "}
+    </section>
+    <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+      {
+        <button
+          onClick={setContentStateFn}
+          className="mdc-icon-button material-icons"
+        >
+          {modalActionBarButtonIcon}
+        </button>
+      }
+    </section>
   </div>
 );
 
-
-export default ModalHeaderActionBar
+export default ModalHeaderActionBar;

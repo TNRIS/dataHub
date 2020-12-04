@@ -56,11 +56,12 @@ const FlexModal = ({
   backgroundOverlayColor, //Pass a hex code for overlay area outside of modal content.
   onClickBackground = () => null, //function called on click outside modal content. if set, overrides pointerEvents: 'none' css default
   children,
+  modalBackgroundPointerEvents
 }) => {
   return isDisplayed ? (
     <div
       style={{
-        background: backgroundOverlayColor,
+        background: backgroundOverlayColor, pointerEvents: modalBackgroundPointerEvents
       }}
       className={'modalPosition__' + cornerPositionLogic(modalPosition) + ' modalContainer'}
       onClick={() => onClickBackground()}
