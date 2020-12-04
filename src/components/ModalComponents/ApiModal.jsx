@@ -96,8 +96,6 @@ export const ApiModal = (props) => {
                   <FullContent
                     survey_template_id={props.survey_template_id}
                     setContentStateFn={setContentState}
-                    full_header={props.full_header}
-                    full_body_text={props.full_body_text}
                     sheet_id={props.sheet_id}
                     survey_id={props.survey_id}
                     modal_id={props.survey_template_id}

@@ -9,7 +9,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
 import turfBbox from '@turf/bbox'
-import styles from '../sass/index.scss'
+import styles from '../sass/index.module.scss'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.module.scss'
