@@ -5,7 +5,7 @@ import LayerSelector from '../LayerSelector'
 import GeoSearcherContainer from '../../containers/GeoSearcherContainer'
 
 import mapboxgl from 'mapbox-gl'
-import styles from '../../sass/index.scss'
+import styles from '../../sass/index.module.scss'
 import turfBbox from '@turf/bbox'
 
 // the carto core api is a CDN in the app template HTML (not available as NPM package)
