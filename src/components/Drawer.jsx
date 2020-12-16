@@ -2,6 +2,8 @@ import React from 'react'
 import {MDCDrawer} from "@material/drawer"
 import tnrisLogo from '../images/tnris_globe.png'
 import twdbLogo from '../images/twdb_splash_icon.png'
+import FlexModal from './ModalComponents/FlexModal';
+import { GeneralContactForm } from './GeneralContactForm';
 
 export default class Drawer extends React.Component {
 

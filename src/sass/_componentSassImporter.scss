@@ -3,6 +3,7 @@ store all component scss files in sass folder and import
 them here to have them available to the app
 */
 
+@import 'aboutPage';
 @import 'catalog';
 @import 'catalogCard';
 @import 'collectionFilter';
@@ -18,6 +19,7 @@ them here to have them available to the app
 @import 'backButton';
 @import 'drawer';
 @import 'footer';
+@import 'generalContactForm';
 @import 'geoSearcher';
 @import 'header';
 @import 'historicalAerialTemplateIndexDownload';

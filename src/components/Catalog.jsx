@@ -26,6 +26,7 @@ import noDataImage666 from '../images/no-data-satan.png'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.module.scss'
+import About from './About'
 
 export default class Catalog extends React.Component {
   constructor(props) {
@@ -320,9 +321,10 @@ export default class Catalog extends React.Component {
         {/*{betaDialog}*/}
 
         <HeaderContainer handleToolDrawerDisplay={this.handleToolDrawerDisplay} />
-
+        
         <div className={viewClass}>
           <Switch>
+            <Route path="/about/" exact component={About} />
             <Route path='/collection/:collectionId' exact render={(props) => this.handleShowCollectionView()} />
             <Route path='/catalog/:filters' exact render={(props) => this.setCatalogView()} />
             <Route path='/cart/' exact render={(props) => <OrderCartViewContainer />} />

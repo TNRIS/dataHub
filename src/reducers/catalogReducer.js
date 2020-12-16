@@ -4,7 +4,8 @@ import {
   SET_VIEW_ORDER_CART,
   SET_VIEW_GEO_FILTER,
   SET_VIEW_NOT_FOUND,
-  POP_BROWSER_STORE
+  POP_BROWSER_STORE,
+  SET_VIEW_ABOUT
 } from '../constants/catalogActionTypes';
 
 const initialState = {
@@ -36,7 +37,12 @@ export default function catalogReducer(state = initialState, action) {
         ...state,
         view: 'geoFilter'
       };
-
+    
+    case SET_VIEW_ABOUT:
+      return {
+        ...state,
+        view: 'about'
+      }
     case SET_VIEW_NOT_FOUND:
       return {
         ...state,
