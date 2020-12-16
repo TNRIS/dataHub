@@ -36,7 +36,7 @@ export default function About() {
       <div className="header-component mdc-top-app-bar mdc-top-app-bar--fixed">
         <div className="mdc-top-app-bar__row">
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-            <span className={"mdc-top-app-bar__title"}>About TNRIS</span>
+            <span className={"mdc-top-app-bar__title"}>About DataHub</span>
           </section>
           <section
             className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
