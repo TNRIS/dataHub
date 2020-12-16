@@ -4,7 +4,7 @@ import { useState } from "react";
 import BackButtonContainer from "../containers/BackButtonContainer";
 import { GeneralContactForm } from "./GeneralContactForm";
 
-export default function About() {
+export default function Help() {
   const [scrollTo, setScrollTo] = useState();
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function About() {
       <div className="header-component mdc-top-app-bar mdc-top-app-bar--fixed">
         <div className="mdc-top-app-bar__row">
           <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-            <span className={"mdc-top-app-bar__title"}>About DataHub</span>
+            <span className={"mdc-top-app-bar__title"}>DataHub Help</span>
           </section>
           <section
             className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"

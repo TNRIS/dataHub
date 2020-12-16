@@ -173,10 +173,10 @@ export default class Footer extends React.Component {
                 className={"link-menu-control"}
                 onClick={() => {
                   this.props.setViewAbout();
-                  this.props.setUrl("/about");
+                  this.props.setUrl("/help");
                 }}
               >
-                <span>Contact</span>
+                <span>Help</span>
               </div>
             </div>
             {/* <div className="mdc-menu-surface--anchor">

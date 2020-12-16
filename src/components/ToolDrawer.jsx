@@ -90,10 +90,10 @@ export default class ToolDrawer extends React.Component {
               <ThemeChooserContainer />
               <ShareButtons />
               <br />
-              <div className="mdc-touch-target-wrapper contact-button-wrapper">
+              <div className="mdc-touch-target-wrapper general-contact-button-wrapper centered">
                 <div onClick={ () => {
                   this.props.setViewAbout()
-                  this.props.setUrl("/about")
+                  this.props.setUrl("/help")
                 }}>
                   <button className="mdc-button mdc-button--outlined button">
                     <div className="mdc-button__ripple"></div>
