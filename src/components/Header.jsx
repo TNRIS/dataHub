@@ -9,6 +9,7 @@ import breakpoints from '../sass/_breakpoints.module.scss';
 import CollectionSearcherContainer from '../containers/CollectionSearcherContainer';
 
 import tnrisLogo from '../images/tnris_logo.svg';
+import Breadcrumbs from './Breadcrumbs';
 
 export default class Header extends React.Component {
   constructor(props) {
@@ -208,6 +209,7 @@ export default class Header extends React.Component {
             </a>
           </section>
         </div>
+        <Breadcrumbs />
       </header>
     );
 

@@ -26,6 +26,7 @@ import noDataImage666 from '../images/no-data-satan.png'
 
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.module.scss'
+import Breadcrumbs from './Breadcrumbs'
 
 export default class Catalog extends React.Component {
   constructor(props) {
@@ -312,7 +313,7 @@ export default class Catalog extends React.Component {
       return this.loadingMessage;
     }
 
-    const viewClass = this.props.view === 'catalog' ? 'catalog-view-container' : 'other-view-container';
+    const viewClass = this.props.view === 'catalog' ? 'catalog-view-container' : 'catalog-view-container'; //'other-view-container';
 
     return (
       <div className="catalog-component">
@@ -320,7 +321,6 @@ export default class Catalog extends React.Component {
         {/*{betaDialog}*/}
 
         <HeaderContainer handleToolDrawerDisplay={this.handleToolDrawerDisplay} />
-
         <div className={viewClass}>
           <Switch>
             <Route path='/collection/:collectionId' exact render={(props) => this.handleShowCollectionView()} />
