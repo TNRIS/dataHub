@@ -2,6 +2,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
 import {
+  catalogActions,
   collectionFilterActions,
   collectionFilterMapActions,
   collectionSorterActions,
@@ -88,6 +89,9 @@ const mapDispatchToProps = dispatch => ({
         newUrl, history
       )
     );
+  },
+  setViewAbout: () => {
+    dispatch(catalogActions.setViewAbout());
   },
   logFilterChange: (url) => {
     dispatch(

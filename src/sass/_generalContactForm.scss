@@ -1,0 +1,18 @@
+/*
+styles for GeneralContactForm.jsx
+*/
+
+.general-contact-button-wrapper {
+    display: flex;
+    flex: 1;
+    padding-bottom: 30px;
+  
+    .button {
+      background-color: $tnris-blue;
+      color: white;
+    }
+
+    &.centered {
+        justify-content: center;
+    }
+}

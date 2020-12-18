@@ -3,7 +3,6 @@ styles for component: ToolDrawer
 */
 
 .tool-drawer-component {
-
   .mdc-drawer--dismissible.mdc-drawer--open {
     display: flex;
     position: fixed;
@@ -97,7 +96,6 @@ styles for component: ToolDrawer
         width: 100%;
         display: flex;
         justify-content: center;
-        padding-bottom: 72px;
 
         .share-button {
           margin: 6px;
