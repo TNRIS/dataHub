@@ -36,7 +36,7 @@ export default class CatalogCard extends React.Component {
           className="mdc-card__media mdc-card__media--16-9"
           style={{backgroundImage: `url(${this.props.collection.thumbnail_image})`}}>
         </div>
-        <p className='catalog-card__headline mdc-typography--headline6'>
+        <p className='catalog-card__headline mdc-typography--label'>
           {this.props.collection.name}
         </p>
         <p className='catalog-card__year mdc-typography--subtitle1'>

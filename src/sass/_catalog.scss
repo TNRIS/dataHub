@@ -53,13 +53,13 @@ styles for component: Catalog
   }
 
   .catalog {
-    background-color: $main-background;
-
     .catalog-grid {
-      @include mdc-layout-grid(desktop, 30px, 1600px);
-
+      @include mdc-layout-grid(desktop, 0px, 1600px);
+      background: $secondary-background; 
+      
       .mdc-layout-grid__inner {
         padding-inline-start: unset;
+        gap: 1rem;
       }
 
       .scrolltop-container {

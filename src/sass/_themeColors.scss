@@ -28,6 +28,7 @@ $button-text: white;
 $link-color: $primary-color;
 
 $main-background: white;
+$secondary-background: #f5f5f5;
 $nest-text: #444;
 $nest-text-subtle: gray;
 
@@ -86,16 +87,18 @@ When adding new themes you will also need to update:
   $link-color: $button-text;
 
   $main-background: #383838;
+  $secondary-background: #222;
   $nest-text: #ededed;
   $nest-text-subtle: $secondary-color;
 
   $search-background: $secondary-color;
   $header-border: #282828;
-
+  
   // $catalog-card-shadow: 0px 2px 6px -1px rgba(255,255,255, 0.2),
   //                        0px 1px 1px 0px rgba(255,255,255, 0.14),
   //                        0px 1px 3px 0px rgba(255,255,255, 0.12);
-
+  $catalog-card-shadow-hover: #444;
+  
   $error-text: #af0000;
   $success-text: #00870b;
 
