@@ -47,7 +47,7 @@ export default function Help() {
         </div>
       </div>
       {/* Body */}
-      <div id="about-page-wrapper">
+      <div id="help-page-wrapper">
         <div id="contact">
           <GeneralContactForm />
         </div>
