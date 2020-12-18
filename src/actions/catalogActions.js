@@ -4,30 +4,35 @@ import {
   SET_VIEW_ORDER_CART,
   SET_VIEW_GEO_FILTER,
   SET_VIEW_NOT_FOUND,
-  POP_BROWSER_STORE
-} from '../constants/catalogActionTypes';
+  POP_BROWSER_STORE,
+  SET_VIEW_ABOUT,
+} from "../constants/catalogActionTypes";
 
 export const setViewCatalog = () => ({
-  type: SET_VIEW_CATALOG
+  type: SET_VIEW_CATALOG,
 });
 
 export const setViewCollection = () => ({
-  type: SET_VIEW_COLLECTION
+  type: SET_VIEW_COLLECTION,
 });
 
 export const setViewOrderCart = () => ({
-  type: SET_VIEW_ORDER_CART
+  type: SET_VIEW_ORDER_CART,
 });
 
 export const setViewGeoFilter = () => ({
-  type: SET_VIEW_GEO_FILTER
+  type: SET_VIEW_GEO_FILTER,
+});
+
+export const setViewAbout = () => ({
+  type: SET_VIEW_ABOUT,
 });
 
 export const setViewNotFound = () => ({
-  type: SET_VIEW_NOT_FOUND
+  type: SET_VIEW_NOT_FOUND,
 });
 
 export const popBrowserStore = (state) => ({
   type: POP_BROWSER_STORE,
-  payload: state
-})
+  payload: state,
+});
