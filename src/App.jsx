@@ -11,6 +11,8 @@ import CatalogContainer from "./containers/CatalogContainer";
 
 import ApiModalContainer from "./containers/ApiModalContainer";
 
+import packageJson from '../package.json';
+
 
 export const history = createBrowserHistory();
 export const store = createStore(
@@ -28,7 +30,16 @@ class App extends Component {
   componentDidMount() {
     caches.delete("workbox-precache-v2-https://data.tnris.org/").then(function(boolean) {
       // your cache is now deleted
-      console.log("workbox-precache-v2-https://data.tnris.org/ was deleted")
+      console.log("workbox-precache-v2-https://data.tnris.org/ was deleted");
+      // keep app version in local storage and force page reload if client version if different
+      // than current prod. this should clear client-side cache
+      if (localStorage.getItem("data_version") &&
+          localStorage.getItem("data_version") === packageJson.version) {
+            localStorage.setItem("data_version", packageJson.version);
+      } else {
+        localStorage.setItem("data_version", packageJson.version);
+        window.location.reload();
+      }
     });
   }
 

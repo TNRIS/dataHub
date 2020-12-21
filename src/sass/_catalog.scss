@@ -53,17 +53,17 @@ styles for component: Catalog
   }
 
   .catalog {
-    background-color: $main-background;
+    background: $secondary-background;
 
     .catalog-grid {
-      @include mdc-layout-grid(desktop, 30px, 1600px);
+      @include mdc-layout-grid(desktop, 0px, 1600px);
 
       .mdc-layout-grid__inner {
         padding-inline-start: unset;
+        gap: 1rem;
       }
 
       .scrolltop-container {
-
         .scrolltop {
           z-index: 5000;
           text-align: center;
@@ -93,7 +93,6 @@ styles for component: Catalog
         height: auto;
       }
     }
-
   }
 }
 
@@ -123,7 +122,7 @@ styles for component: Catalog
       position: fixed;
       left: -9999px;
       right: -9999px;
-      margin:0 auto;
+      margin: 0 auto;
     }
   }
 }

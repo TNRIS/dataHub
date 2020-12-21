@@ -199,7 +199,7 @@ export default class Catalog extends React.Component {
         <ul className="mdc-layout-grid__inner" key={loop} count={loop}>
           {chunk.map((collectionId, index) =>
             <li
-              className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
+              className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet"
               key={collectionId}
               idx={index}>
               <CatalogCardContainer
@@ -241,7 +241,7 @@ export default class Catalog extends React.Component {
                     <ul className="mdc-layout-grid__inner">
                       {this.props.visibleCollections.map((collectionId, index) =>
                         <li
-                          className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop"
+                          className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet"
                           key={collectionId}
                           count={index}>
                           <CatalogCardContainer

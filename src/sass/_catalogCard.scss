@@ -11,9 +11,9 @@ styles for component: CatalogCard
 
   .catalog-card__headline {
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 400;
-    margin: 1em 0 inherit 0;
+    margin-top: 8px !important;
     -webkit-margin-before: 1em;
     -webkit-margin-after: inherit;
     padding-left: 5px;
@@ -22,7 +22,7 @@ styles for component: CatalogCard
   }
 
   .catalog-card__year {
-    font-size: 18px;
+    font-size: 14px;
     color: $nest-text-subtle;
     padding-left: 5px;
     padding-right: 5px;
@@ -32,7 +32,7 @@ styles for component: CatalogCard
   }
 
   .catalog-card__source {
-    font-size: 18px;
+    font-size: 14px;
     color: $nest-text-subtle;
     padding-left: 5px;
     padding-right: 5px;
