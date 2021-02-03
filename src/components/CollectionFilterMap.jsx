@@ -260,145 +260,123 @@ export default class CollectionFilterMap extends React.Component {
     //
     map.on('load', () => {
       // define area type layers and add to the map
-      const areaTypeLayerData = {
-        user_name: 'tnris-flood',
-        sublayers: [{
-          sql: `SELECT
-                  the_geom_webmercator,
-                  area_type,
-                  area_type_name,
-                  ST_AsText(ST_Centroid(the_geom)) as centroid
-                FROM
-                  area_type
-                WHERE
-                  area_type IN ('county', 'quad');`,
-          cartocss: '{}'
-        }],
-        maps_api_template: 'https://tnris-flood.carto.com'
-      };
+      const areaTypeTiles = 'https://mapserver.tnris.org/?map=/tnris_mapfiles/area_type.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=reference_boundaries&map.imagetype=mvt';
 
-      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
-        if (result == null) {
-          console.log("error: ", error.errors.join('\n'));
-          return;
-        }
+      map.addSource(
+        'area-type-source',
+        { type: 'vector', tiles: [areaTypeTiles] }
+      );
 
-        const areaTypeTiles = result.tiles.map(function (tileUrl) {
-          return tileUrl
-            .replace('{s}', 'a')
-            .replace(/\.png/, '.mvt');
-        });
-
-        map.addSource(
-          'area-type-source',
-          { type: 'vector', tiles: areaTypeTiles }
-        );
-
-        // Add the county outlines to the map
-        map.addLayer({
-          'id': 'county-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 2,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': styles['boundaryOutline'],
-            'line-width': 1.5,
-            'line-opacity': .4
-          },
-          'filter': ["==", ["get", "area_type"], "county"]
-        }, 'boundary_country_inner');
-
-        // Add the quad outlines to the map
-        map.addLayer({
-          'id': 'quad-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 9,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': 'rgba(139,69,19,1)',
-            'line-width': 1.5,
-            'line-opacity': .05
-          },
-          'filter': ["==", ["get", "area_type"], "quad"]
-        }, 'county-outline');
-
-        map.addSource("county-centroid", {
-          "type": "geojson",
-          "data": countyLabelCentroids
-        });
-
-        map.addSource("quad-centroid", {
-          "type": "geojson",
-          "data": quadLabelCentroids
-        });
-
-        map.addLayer({
-          "id": "county-label",
-          "type": "symbol",
-          "source": "county-centroid",
-          'minzoom': 6,
-          'maxzoom': 24,
-          "layout": {
-            "text-field": ["get", "area_type_name"],
-            "text-justify": "auto",
-            "text-size": {
-              "base": 1,
-              "stops": [
-                [6, 6],
-                [8, 10],
-                [10, 12],
-                [16, 18]
-              ]
-            },
-            "text-padding": 3,
-            "text-letter-spacing": 0.1,
-            "text-max-width": 7,
-            "text-transform": "uppercase",
-            "text-allow-overlap": true
-          },
-          "paint": {
-            "text-color": "#555",
-            "text-halo-color": "hsl(0, 0%, 100%)",
-            "text-halo-width": 1.5,
-            "text-halo-blur": 1
-          }
-        });
-
-        map.addLayer({
-          "id": "quad-label",
-          "type": "symbol",
-          "source": "quad-centroid",
-          'minzoom': 9,
-          'maxzoom': 24,
-          "layout": {
-            "text-field": ["get", "area_type_name"],
-            "text-size": {
-              "base": 1,
-              "stops": [
-                [9, 8.5],
-                [10, 10],
-                [16, 16]
-              ]
-            },
-            "text-padding": 3,
-            "text-letter-spacing": 0.1,
-            "text-max-width": 7,
-            "text-allow-overlap": true,
-            "text-rotate": 315,
-          },
-          "paint": {
-            "text-color": "rgb(139,69,19)",
-            "text-opacity": .4,
-            "text-halo-color": "hsl(0, 0%, 100%)",
-            "text-halo-width": 1,
-            "text-halo-blur": 1
-          }
-        }, "county-outline");
+      // Add the county outlines to the map
+      map.addLayer({
+        'id': 'county-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 2,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': styles['boundaryOutline'],
+          'line-width': 2,
+          'line-opacity': .2
+        },
+        'filter': ["==", ["get", "area_type"], "county"]
       });
+
+      // Add the quad outlines to the map
+      map.addLayer({
+        'id': 'quad-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 9,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': 'rgba(139,69,19,1)',
+          'line-width': 2,
+          'line-opacity': .05
+        },
+        'filter': ["==", ["get", "area_type"], "quad"]
+      }, 'county-outline');
+
+      // add the point sources for the county and quad
+      // reference layer labels
+      map.addSource("county-centroid", {
+        "type": "geojson",
+        "data": countyLabelCentroids
+      });
+
+      map.addSource("quad-centroid", {
+        "type": "geojson",
+        "data": quadLabelCentroids
+      });
+
+      // add symbol layer to label the counties
+      map.addLayer({
+        "id": "county-label",
+        "type": "symbol",
+        "source": "county-centroid",
+        'minzoom': 6,
+        'maxzoom': 24,
+        "layout": {
+          "text-field": ["get", "area_type_name"],
+          "text-justify": "auto",
+          'text-size': {
+            "base": 1,
+            "stops": [
+              [6, 6],
+              [8, 10],
+              [10, 12],
+              [16, 18]
+            ]
+          },
+          "text-padding": 3,
+          "text-letter-spacing": 0.1,
+          "text-max-width": 7,
+          "text-transform": "uppercase",
+          "text-allow-overlap": true
+        },
+        "paint": {
+          "text-color": "#555",
+          "text-halo-color": "hsl(0, 0%, 100%)",
+          "text-halo-width": 1.5,
+          "text-halo-blur": 1
+        }
+      });
+
+      // add symbol layer to label the quads
+      map.addLayer({
+        "id": "quad-label",
+        "type": "symbol",
+        "source": "quad-centroid",
+        'minzoom': 9,
+        'maxzoom': 24,
+        "layout": {
+          "text-field": ["get", "area_type_name"],
+          'text-size': {
+            "base": 1,
+            "stops": [
+              [9, 8.5],
+              [10, 10],
+              [16, 16]
+            ]
+          },
+          "text-padding": 3,
+          "text-letter-spacing": 0.1,
+          "text-max-width": 7,
+          "text-allow-overlap": true,
+          "text-rotate": 315,
+        },
+        "paint": {
+          "text-color": "rgb(139,69,19)",
+          "text-opacity": .4,
+          "text-halo-color": "hsl(0, 0%, 100%)",
+          "text-halo-width": 1,
+          "text-halo-blur": 1
+        }
+      }, 'county-label');
     });
     //
     // END COUNTY AND QUAD REFERENCE LAYER

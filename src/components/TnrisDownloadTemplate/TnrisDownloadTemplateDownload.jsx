@@ -333,71 +333,49 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
     //
     map.on('load', () => {
       // define area type layers and add to the map
-      const areaTypeLayerData = {
-          user_name: 'tnris-flood',
-          sublayers: [{
-            sql: `SELECT
-                    the_geom_webmercator,
-                    area_type
-                  FROM
-                    area_type
-                  WHERE
-                    area_type IN ('county', 'quad');`,
-            cartocss: '{}'
-          }],
-          maps_api_template: 'https://tnris-flood.carto.com'
-      };
+      const areaTypeTiles = 'https://mapserver.tnris.org/?map=/tnris_mapfiles/area_type.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=reference_boundaries&map.imagetype=mvt';
 
-      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
-        if (result == null) {
-          console.log("error: ", error.errors.join('\n'));
-          return;
-        }
+      map.addSource(
+        'area-type-source',
+        { type: 'vector', tiles: [areaTypeTiles] }
+      );
 
-        const areaTypeTiles = result.tiles.map(function (tileUrl) {
-          return tileUrl
-          .replace('{s}', 'a')
-          .replace(/\.png/, '.mvt');
-        });
-
-        map.addSource(
-          'area-type-source',
-          { type: 'vector', tiles: areaTypeTiles }
-        );
-
-        // Add the county outlines to the map
-        map.addLayer({
-          'id': 'county-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 2,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': styles['boundaryOutline'],
-            'line-width': 1.5,
-            'line-opacity': .2
-          },
-          'filter': ['==', ['get', 'area_type'], 'county']
-        }, 'quad-label');
-
-        // Add the quad outlines to the map
-        map.addLayer({
-          'id': 'quad-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 9,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': 'rgba(139,69,19,1)',
-            'line-width': 1.5,
-            'line-opacity': .05
-          },
-          'filter': ['==', ['get', 'area_type'], 'quad']
-        }, 'county-outline');
+      // Add the county outlines to the map
+      map.addLayer({
+        'id': 'county-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 2,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': styles['boundaryOutline'],
+          'line-width': 2,
+          'line-opacity': .2
+        },
+        'filter': ["==", ["get", "area_type"], "county"]
       });
 
+      // Add the quad outlines to the map
+      map.addLayer({
+        'id': 'quad-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 9,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': 'rgba(139,69,19,1)',
+          'line-width': 2,
+          'line-opacity': .05
+        },
+        'filter': ["==", ["get", "area_type"], "quad"]
+      }, 'county-outline');
+
+      // add the point sources for the county and quad
+      // reference layer labels
       map.addSource("county-centroid", {
         "type": "geojson",
         "data": countyLabelCentroids
@@ -408,6 +386,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         "data": quadLabelCentroids
       });
 
+      // add symbol layer to label the counties
       map.addLayer({
         "id": "county-label",
         "type": "symbol",
@@ -417,7 +396,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         "layout": {
           "text-field": ["get", "area_type_name"],
           "text-justify": "auto",
-          "text-size": {
+          'text-size': {
             "base": 1,
             "stops": [
               [6, 6],
@@ -440,6 +419,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         }
       });
 
+      // add symbol layer to label the quads
       map.addLayer({
         "id": "quad-label",
         "type": "symbol",
@@ -448,7 +428,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         'maxzoom': 24,
         "layout": {
           "text-field": ["get", "area_type_name"],
-          "text-size": {
+          'text-size': {
             "base": 1,
             "stops": [
               [9, 8.5],
@@ -469,7 +449,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           "text-halo-width": 1,
           "text-halo-blur": 1
         }
-      }, "county-label");
+      }, 'county-label');
     });
     //
     // END COUNTY AND QUAD REFERENCE LAYER

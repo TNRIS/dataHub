@@ -8,9 +8,6 @@ import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.module.scss'
 import turfBbox from '@turf/bbox'
 
-// the carto core api is a CDN in the app template HTML (not available as NPM package)
-// so we create a constant to represent it so it's available to the component
-const cartodb = window.cartodb;
 const countyLabelCentroids = require('../../constants/countyCentroids.geojson.json');
 const quadLabelCentroids = require('../../constants/quadCentroids.geojson.json');
 
@@ -351,70 +348,46 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
       // START COUNTY AND QUAD REFERENCE LAYERS
       //
       // define area type layers and add to the map
-      const areaTypeLayerData = {
-        user_name: 'tnris-flood',
-        sublayers: [{
-          sql: `SELECT
-                  the_geom_webmercator,
-                  area_type
-                FROM
-                  area_type
-                WHERE
-                  area_type IN ('county', 'quad');`,
-          cartocss: '{}'
-        }],
-        maps_api_template: 'https://tnris-flood.carto.com'
-      };
+      const areaTypeTiles = 'https://mapserver.tnris.org/?map=/tnris_mapfiles/area_type.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=reference_boundaries&map.imagetype=mvt';
 
-      cartodb.Tiles.getTiles(areaTypeLayerData, function (result, error) {
-        if (result == null) {
-          console.log("error: ", error.errors.join('\n'));
-          return;
-        }
+      map.addSource(
+        'area-type-source',
+        { type: 'vector', tiles: [areaTypeTiles] }
+      );
 
-        const areaTypeTiles = result.tiles.map(function (tileUrl) {
-          return tileUrl
-          .replace('{s}', 'a')
-          .replace(/\.png/, '.mvt');
-        });
-
-        map.addSource(
-          'area-type-source',
-          { type: 'vector', tiles: areaTypeTiles }
-        );
-
-        // Add the county outlines to the map
-        map.addLayer({
-          'id': 'county-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 2,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': styles['boundaryOutline'],
-            'line-width': 2,
-            'line-opacity': .2
-          },
-          'filter': ["==", ["get", "area_type"], "county"]
-        });
-
-        // Add the quad outlines to the map
-        map.addLayer({
-          'id': 'quad-outline',
-          'type': 'line',
-          'source': 'area-type-source',
-          'source-layer': 'layer0',
-          'minzoom': 9,
-          'maxzoom': 24,
-          'paint': {
-            'line-color': 'rgba(139,69,19,1)',
-            'line-width': 2,
-            'line-opacity': .05
-          },
-          'filter': ["==", ["get", "area_type"], "quad"]
-        }, 'county-outline');
+      // Add the county outlines to the map
+      map.addLayer({
+        'id': 'county-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 2,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': styles['boundaryOutline'],
+          'line-width': 2,
+          'line-opacity': .2
+        },
+        'filter': ["==", ["get", "area_type"], "county"]
       });
+
+      // Add the quad outlines to the map
+      map.addLayer({
+        'id': 'quad-outline',
+        'type': 'line',
+        'source': 'area-type-source',
+        'source-layer': 'reference_boundaries',
+        'layout': {'visibility': 'visible'},
+        'minzoom': 9,
+        'maxzoom': 24,
+        'paint': {
+          'line-color': 'rgba(139,69,19,1)',
+          'line-width': 2,
+          'line-opacity': .05
+        },
+        'filter': ["==", ["get", "area_type"], "quad"]
+      }, 'county-outline');
 
       // add the point sources for the county and quad
       // reference layer labels
