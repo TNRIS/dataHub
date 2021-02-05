@@ -73,6 +73,7 @@
     "reselect": "^4.0.0",
     "resolve": "^1.17.0",
     "survey-react": "^1.8.4",
+    "turf-extent": "^1.0.4",
     "wellknown": "^0.5.0",
     "whatwg-fetch": "3.4.1"
   },
