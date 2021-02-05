@@ -1,7 +1,7 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import styles from '../../sass/index.module.scss'
-import extent from 'turf-extent'
+import turfBbox from '@turf/bbox'
 
 export default class CountyCoverage extends React.Component {
   constructor(props) {
@@ -41,7 +41,7 @@ export default class CountyCoverage extends React.Component {
     fetch(geoJsonFeatures)
     .then(res => res.json())
     .then(json => {
-      const bbox = extent(json);
+      const bbox = turfBbox(json);
       map.fitBounds(bbox,{padding: 20});
     })
     .catch(error => console.log(error));
