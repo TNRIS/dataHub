@@ -12,9 +12,6 @@ import turfBbox from '@turf/bbox'
 // global sass breakpoint variables to be used in js
 import breakpoints from '../../sass/_breakpoints.module.scss'
 
-// the carto core api is a CDN in the app template HTML (not available as NPM package)
-// so we create a constant to represent it so it's available to the component
-const cartodb = window.cartodb;
 const countyLabelCentroids = require('../../constants/countyCentroids.geojson.json');
 const quadLabelCentroids = require('../../constants/quadCentroids.geojson.json');
 
@@ -61,6 +58,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   componentWillUnmount() {
     if (this._map) {
       this._map.remove();
+      delete this._map
+      this.layerRef = {};
     }
     // clear the GeoSearcher input when the map is closed
     this.props.setGeoSearcherInputValue('');
@@ -314,6 +313,8 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   //
 
   createMap() {
+    this.layerRef = {};
+
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
     const map = new mapboxgl.Map({
@@ -566,9 +567,6 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       // set aside array in layerRef object for populating with layer ids for
       // layers of this areaType
       this.layerRef[areaType] = [];
-      // set aside the api response with all available resources (downloads)
-      // for this areaType
-      const areasList = [...new Set(this.props.resourceAreaTypes[areaType])];
 
       let visibility;
       switch (areaType === startLayer) {
@@ -579,53 +577,29 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           // The map will fit to the bounds of the aoi instead.
           if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
             // since this is our initial layer on display, we'll zoom to the bounds
-            const areasString = areasList.join("','");
-            const boundsQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + areasString + "')";
-            const sql = new cartodb.SQL({ user: 'tnris-flood' });
-            sql.getBounds(boundsQuery).done(function(bounds) {
-              // set map to extent of download areas
-              map.fitBounds(
-                [[bounds[1][1],bounds[1][0]],[bounds[0][1],bounds[0][0]]],
-                {padding: 20}
-              );
-            });
+            // get bounds and zoom map
+            const geoJsonFeatures = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=collection_query&outputformat=geojson&SRSNAME=EPSG:4326&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
+            fetch(geoJsonFeatures)
+            .then(res => res.json())
+            .then(json => {
+              const bbox = turfBbox(json);
+              map.fitBounds(bbox,{padding: 20});
+            })
+            .catch(error => console.log(error));
           }
           break;
         default:
           visibility = 'none';
       }
 
-      // get total number of resources available for download
-      const total = areasList.length;
       // if the preview layer, we'll use a separate function to add the wms service
-      // otherwise, use the total areas count to add interactive download layer(s)
+      // otherwise, add interactive download layer(s)
       if (areaType === 'preview') {
         this.createPreviewLayer(map, this.props.collection.wms_link);
       }
-      // if < 2000 downloads, we know the map can perform so we'll just get them
-      // all at once
-      else if (total < 2000) {
-        const allAreasString = areasList.join("','");
-        const allAreasQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + allAreasString + "')";
-        this.createLayers(allAreasQuery, map, "0", areaType, visibility);
-      }
-      // if more than 2000, we will get area_types to display on the map in chunks
-      // since the carto api payload has a maximum limit
       else {
-        let loop = 0;
-        let s = 0;
-        let e = 2000;
-        // iterate resources in 2000 record chunks creating the polygon, hover, and label
-        // layers for each chunk as separate 'chunk layers'
-        while (s < total) {
-          let chunk = areasList.slice(s, e);
-          let chunkString = chunk.join("','");
-          let chunkQuery = "SELECT * FROM area_type WHERE area_type_id IN ('" + chunkString + "')";
-          this.createLayers(chunkQuery, map, loop.toString(), areaType, visibility);
-          loop += 1;
-          s += 2000;
-          e += 2000;
-        }
+        const allAreasQuery = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=collection_query&map.imagetype=mvt&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
+        this.createLayers(allAreasQuery, map, "0", areaType, visibility);
       }
       return areaType;
     }, this);
@@ -670,87 +644,64 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   createLayers(query, map, loop, areaType, visibility) {
-    // prepare carto tile api information
-    var layerData = {
-      user_name: 'tnris-flood',
-      sublayers: [{
-        sql: query,
-        cartocss: '{}'
-      }],
-      maps_api_template: 'https://tnris-flood.carto.com'
-    };
 
     const layerSourceName = areaType + '__area_type_source' + loop;
     const layerBaseName = areaType + '__area_type' + loop;
+    const areaTiles = [query];
 
-    // get the raster tiles from the carto api
-    cartodb.Tiles.getTiles(layerData, function (result, error) {
-      if (result == null) {
-        console.log("error: ", error.errors.join('\n'));
-        return;
-      }
-      // reformat the tile urls in the carto api response to convert them to
-      // vector rather than raster tiles
-      const areaTiles = result.tiles.map(function (tileUrl) {
-        return tileUrl
-          .replace('{s}', 'a')
-          .replace(/.png/, '.mvt');
+    setTimeout(function () {
+      // use the tiles from the response to add a source to the map
+      map.addSource(layerSourceName, {
+        'type': 'vector',
+        'tiles': areaTiles,
+        'promoteId': 'oid'
       });
 
-      setTimeout(function () {
-        // use the tiles from the response to add a source to the map
-        map.addSource(layerSourceName, {
-          'type': 'vector',
-          'tiles': areaTiles,
-          'promoteId': 'objectid'
-        });
+      // add the area_type outline layer
+      map.addLayer({
+          id: layerBaseName + '__outline',
+          'type': 'line',
+          'source': layerSourceName,
+          'source-layer': 'collection_query',
+          'layout': {'visibility': visibility},
+          'interactive': true,
+          'paint': {
+            'line-color': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              styles['selectedFeature'],
+              styles['boundaryOutline']
+            ],
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              2.5,
+              1.5
+            ],
+            'line-opacity': 1
+          }
+      });
 
-        // add the area_type outline layer
-        map.addLayer({
-            id: layerBaseName + '__outline',
-            'type': 'line',
-            'source': layerSourceName,
-            'source-layer': 'layer0',
-            'layout': {'visibility': visibility},
-            'interactive': true,
-            'paint': {
-              'line-color': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                styles['selectedFeature'],
-                styles['boundaryOutline']
-              ],
-              'line-width': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                2.5,
-                1.5
-              ],
-              'line-opacity': 1
-            }
-        });
-
-        // add the area_type polygon layer
-        map.addLayer({
-            id: layerBaseName,
-            'type': 'fill',
-            'source': layerSourceName,
-            'source-layer': 'layer0',
-            'layout': {'visibility': visibility},
-            'paint': {
-              // hover state is set here using a case expression
-              // if hover is false, then color should be grey
-              // if hover is true then color should be blue
-              'fill-color': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                styles['selectedFeature'],
-                styles['boundaryFill']
-              ],
-              'fill-opacity': .1            }
-        }, layerBaseName + '__outline');
-      }, 500);
-    });
+      // add the area_type polygon layer
+      map.addLayer({
+          id: layerBaseName,
+          'type': 'fill',
+          'source': layerSourceName,
+          'source-layer': 'collection_query',
+          'layout': {'visibility': visibility},
+          'paint': {
+            // hover state is set here using a case expression
+            // if hover is false, then color should be grey
+            // if hover is true then color should be blue
+            'fill-color': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              styles['selectedFeature'],
+              styles['boundaryFill']
+            ],
+            'fill-opacity': .1            }
+      }, layerBaseName + '__outline');
+    }, 500);
 
     // add the layer id's to the areaType's array in the layerRef for toggling
     this.layerRef[areaType].push(layerBaseName);
@@ -798,7 +749,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
           // set the hover attribute to false with feature state
           map.setFeatureState({
             source: layerSourceName,
-            sourceLayer: 'layer0',
+            sourceLayer: 'collection_query',
             id: hoveredStateId
           }, {
             hover: false
@@ -808,7 +759,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         // set the hover attribute to true with feature state
         map.setFeatureState({
           source: layerSourceName,
-          sourceLayer: 'layer0',
+          sourceLayer: 'collection_query',
           id: hoveredStateId
         }, {
           hover: true
@@ -824,7 +775,7 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
         // set the hover attribute to false with feature state
         map.setFeatureState({
           source: layerSourceName,
-          sourceLayer: 'layer0',
+          sourceLayer: 'collection_query',
           id: hoveredStateId
         }, {
           hover: false
