@@ -19,7 +19,6 @@ export default class BasemapSelector extends React.Component {
 
         this.props.map.on('load', () => {
             const satelliteUrl = 'https://imagery.tnris.org/server/services/NAIP/NAIP18_NCCIR_60cm/ImageServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=0';
-
             this.props.map.addSource(
                 'satellite-basemap',
                 { type: 'raster', tiles: [satelliteUrl], tileSize: 256 }
