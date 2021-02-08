@@ -14,9 +14,6 @@ import styles from '../sass/index.module.scss'
 // global sass breakpoint variables to be used in js
 import breakpoints from '../sass/_breakpoints.module.scss'
 
-// the carto core api is a CDN in the app template HTML (not available as NPM package)
-// so we create a constant to represent it so it's available to the component
-const cartodb = window.cartodb;
 const countyLabelCentroids = require('../constants/countyCentroids.geojson.json');
 const quadLabelCentroids = require('../constants/quadCentroids.geojson.json');
 
@@ -736,26 +733,19 @@ export default class CollectionFilterMap extends React.Component {
   }
 
   getExtentIntersectedCollectionIds = (_this, aoiType, aoi) => {
-    // get the bounds from the aoi and query carto
+    // get the bounds from the aoi and query mapserver
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
     const bounds = aoi.bbox;
-    const sql = new cartodb.SQL({user: 'tnris-flood'});
-    const query = `SELECT
-                   areas_view.collections
-                 FROM
-                   area_type, areas_view
-                 WHERE
-                   area_type.area_type_id = areas_view.area_type_id
-                 AND
-                   area_type.the_geom && ST_MakeEnvelope(
-                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`
-
-    sql.execute(query).done(function(data) {
+    const geoJsonFeatures = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=envelope_query&outputformat=geojson&SRSNAME=EPSG:4326&xmin=${bounds[2]}&ymin=${bounds[1]}&xmax=${bounds[0]}&ymax=${bounds[3]}`;
+    fetch(geoJsonFeatures)
+    .then(res => res.json())
+    .then(json => {
+      console.log(json.features.length);
       // set up the array of collection_id arrays from the returned
       // query object
-      const collectionIds = data.rows.map(function (obj) {
-        return obj.collections.split(",");
+      const collectionIds = json.features.map(function (obj) {
+        return obj.properties.collections.split(",");
       });
       // combine all collection_id arrays into a single array of unique ids
       const uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
@@ -766,10 +756,8 @@ export default class CollectionFilterMap extends React.Component {
       _this._map.fitBounds(bounds, {padding: 80});
       // set the aoi details in the app state
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
-    }).error(function(errors) {
-      // errors contains a list of errors
-      console.log("errors:" + errors);
     })
+    .catch(error => console.log(error));
   }
 
   render() {
