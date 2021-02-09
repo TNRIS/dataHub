@@ -583,7 +583,10 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
             .then(res => res.json())
             .then(json => {
               const bbox = turfBbox(json);
-              map.fitBounds(bbox,{padding: 20});
+              // fitBounds only if turfBbox returns actual bounds. on initial load, sometimes returns an Infinity array if data hasn't returned yet
+              if (!bbox.includes(Infinity)) {
+                map.fitBounds(bbox,{padding: 20});
+              }
             })
             .catch(error => console.log(error));
           }
