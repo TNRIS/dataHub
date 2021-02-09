@@ -1,9 +1,6 @@
 import React from 'react'
 import { matchPath } from 'react-router-dom'
 import turfBbox from '@turf/bbox'
-// the carto core api is a CDN in the app template HTML (not available as NPM package)
-// so we create a constant to represent it so it's available to the component
-const cartodb = window.cartodb;
 
 export default class CollectionFilter extends React.Component {
   constructor(props) {
@@ -116,35 +113,25 @@ export default class CollectionFilter extends React.Component {
   }
 
   handleSetGeoFilter(_this, aoiType, aoi) {
-    // get the bounds from the aoi and query carto
+    // get the bounds from the aoi and query mapserver
     // to find the area_type polygons that intersect this mbr
     // and return the collection_ids associated with those areas
     let bounds = turfBbox(aoi); // get the bounds with turf.js
-    let sql = new cartodb.SQL({user: 'tnris-flood'});
-    let query = `SELECT
-                   areas_view.collections
-                 FROM
-                   area_type, areas_view
-                 WHERE
-                   area_type.area_type_id = areas_view.area_type_id
-                 AND
-                   area_type.the_geom && ST_MakeEnvelope(
-                     ${bounds[2]}, ${bounds[1]}, ${bounds[0]}, ${bounds[3]})`;
-
-    sql.execute(query).done(function(data) {
+    let geoJsonFeatures = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=envelope_query&outputformat=geojson&SRSNAME=EPSG:4326&xmin=${bounds[2]}&ymin=${bounds[1]}&xmax=${bounds[0]}&ymax=${bounds[3]}`;
+    fetch(geoJsonFeatures)
+    .then(res => res.json())
+    .then(json => {
       // set up the array of collection_id arrays from the returned
       // query object
-      let collectionIds = data.rows.map(function (obj) {
-        return obj.collections.split(",");
+      let collectionIds = json.features.map(function (obj) {
+        return obj.properties.collections.split(",");
       });
       // combine all collection_id arrays into a single array of unique ids
       let uniqueCollectionIds = [...new Set([].concat(...collectionIds))];
       _this.props.setCollectionFilterMapFilter(uniqueCollectionIds);
       _this.props.setCollectionFilterMapAoi({aoiType: aoiType, payload: aoi});
-    }).error(function(errors) {
-      // errors contains a list of errors
-      console.log("errors:" + errors);
     })
+    .catch(error => console.log(error));
   }
 
   openFilterMenu(e) {
