@@ -28,7 +28,6 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   componentWillUnmount() {
     if (this._map) {
       this._map.remove();
-      delete this._map
       this.layerRef = {};
     }
   }
