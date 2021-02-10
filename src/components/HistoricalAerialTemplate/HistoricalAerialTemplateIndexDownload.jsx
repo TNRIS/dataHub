@@ -28,6 +28,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   componentWillUnmount() {
     if (this._map) {
       this._map.remove();
+      delete this._map
+      this.layerRef = {};
     }
   }
 
@@ -229,6 +231,8 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
   //
 
   createMap() {
+    this.layerRef = {};
+    
     // define mapbox map
     mapboxgl.accessToken = 'undefined';
     const map = new mapboxgl.Map({
@@ -279,6 +283,7 @@ export default class HistoricalAerialTemplateIndexDownload extends React.Compone
         this._container.parentNode.removeChild(this._container);
       }
     }
+    
     // custom control variable
     const ctrlMenu = new ButtonControl({
       id: 'download-menu',

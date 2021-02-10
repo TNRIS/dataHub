@@ -561,48 +561,53 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
       ReactDOM.render(<LayerSelector map={map} handler={this.toggleLayers} areaTypes={areaTypesAry} startLayer={startLayer} />, layerSelectorContainer);
     }
 
-    // iterate our area_types so we can add them to different layers for
-    // layer control in the map and prevent overlap of area polygons
-    areaTypesAry.map(areaType => {
-      // set aside array in layerRef object for populating with layer ids for
-      // layers of this areaType
-      this.layerRef[areaType] = [];
+    map.on('load', () => {
+      // iterate our area_types so we can add them to different layers for
+      // layer control in the map and prevent overlap of area polygons
+      areaTypesAry.map(areaType => {
+        // set aside array in layerRef object for populating with layer ids for
+        // layers of this areaType
+        this.layerRef[areaType] = [];
 
-      let visibility;
-      switch (areaType === startLayer) {
-        case true:
-          visibility = 'visible';
-          // Check if an aoi has been set in the geo filter
-          // and overide the below fitBounds call if it has.
-          // The map will fit to the bounds of the aoi instead.
-          if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
-            // since this is our initial layer on display, we'll zoom to the bounds
-            // get bounds and zoom map
-            const geoJsonFeatures = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=collection_query&outputformat=geojson&SRSNAME=EPSG:4326&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
-            fetch(geoJsonFeatures)
-            .then(res => res.json())
-            .then(json => {
-              const bbox = turfBbox(json);
-              map.fitBounds(bbox,{padding: 20});
-            })
-            .catch(error => console.log(error));
-          }
-          break;
-        default:
-          visibility = 'none';
-      }
+        let visibility;
+        switch (areaType === startLayer) {
+          case true:
+            visibility = 'visible';
+            // Check if an aoi has been set in the geo filter
+            // and overide the below fitBounds call if it has.
+            // The map will fit to the bounds of the aoi instead.
+            if (Object.keys(this.props.collectionFilterMapAoi).length < 1) {
+              // since this is our initial layer on display, we'll zoom to the bounds
+              // get bounds and zoom map
+              const geoJsonFeatures = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=collection_query&outputformat=geojson&SRSNAME=EPSG:4326&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
+              fetch(geoJsonFeatures)
+              .then(res => res.json())
+              .then(json => {
+                const bbox = turfBbox(json);
+                // fitBounds only if turfBbox returns actual bounds. on initial load, sometimes returns an Infinity array if data hasn't returned yet
+                if (!bbox.includes(Infinity)) {
+                  map.fitBounds(bbox,{padding: 20});
+                }
+              })
+              .catch(error => console.log(error));
+            }
+            break;
+          default:
+            visibility = 'none';
+        }
 
-      // if the preview layer, we'll use a separate function to add the wms service
-      // otherwise, add interactive download layer(s)
-      if (areaType === 'preview') {
-        this.createPreviewLayer(map, this.props.collection.wms_link);
-      }
-      else {
-        const allAreasQuery = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=collection_query&map.imagetype=mvt&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
-        this.createLayers(allAreasQuery, map, "0", areaType, visibility);
-      }
-      return areaType;
-    }, this);
+        // if the preview layer, we'll use a separate function to add the wms service
+        // otherwise, add interactive download layer(s)
+        if (areaType === 'preview') {
+          this.createPreviewLayer(map, this.props.collection.wms_link);
+        }
+        else {
+          const allAreasQuery = `https://mapserver.tnris.org/?map=/tnris_mapfiles/download_areas.map&mode=tile&tilemode=gmap&tile={x}+{y}+{z}&layers=collection_query&map.imagetype=mvt&AreaType=${areaType}&Collection=${this.props.collection.collection_id}`;
+          this.createLayers(allAreasQuery, map, "0", areaType, visibility);
+        }
+        return areaType;
+      }, this);
+    });
 
     // if a geo filter aoi is set in the app's state on map load,
     // add it to the map and fit the map's bounds to the extent
