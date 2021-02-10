@@ -2,9 +2,7 @@ import React from 'react'
 import {MDCFormField} from '@material/form-field';
 import {MDCRadio} from '@material/radio';
 
-
-
-export default class BasemapSelector extends React.Component {
+export default class LayerSelector extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);

@@ -56,10 +56,9 @@ export default class TnrisDownloadTemplateDownload extends React.Component {
   }
 
   componentWillUnmount() {
+    this.layerRef = {};
     if (this._map) {
       this._map.remove();
-      delete this._map
-      this.layerRef = {};
     }
     // clear the GeoSearcher input when the map is closed
     this.props.setGeoSearcherInputValue('');
