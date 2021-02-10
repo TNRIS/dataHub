@@ -741,7 +741,6 @@ export default class CollectionFilterMap extends React.Component {
     fetch(geoJsonFeatures)
     .then(res => res.json())
     .then(json => {
-      console.log(json.features.length);
       // set up the array of collection_id arrays from the returned
       // query object
       const collectionIds = json.features.map(function (obj) {
