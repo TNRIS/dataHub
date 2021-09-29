@@ -234,7 +234,7 @@ export default class Header extends React.Component {
             </section>
           </div>
           <Alert severity="info">
-            A new version of DataHub is available for preview at <a href="https://betadata.tnris.org">betadata.tnris.org</a>. This version will be available until at least 9/23/2021.
+            A new version of DataHub is available for preview at <a href="https://betadata.tnris.org">betadata.tnris.org</a>. This version will no longer be available on 10/04/2021.
           </Alert>
         </header>
       ) : (
